@@ -158,19 +158,53 @@ public class DataParser {
 	private Slot readCourseSlot(String input, int rowNum){
 		Slot outSlot;
 		String[] dataSet = input.split(" ");
+		if(dataSet.length != 4)
+			throw new IllegalArgumentException("The number of arguments found in row: " + rowNum + " is incorrect.");
+		if(!Arrays.stream(validDays).anyMatch(dataSet[0]::equals))
+			throw new IllegalArgumentException("Invalid format for day found in: " + dataSet[0] + " in row: " + rowNum);
+		if(!Arrays.stream(validTimes).anyMatch(dataSet[1]::equals))
+			throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+		int tempMax = Integer.parseInt(dataSet[2]);
+		int tempMin = Integer.parseInt(dataSet[3]);
+		if(tempMax < tempMin)
+			throw new IllegalArgumentException("The format for the max and min for a slot are invalid: " + dataSet[2] + ", " + dataSet[3] + "in row: " + rowNum);
+		outSlot = new Slot(tempMax, tempMin, dataSet[1], dataSet[0]);
 		return outSlot;
 	}
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a pair of courses
 	private CoursePair readCoursePair(String input, int rowNum){
-		CoursePair localOutput;
-		localOutput = new CoursePair();
-		return localOutput;
+		String[] dataSet = input.split(",");
+		if(dataSet.length != 2)
+			throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
+		courseItem ItemOne = readCourseLine(dataSet[0], rowNum);
+		courseItem ItemTwo = readCourseLine(dataSet[1], rowNum); 
+		return new CoursePair(ItemOne, ItemTwo);
 	}
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a pair of time and course data sets.
 	private TimeCoursePair readTimeCoursePair(String input, int rowNum){
-		return new TimeCoursePair();
+		String day = "";
+		String time = "";
+		int classIndex = 0;
+		String[] dataSet = input.split(",");
+		if(dataSet.length != 3)
+			throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
+		for(int i = 0; i < dataSet.length; i++){
+			if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
+				day = dataSet[i];
+				if(Arrays.stream(validTimes).anyMatch(dataSet[i + 1]::equals))
+					time = dataSet[i+ 1];
+				if(i == 0)
+					classIndex = i + 2;
+				else
+					classIndex = i - 1;
+				break;
+			}
+		}
+		if((day == "")||(time == ""))
+			throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
+		return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum));
 	}
 	
 	

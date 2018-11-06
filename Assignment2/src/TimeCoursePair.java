@@ -10,4 +10,9 @@ public class TimeCoursePair {
 	public courseItem getCourseItem() {
 		return item;
 	}
+	
+	public TimeCoursePair(Slot inTime, courseItem inItem){
+		time = inTime;
+		item = inItem;
+	}
 }

@@ -9,4 +9,9 @@ public class CoursePair {
 	public courseItem getItemTwo() {
 		return itemTwo;
 	}
+	
+	public CoursePair(courseItem inOne, courseItem inTwo){
+		itemOne = inOne;
+		itemTwo = inTwo;
+	}
 }
