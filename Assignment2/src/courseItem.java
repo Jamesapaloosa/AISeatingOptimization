@@ -17,6 +17,15 @@ public class courseItem {
 		section = inSection;
 	}
 	
+	public courseItem(String inDepartment, String inNumber, String inLecVsTut, String inSection, String inTutVLab, String inTutSection) {
+		department= inDepartment;
+		number = inNumber;
+		lec = inLecVsTut;
+		section = inSection;
+		tutVLab = inTutVLab;
+		tutSection = inTutSection;
+	}
+	
 	public String getDepartment() {
 		return department;
 	}

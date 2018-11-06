@@ -1,0 +1,87 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.*;
+import java.io.*; 
+public class DataParser {
+	String sourcefile;
+	
+	public DataParser(String infile) {
+		if(infile == "") {
+			sourcefile = "E:\\CPSC433\\testCase1.txt";
+		}else {
+			sourcefile = infile;
+		}
+	}
+	
+	
+	public FileData readfile() throws IOException {
+		File file = new File(sourcefile);
+		FileData dataOutput = new FileData();
+		BufferedReader br;
+		try {
+		br = new BufferedReader(new FileReader(file));
+		}catch(FileNotFoundException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		String line;
+		while ((line = br.readLine()) != null){
+			//Switch to bounce between different data sets
+			switch(line){
+			case "Name:":
+				while((line != "\n")||(line != "\r")||(line != null)){
+					dataOutput.setName(line);
+				}
+				break;
+			case "Course slots:":
+				while((line != "\n")||(line != "\r")||(line != null)){
+					dataOutput.getCourseSlots().add(readCourseSlot(line));
+				}
+				break;
+			case "Lab slots:":
+				while((line != "\n")||(line != "\r")||(line != null)){
+					dataOutput.getLabSlots().add(readCourseSlot(line));
+				}
+				break;
+			case "Courses:":
+				while((line != "\n")||(line != "\r")||(line != null)){
+					dataOutput.getCourses().add(readCourseLine(line));
+				}
+				break;
+			case "Labs:":
+				while((line != "\n")||(line != "\r")||(line != null)){
+					dataOutput.getLabs().add(readCourseLine(line));
+				}
+				break;
+			}
+		}
+		
+		return dataOutput;
+	}
+	
+	public void readfile(String infile) throws IOException {
+		sourcefile = infile;
+		readfile();
+	}
+	
+	private courseItem readCourseLine(String input) {
+		courseItem outCL;
+		return outCL
+	}
+	
+	private Slot readCourseSlot(String input){
+		
+	}
+	
+	private CoursePair readCoursePair(String input){
+		CoursePair localOutput;
+		localOutput = new CoursePair();
+		return localOutput;
+	}
+	
+	private TimeCoursePair readTimeCoursePair(String input){
+		
+	}
+	
+	
+}
