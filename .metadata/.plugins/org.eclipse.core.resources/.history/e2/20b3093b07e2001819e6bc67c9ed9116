@@ -28,8 +28,7 @@ public class Slot {
 		return Min;
 	}
 	
-	//Method for making sure that two slots are the same, does not compare max and min because those are not always relevant
-	public Boolean isSameSlot(Slot OtherSlot){
+	public Boolean compareSlot(Slot OtherSlot){
 		if(OtherSlot.getStartTime() != this.startTime)
 			return false;
 		if(OtherSlot.getDay() != this.day)

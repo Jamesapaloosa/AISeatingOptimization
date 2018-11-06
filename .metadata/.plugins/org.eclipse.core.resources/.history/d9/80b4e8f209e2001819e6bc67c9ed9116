@@ -6,9 +6,8 @@ public class DataParser {
 	String sourcefile;
 	public static String[] validDays = {"MO", "TU", "FR"};
 	public static String[] validTimes = {"8:00", "8:30", "9:00", "9:30", "10:00", "10:30"};
-	public static String[] validClassType = {"LEC", "TUT", "LAB", "tut", "lab", "lec"};
-	public static String[] validTutType = {"TUT", "LAB", "tut", "lab"};
-	public static String[] validLecType = {"LEC", "lec"};
+	public static String[] validClassType = {"LEC", "TUT", "LAB"};
+	public static String[] validTutType = {"TUT", "LAB"};
 	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
 	

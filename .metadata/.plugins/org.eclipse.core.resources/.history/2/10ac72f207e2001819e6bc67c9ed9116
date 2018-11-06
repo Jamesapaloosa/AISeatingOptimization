@@ -30,20 +30,8 @@ public class courseItem {
 		tutSection = inTutSection;
 	}
 	
-	//compare two course items to see if they are the same;
 	public Boolean isSameCourseItems(courseItem OtherCourseItem){
-		if(department != OtherCourseItem.getDepartment())
-			return false;
-		if(number != OtherCourseItem.getNumber())
-			return false;
-		if(lec != OtherCourseItem.getLecVsTut())
-			return false;
-		if(section != OtherCourseItem.getSection())
-			return false;
-		if(tutVLab != OtherCourseItem.getTutVLab())
-			return false;
-		if(tutSection != OtherCourseItem.getTutSection())
-			return false;
+		if(department != )
 		return true;
 	}
 	
