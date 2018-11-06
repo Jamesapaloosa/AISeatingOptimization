@@ -16,7 +16,7 @@ public class DataParser {
 	
 	public fileData readfile() throws IOException {
 		File file = new File(sourcefile);
-		LinkedList<inCoursesLabs> coursesAndLabs = new LinkedList<inCoursesLabs>();
+		LinkedList<courseItem> coursesAndLabs = new LinkedList<courseItem>();
 		BufferedReader br;
 		try {
 		br = new BufferedReader(new FileReader(file));
@@ -41,13 +41,10 @@ public class DataParser {
 		readfile();
 	}
 	
-	private inCoursesLabs readCourseLine(String input) {
-		inCoursesLabs outCL;
+	private courseItem readCourseLine(String input) {
+		courseItem outCL;
 		
 		
 		return outCL
 	}
-	
-	
-	inCoursesLabs temp;
 }
