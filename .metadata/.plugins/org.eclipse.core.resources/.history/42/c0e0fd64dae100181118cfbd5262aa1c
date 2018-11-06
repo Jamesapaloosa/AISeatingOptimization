@@ -7,9 +7,6 @@ public class FileData {
 	LinkedList<Slot> courseSlots;
 	LinkedList<Slot> labSlots;
 	LinkedList<CoursePair> incompatible;
-	LinkedList<TimeCoursePair> unwanted;
-	LinkedList<CoursePair> pair;
-	LinkedList<TimeCoursePair> preferences;
-	LinkedList<TimeCoursePair> preAssigned;
+	LinkedList<Unwanted> unwanted;
 	
 }

@@ -14,9 +14,8 @@ public class DataParser {
 	}
 	
 	
-	public FileData readfile() throws IOException {
+	public fileData readfile() throws IOException {
 		File file = new File(sourcefile);
-		FileData dataOutput;
 		LinkedList<courseItem> coursesAndLabs = new LinkedList<courseItem>();
 		BufferedReader br;
 		try {
@@ -34,7 +33,7 @@ public class DataParser {
 			}
 		}
 		
-		return dataOutput;
+		return coursesAndLabs;
 	}
 	
 	public void readfile(String infile) throws IOException {
