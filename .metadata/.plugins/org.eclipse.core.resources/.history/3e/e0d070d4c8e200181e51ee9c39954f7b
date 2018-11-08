@@ -1,0 +1,60 @@
+import java.io.File;
+import java.util.LinkedList;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+
+public class testGenerator {
+	int coursesCount;
+	int labsCount;
+	String name;
+	int courseSlotCount;
+	int labSlotCount;
+	int incompatibleCount;
+	int unwantedCount;
+	int pairCount;
+	int preferencesCount;
+	int preAssignedCount;
+	FileWriter write;
+	
+	public testGenerator(String inDestination, String inName, int coursesCount, int inLabsCount, int inCourseSlotCount, int labSlotCount, int inIncompatibleCount, int inUnwantedCount, int inPairCount, int inPreferencesCount, int inPreAssignedCount ) throws IOException{
+		File file = new File(inDestination);
+		if(file.isDirectory())
+			write = new FileWriter( inDestination + "RandomInput.txt" , false);
+		else
+			write = new FileWriter(inDestination, false);
+		this.coursesCount = coursesCount;
+		labsCount = inLabsCount;
+		name = inName;
+		courseSlotCount = inCourseSlotCount;
+		this.labSlotCount = labSlotCount;
+		incompatibleCount = inIncompatibleCount;
+		unwantedCount = inUnwantedCount;
+		pairCount = inPairCount;
+		preferencesCount = inPreferencesCount;
+		preAssignedCount = inPreAssignedCount;
+	}
+	
+	
+	//Size is a character either s, m, l, x, g with s being smallest and g being biggest 
+	public testGenerator(char size, String inName, String destination) throws IOException{
+		File file = new File(destination);
+		if(file.isDirectory())
+			write = new FileWriter( destination + "RandomInput.txt" , false);
+		else
+			write = new FileWriter(destination, false);
+		switch (size){
+		case 's':
+			
+			break;
+		case 'm':
+			break;
+		case 'l':
+			break;
+		case 'x':
+			break;
+		case 'g':
+			break;
+		}
+	}
+}
