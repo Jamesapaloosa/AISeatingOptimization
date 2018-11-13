@@ -1,0 +1,36 @@
+//This class can be used to build solutions or as a way of building off of our set based solutions.
+import java.util.LinkedList;
+import java.util.Random;
+public class OrTree {
+	State currentState;
+	
+	public OrTree(State inState){
+		currentState = inState;
+	}
+	
+	public State fillState(){
+		courseItem addingItem;
+		int ranNum;
+		LinkedList<courseItem> sourceList;
+		for(int i = (currentState.getCoursesToAssign().size() + currentState.getLabsToAssign().size()); i > 0 ; i++){
+			if(currentState.getCoursesToAssign().size() == 0)
+				sourceList = currentState.getLabsToAssign();
+			else if(currentState.getLabsToAssign().size()== 0)
+				sourceList = currentState.getCoursesToAssign();
+			else{
+				ranNum = new Random().nextInt(1) + 1;
+				if(ranNum == 1 ){
+					sourceList = currentState.getLabsToAssign();
+				}else{
+					sourceList = currentState.getCoursesToAssign();
+				}
+			}
+			ranNum = new Random().nextInt(sourceList.size() - 1);
+			addingItem = sourceList.get(ranNum);
+			
+		}
+		return currentState;
+	}
+	
+	
+}

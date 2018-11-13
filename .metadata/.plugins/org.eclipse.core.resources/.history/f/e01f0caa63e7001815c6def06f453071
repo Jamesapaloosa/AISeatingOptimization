@@ -47,22 +47,12 @@ public class OrTree {
 				altern.add(new Integer(k));
 			}
 			int j = altern.size();
-			int alternChoice;
 			while(j > 0 ){
 				j = altern.size();
-				alternChoice = new Random().nextInt(altern.size() - 1);
-				destinationTimeslot = currentState.timeSlots.get(altern.get(alternChoice));
-				altern.remove(alternChoice);
+				destinationTimeslot = currentState.timeSlots.get(new Random().nextInt(currentState.timeSlots.size() - 1));
 				if(isCourse == destinationTimeslot.forCourses){
 					found = destinationTimeslot.addItemToTimeslot(addingItem);
-					if(found){
-						sourceList.remove(ranNum);
-						break;
-					}
 				}
-			}
-			if(found == false){
-				return null;
 			}
 		}
 		return currentState;

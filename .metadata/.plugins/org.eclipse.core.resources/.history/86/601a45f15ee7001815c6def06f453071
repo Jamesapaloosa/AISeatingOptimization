@@ -1,0 +1,15 @@
+//This class can be used to build solutions or as a way of building off of our set based solutions.
+public class OrTree {
+	State currentState;
+	
+	public OrTree(State inState){
+		currentState = inState;
+	}
+	
+	public State fillState(){
+		for(int i = (currentState.getCoursesToAssign().size() + currentState.getLabsToAssign().size()); i > 0 ; i++){
+			
+		}
+		return currentState;
+	}
+}
