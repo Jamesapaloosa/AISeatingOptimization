@@ -122,7 +122,8 @@ public class testGenerator {
 		String time = DataParser.validTimes[new Random().nextInt(DataParser.validDays.length)];
 		SlotItem = Day + "," + time;
 		write.append(SlotItem);
-	}	
+	}
+	
 	
 	public void createIncompatible() throws IOException{
 		int chooseFirstItem = new Random().nextInt(1);
@@ -168,15 +169,11 @@ public class testGenerator {
 			createCourse();
 		else
 			createLab();
-		createNoMaxSlot();
+		createSlot();
+		
 	}
 	
 	public void preAssigned() throws IOException{
-		int chooseFirstItem = new Random().nextInt(1);
-		if(chooseFirstItem == 0)
-			createCourse();
-		else
-			createLab();
-		createNoMaxSlot();
+		
 	}
 }

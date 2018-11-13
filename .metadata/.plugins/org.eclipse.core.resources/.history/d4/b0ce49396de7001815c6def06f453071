@@ -9,7 +9,6 @@ public class DataParser {
 	public static String[] validClassType = {"LEC", "TUT", "LAB", "tut", "lab", "lec"};
 	public static String[] validTutType = {"TUT", "LAB", "tut", "lab"};
 	public static String[] validLecType = {"LEC", "lec"};
-	public static String[] validDepartments = {"CPSC", "SENG"};
 	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
 	
