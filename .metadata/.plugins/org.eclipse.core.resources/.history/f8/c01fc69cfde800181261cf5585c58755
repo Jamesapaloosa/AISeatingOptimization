@@ -4,17 +4,14 @@ public class OutputGenerator {
 	State resultState;
 	LinkedList<String> outputData;
 	
-	//Constructor that takes in a state
 	public OutputGenerator(State inState){
 		resultState = inState;
 	}
 	
-	//Send the results to a file: NOT FINISHED
 	public void OutputResultToFile(String path){
 		sortResults();
 	}
 	
-	//Send the results to the command line
 	public void OutputResultToCommandLine(){
 		sortResults();
 		System.out.println("Eval Value: " + resultState.eval_Value);
@@ -23,7 +20,6 @@ public class OutputGenerator {
 		}
 	}
 	
-	//Sort data into a alphabetical order by class
 	public void sortResults(){
 		String temp;
 		Slot time;
@@ -39,5 +35,4 @@ public class OutputGenerator {
 		}
 		Collections.sort(outputData, String.CASE_INSENSITIVE_ORDER);
 	}
-	
 }
