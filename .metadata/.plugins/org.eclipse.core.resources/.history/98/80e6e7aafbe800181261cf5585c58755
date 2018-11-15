@@ -1,0 +1,26 @@
+
+public class Driver {
+	public static void main(String[] args) {
+		State currentState = new State();
+		long startTime;
+		long endTime;
+		
+		startTime = System.nanoTime();
+		DataParser inputFileParser = new DataParser(args[0]);
+		endTime = System.nanoTime();
+		
+		try{
+			FileData inputFileData = inputFileParser.readfile();
+		}catch(Exception e){
+			
+		}
+		//need to assign pre assigned courses to a timeslot
+		//need to setup all of the timeslots based on imported data
+		//
+		OrTree thisOrTree = new OrTree(currentState);
+		//Genetic algorithm here
+		//
+		OutputGenerator output = new OutputGenerator(currentState);
+		output.OutputResultToCommandLine();
+	}
+}

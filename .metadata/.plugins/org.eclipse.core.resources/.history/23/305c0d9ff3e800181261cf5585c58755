@@ -56,7 +56,6 @@ public class OrTree {
 				if(isCourse == destinationTimeslot.forCourses){
 					found = destinationTimeslot.addItemToTimeslot(addingItem);
 					if(found){
-						//TODO: use the constr here to check that this is a valid addition
 						sourceList.remove(ranNum);
 						break;
 					}

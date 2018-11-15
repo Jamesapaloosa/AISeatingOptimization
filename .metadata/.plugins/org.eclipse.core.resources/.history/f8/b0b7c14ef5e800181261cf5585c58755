@@ -1,0 +1,16 @@
+
+public class OutputGenerator {
+	State resultState;
+	
+	public OutputGenerator(State inState){
+		resultState = inState;
+	}
+	
+	public void OutputResultToFile(String path){
+		
+	}
+	
+	public void OutputResultToCommandLine(){
+		
+	}
+}

@@ -4,7 +4,6 @@ public class State {
 	LinkedList<courseItem> CoursesToAssign;
 	LinkedList<courseItem> LabsToAssign;
 	int eval_Value; 
-	boolean isSolvable;
 	
 	public LinkedList<Timeslot> getTimeSlots() {
 		return timeSlots;
