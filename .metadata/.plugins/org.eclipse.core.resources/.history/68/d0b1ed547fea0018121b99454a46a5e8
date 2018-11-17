@@ -33,7 +33,6 @@ public class Driver {
 		//Genetic algorithm here
 		//
 		
-		//Print output to the console.
 		startTime = System.nanoTime();
 		OutputGenerator output = new OutputGenerator(currentState);
 		output.OutputResultToCommandLine();
