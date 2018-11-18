@@ -242,10 +242,14 @@ public class Constr {
 	public Boolean final(State currentState){
 		State state = currentState;
 
-		if (!(state.CoursesToAssign.isEmpty()) && !(state.LabsToAssign.isEmpty())){
-			if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state))
+	
+		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state)){
+			if (!(state.CoursesToAssign.isEmpty()) && !(state.LabsToAssign.isEmpty())){	
+				return false;
+			}
 			return true;
 		}
+		
 
 		else
 			return false;
@@ -261,19 +265,18 @@ public class Constr {
 			return false;
 	}
 
-	// Run Constr on a state
-	public Boolean partial(State currentState){
-		State state = currentState;
+	// Run Constr on an assignment
+	public Boolean assign(Timeslot ts, courseItem ci){
+		Timeslot timeslot = ts;
+		courseItem item = ci; 
 
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)))
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci)){
 			return true;
+		}
 		else
 			return false;
-	}
-
-
-	public static void main(String[] args){
 
 	}
+
 
 }
