@@ -1,11 +1,10 @@
 
 public class Driver {
 	public static void main(String[] args) {
-		State currentState;
+		State currentState = new State();
 		long startTime;
 		long endTime;
 		long duration;
-		FileData inputFileData;
 		//command line inputs required here
 		
 		
@@ -13,22 +12,17 @@ public class Driver {
 		startTime = System.nanoTime();
 		DataParser inputFileParser = new DataParser(args[0]);
 		try{
-			inputFileData = inputFileParser.readfile();
+			FileData inputFileData = inputFileParser.readfile();
 		}catch(Exception e){
-			System.out.println("Fatal error in inputFileParser method! ");
-			return;
+			
 		}
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
 		
 		
-		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
-		startTime = System.nanoTime();
-		currentState = StateMaker.convertFromFileData(inputFileData);
-		duration = endTime - startTime;
-		System.out.println("input file parser speed: " + duration);
-		
+		//need to assign pre assigned courses to a timeslot
+		//need to setup all of the timeslots based on imported data
 		
 		//Or tree
 		startTime = System.nanoTime();
@@ -38,9 +32,9 @@ public class Driver {
 		System.out.println("or tree speed: " + duration);
 		
 		
+		
 		//Genetic algorithm here
 		//
-		
 		
 		//Print output to the console.
 		startTime = System.nanoTime();

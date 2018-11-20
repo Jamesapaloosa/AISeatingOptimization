@@ -9,28 +9,25 @@ public class courseItem {
 	public String section;
 	public String tutVLab;
 	public String tutSection;
-	public boolean isALec;
 	
 	//Constructor that is used in the case of a single course or a tutorial that is for a course with only one section.
-	public courseItem(String inDepartment, String inNumber, String inLecVsTut, String inSection, boolean inIsALec) {
+	public courseItem(String inDepartment, String inNumber, String inLecVsTut, String inSection) {
 		department= inDepartment;
 		number = inNumber;
 		lec = inLecVsTut;
 		section = inSection;
 		tutVLab = "";
 		tutSection = "";
-		isALec = inIsALec;
 	}
 	
 	//Constructor that is used in the case of multiple tutorials for the same section of a course
-	public courseItem(String inDepartment, String inNumber, String inLecVsTut, String inSection, String inTutVLab, String inTutSection, boolean inIsALec) {
+	public courseItem(String inDepartment, String inNumber, String inLecVsTut, String inSection, String inTutVLab, String inTutSection) {
 		department= inDepartment;
 		number = inNumber;
 		lec = inLecVsTut;
 		section = inSection;
 		tutVLab = inTutVLab;
 		tutSection = inTutSection;
-		isALec = inIsALec;
 	}
 	
 	//compare two course items to see if they are the same;

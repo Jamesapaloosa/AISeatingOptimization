@@ -142,8 +142,9 @@ public class DataParser {
 		//Create a new course item based on the amount of data provided.
 		if(dataSet.length == 4){
 			boolean isCourse = true;
-			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
+			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals)){
 				isCourse = false;
+			}
 			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
 			
 		}

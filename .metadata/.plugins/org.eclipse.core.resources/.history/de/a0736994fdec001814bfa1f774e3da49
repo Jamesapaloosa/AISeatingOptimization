@@ -41,11 +41,4 @@ public class Timeslot {
 		return assignedItems;
 	}
 	
-	public boolean equals(Timeslot otherSlot){
-		if(localSlot.isSameSlot(otherSlot.localSlot)&&(forCourses == otherSlot.forCourses)){
-			return true;
-		}
-		return false;
-	}
-	
 }

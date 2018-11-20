@@ -2,7 +2,6 @@
 public class TimeCoursePair {
 	Slot time;
 	courseItem item;
-	int prefVal;
 	
 	public Slot getTime() {
 		return time;
@@ -12,9 +11,8 @@ public class TimeCoursePair {
 		return item;
 	}
 	
-	public TimeCoursePair(Slot inTime, courseItem inItem, int inPrefVal){
+	public TimeCoursePair(Slot inTime, courseItem inItem){
 		time = inTime;
 		item = inItem;
-		prefVal = inPrefVal;
 	}
 }

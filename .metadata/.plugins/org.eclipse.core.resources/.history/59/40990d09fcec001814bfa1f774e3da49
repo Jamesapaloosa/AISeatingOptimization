@@ -140,20 +140,15 @@ public class DataParser {
 			throw new IllegalArgumentException("Invalid Section number: " + dataSet[3] + " on row: " + rowNum);
 		
 		//Create a new course item based on the amount of data provided.
-		if(dataSet.length == 4){
-			boolean isCourse = true;
-			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
-				isCourse = false;
-			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
-			
-		}
+		if(dataSet.length == 4)
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3]);
 		else if (dataSet.length == 6){
 			//Type verification if there are the two extra data points
 			if(!Arrays.stream(validTutType).anyMatch(dataSet[4]::equals))
 				throw new IllegalArgumentException("Invalid type for the lab: " + dataSet[4] + " on row: " + rowNum);
 			if((!Arrays.stream(validSectionNum).anyMatch(dataSet[5]::equals))||(Integer.parseInt(dataSet[5]) > 100))
 				throw new IllegalArgumentException("Invalid Section number: " + dataSet[5] + " on row: " + rowNum);
-			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5], false);
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5]);
 		}
 		else{
 			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
