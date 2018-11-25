@@ -10,7 +10,11 @@ public class Ext {
 		
 	}
 	
-	public State breed (State state1, State state2) {
+	public State getOptomized(LinkedList<State> FactsSet){
+		return new State();
+	}
+	
+	private State breed (State state1, State state2) {
 		
 		State newState = state2;
 		max = state2.timeSlots.size();
@@ -22,22 +26,18 @@ public class Ext {
 			
 			for (int i = 0; i < state2.timeSlots.size(); i++) {
 				for (courseItem course : state2.timeSlots.get(i).assignedItems) {
-					if (t.assignedItems.contains(course)) {
+					if (t.assignedItems.contains(course)) 
 						state2.timeSlots.get(i).assignedItems.remove(course);
-					}
 				}
 			}
-			
 			newState.timeSlots.set(randNum, t);
-			
-			if (Constr.final(newState)) {
+			if (Constr.finalCheck(newState))
 				return newState;
-			}
 		}
-		
+		return null;
 	}
 	
-	public LinkedList <State> purge (LinkedList <State> states){
+	private LinkedList <State> purge (LinkedList <State> states){
 		
 		int statesSize = states.size();
 		int [][] evalValues = new int [statesSize][2];

@@ -12,6 +12,7 @@ public class DataParser {
 	public static String[] validDepartments = {"CPSC", "SENG"};
 	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
+	public static int generationSize = 10;
 	
 	public DataParser(String infile) {
 		if(infile == "") {

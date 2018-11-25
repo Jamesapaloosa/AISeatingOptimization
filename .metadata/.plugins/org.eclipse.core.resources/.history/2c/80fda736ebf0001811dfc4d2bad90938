@@ -11,7 +11,7 @@ public class Constr {
 //This section holds all functions that check the hard constraints of any given state
 
 	// Ensure courseMax or labMax isn't violated in a current state
-	private Boolean maxAndOverlapCheck(State currentState){
+	public Boolean maxAndOverlapCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		courseItem item;
@@ -38,7 +38,7 @@ public class Constr {
 
 	}
 
-	private Boolean tuesdayCourseCheck(State currentState){
+	public Boolean tuesdayCourseCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -60,7 +60,7 @@ public class Constr {
 		}
 	}
 
-	private Boolean eveningLecCheck(State currentState){
+	public Boolean eveningLecCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
@@ -84,7 +84,7 @@ public class Constr {
 
 
 	// Check that no two 500 level courses are assigned in the same slot in any given state
-	private Boolean check500(State currentState){
+	public Boolean check500(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		int count = 0;
@@ -106,7 +106,7 @@ public class Constr {
 	}
 
 	// Deal with the complicated CPSC 813/913 scheduling and overlap rules
-	private Boolean check13(State currentState){
+	public Boolean check13(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -147,7 +147,7 @@ public class Constr {
 	}
 
 	// Deal with the CPSC 813 overlap rules
-	private Boolean check13(State currentState){
+	public Boolean check13(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -167,7 +167,7 @@ public class Constr {
 	}
 
 		// Check incompatible classes aren't scheduled at the same times
-	private Boolean checkIncompatible(State currentState, LinkedList<CoursePair> inc){
+	public Boolean checkIncompatible(State currentState, LinkedList<CoursePair> inc){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		LinkedList<courseItem> incompClasses = inc; 
@@ -205,7 +205,7 @@ public class Constr {
 //This section holds all functions that check the hard constraints when attempting an assignment
 
 	// Check that you won't have more than one 500 level course in a given timeslot
-	private Boolean eveningLecAssign(Timeslot ts, courseItem ci){
+	public Boolean eveningLecAssign(Timeslot ts, courseItem ci){
 		Timeslot timeSlot = ts; 
 		courseItem item = ci;
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
@@ -230,7 +230,7 @@ public class Constr {
 
 
 	// Check every assignment in a timeslot to ensure there are no other 500 level courses currently assigned
-	private Boolean assign500(Timeslot ts){
+	public Boolean assign500(Timeslot ts){
 		Timeslot timeSlot = ts; 
 
 		for (int i=0; i < timeslots.size(); i++){	
@@ -245,7 +245,7 @@ public class Constr {
 	}
 
 	// When assigning either CPSC 813 or 913, it must be assigned to TU at 18:00
-	private Boolean assign13(Timeslot ts, courseItem ci){
+	public Boolean assign13(Timeslot ts, courseItem ci){
 		Timeslot timeslot = ts;
 		courseItem item = ci;
 
@@ -291,7 +291,7 @@ public class Constr {
 	
 
 	// Run Constr on a partial solution
-	public static Boolean partial(State currentState){
+	public Boolean partial(State currentState){
 		State state = currentState;
 
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)))
@@ -301,7 +301,7 @@ public class Constr {
 	}
 
 	// Run Constr on an assignment
-	public static Boolean assign(Timeslot ts, courseItem ci){
+	public Boolean assign(Timeslot ts, courseItem ci){
 		Timeslot timeslot = ts;
 		courseItem item = ci; 
 
