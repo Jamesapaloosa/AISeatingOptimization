@@ -54,17 +54,18 @@ public class OrTree {
 				destinationTimeslot = currentState.timeSlots.get(altern.get(alternChoice));
 				altern.remove(alternChoice);
 				if(isCourse == destinationTimeslot.forCourses){
-					if(Constr.assign(destinationTimeslot, addingItem)){
+					if(Constr.assign(destinationTimeslot, addingItem));
 						found = destinationTimeslot.addItemToTimeslot(addingItem);
 						if(found){
 							sourceList.remove(ranNum);
 							break;
 						}
-					}
+				}
 				}
 			}
-			if(found == false)
+			if(found == false){
 				return null;
+			}
 		}
 		return currentState;
 	}

@@ -22,16 +22,20 @@ public class Constr {
 		// Check every time-slot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
+			labmax = currentSlot.localSlot.Max;
+
 			if((currentSlot.assignedItems.size() <= currentSlot.localSlot.getMax())) {
-				for(int j = 0; j < currentSlot.assignedItems.size(); j++){
-					boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) && currentSlot.assignedItems.get(j).getTutVLab() == "");
-					boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getTutVLab()::equals));
-					if(!validCourse && !validTut)
-						return false;
+				boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(newItem.getLecVsTut()::equals) && newItem.getTutVLab() == "");
+				boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(newItem.getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(newItem.getTutVLab()::equals));
+			
+				if(validCourse || validTut){
+					return true;
 				}
 			}
+			
+			return false;
 		}
-		return true;
+
 	}
 
 	private static Boolean tuesdayCourseCheck(State currentState){
@@ -44,7 +48,7 @@ public class Constr {
 			//labmax = currentSlot.localSlot.Max;
 
 			if((currentSlot.localSlot.day.equals("TU"))&& (currentSlot.localSlot.startTime.equals("11:00"))) {
-				if (currentSlot.forCourses == false){}
+				if (currentSlot.assignedItems.forCourses == false){}
 					
 				else 
 					return false;
@@ -104,29 +108,31 @@ public class Constr {
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
 
-			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
-				// If CPSC 813 or 913 are not scheduled TU at 18:00, return false
-				if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
-					if ((currentSlot.assignedItems.get(j).isALec == true) && ((currentSlot.assignedItems.get(j).number.equals(813)) || (currentSlot.assignedItems.get(j).number.equals(913)))){
+			// If CPSC 813 or 913 are not scheduled TU at 18:00, return false
+			if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
+				if ((currentSlot.assignedItems.isLec == true) && ((currentSlot.assignedItems.number.equals(813)) || (currentSlot.assignedItems.number.equals(913)))){
+					return false;
+				}
+			}
+
+
+			// If CPSC 813 is scheduled TU at 18:00 but so is any element of CPSC 313, return false
+			else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.number.equals(813))){
+				for (int j=0; j < currentSlot.assignedItems.size(); j++){
+					if (currentSlot.assignedItems.get(j).number.equals("313")){
 						return false;
 					}
 				}
-	
-	
-				// If CPSC 813 is scheduled TU at 18:00 but so is any element of CPSC 313, return false
-				else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.get(j).number.equals(813))){
-						if (currentSlot.assignedItems.get(j).number.equals("313")){
-							return false;
-						}
-				}
-				
-				// If CPSC 913 is scheduled TU at 18:00 but so is any element of CPSC 413, return false
-				else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.get(j).number.equals(913))){
-						if (currentSlot.assignedItems.get(j).number.equals("413")){
-							return false;
-						}
-				}		
 			}
+			
+			// If CPSC 913 is scheduled TU at 18:00 but so is any element of CPSC 413, return false
+			else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.number.equals(913))){
+				for (int j=0; j < currentSlot.assignedItems.size(); j++){
+					if (currentSlot.assignedItems.get(j).number.equals("413")){
+						return false;
+					}
+				}
+			}			
 		}
 		return true;
 	}
@@ -138,11 +144,10 @@ public class Constr {
 
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
-			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
-				if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
-					if ((currentSlot.assignedItems.get(j).isALec == true) && ((currentSlot.assignedItems.get(j).number.equals(813)) || (currentSlot.assignedItems.get(j).number.equals(913)))){
-						return false;
-					}
+
+			if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
+				if ((currentSlot.assignedItems.isLec == true) && ((currentSlot.assignedItems.number.equals(813)) || (currentSlot.assignedItems.number.equals(913)))){
+					return false;
 				}
 			}
 		}
@@ -166,10 +171,10 @@ public class Constr {
 				courseItem c1 = cp.getItemOne();
 				courseItem c2 = cp.getItemTwo();
 
-				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					courseItem item = timeslots.get(i).assignedItems.get(k);
+				for (int k=0; k < timeslots.assignedItems.size(); k++){
+					courseItem item = timeslots.assignedItems.get(k);
 
-					if(item.isSameCourseItems(c1)||item.isSameCourseItems(c2)){
+					if((item.number.equals(c1.number)) && (item.section.equals(c1.section)) && (item.department.equals(c1.department))) || ((item.number.equals(c2.number)) && (item.section.equals(c2.section)) && (item.department.equals(c2.department))){
 						incompItems++;
 						if(incompItems > 1)
 							return false;
@@ -205,10 +210,16 @@ public class Constr {
 
 
 	// Check every assignment in a timeslot to ensure there are no other 500 level courses currently assigned
-	private static Boolean assign500(Timeslot timeSlot){
-		for (int i=0; i < timeSlot.assignedItems.size(); i++)
-			if ((timeSlot.assignedItems.get(i).isALec == true) && (Integer.parseInt(timeSlot.assignedItems.get(i).number) > 500) && (Integer.parseInt(timeSlot.assignedItems.get(i).number) < 600))
+	private static Boolean assign500(Timeslot ts){
+		Timeslot timeSlot = ts; 
+
+		for (int i=0; i < timeslots.size(); i++){	
+			Timeslot currentSlot = timeslots.get(i);
+
+			if ((currentSlot.assignedItems.get(i).isALec == true) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) > 500) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) < 600)){
 				return false;
+			}
+		}
 		return true;
 	}
 

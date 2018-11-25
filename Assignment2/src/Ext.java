@@ -10,7 +10,11 @@ public class Ext {
 		
 	}
 	
-	public State getOptomized(LinkedList<State> FactsSet){
+	public Ext(){
+		
+	}
+	
+	public  State getOptomized(LinkedList<State> FactsSet){
 		return new State();
 	}
 	

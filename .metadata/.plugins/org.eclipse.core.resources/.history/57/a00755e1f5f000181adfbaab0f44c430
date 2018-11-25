@@ -45,7 +45,7 @@ public class Driver {
 		
 		
 		//Genetic algorithm here
-		currentState = new Ext().getOptomized(InitialStates);
+		currentState = 
 		//
 		
 		
