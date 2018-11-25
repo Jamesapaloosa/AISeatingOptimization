@@ -9,17 +9,8 @@ public class Ext {
 	public Ext(LinkedList <State> list) {
 
 	}
-<<<<<<< HEAD
 
 	public State getOptomized(LinkedList<State> FactsSet){
-=======
-	
-	public Ext(){
-		
-	}
-	
-	public  State getOptomized(LinkedList<State> FactsSet){
->>>>>>> master
 		return new State();
 	}
 

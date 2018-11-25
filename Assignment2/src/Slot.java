@@ -1,16 +1,14 @@
 
 public class Slot {
 	String startTime;
-	String endTime;
 	String day;
 	int Max;
 	int Min;
 	
-	public Slot(int inMax, int inMin, String inStart, String inEnd, String inDay) {
+	public Slot(int inMax, int inMin, String inStart, String inDay) {
 		Max = inMax;
 		Min = inMin;
 		startTime = inStart;
-		endTime = inEnd;
 		
 		day = inDay;
 	}
