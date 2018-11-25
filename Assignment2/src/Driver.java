@@ -1,38 +1,55 @@
-
+import java.util.LinkedList;
 public class Driver {
 	public static void main(String[] args) {
-		State currentState = new State();
+		State currentState;
 		long startTime;
 		long endTime;
 		long duration;
+
+		FileData inputFileData;
+		//command line inputs required here
+		
 		
 		//Code to call and parse file
 		startTime = System.nanoTime();
 		DataParser inputFileParser = new DataParser(args[0]);
 		try{
-			FileData inputFileData = inputFileParser.readfile();
+			inputFileData = inputFileParser.readfile();
 		}catch(Exception e){
-			
+			System.out.println("Fatal error in inputFileParser method! ");
+			return;
 		}
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
 		
 		
-		//need to assign pre assigned courses to a timeslot
-		//need to setup all of the timeslots based on imported data
+		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
+		startTime = System.nanoTime();
+		currentState = StateMaker.convertFromFileData(inputFileData);
+		duration = endTime - startTime;
+		System.out.println("input file parser speed: " + duration);
+		
 		
 		//Or tree
 		startTime = System.nanoTime();
-		OrTree thisOrTree = new OrTree(currentState);
+		OrTree thisOrTree;
+		LinkedList<State> InitialStates = new LinkedList<State>();
+		for(int i = 0; i < DataParser.generationSize; i++){
+			thisOrTree = new OrTree(currentState);
+			InitialStates.add(thisOrTree.fillState());
+		}
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
 		
 		
 		//Genetic algorithm here
+		
 		//
 		
+		
+		//Print output to the console.
 		startTime = System.nanoTime();
 		OutputGenerator output = new OutputGenerator(currentState);
 		output.OutputResultToCommandLine();

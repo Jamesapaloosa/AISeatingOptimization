@@ -4,7 +4,7 @@ import java.util.LinkedList;
 public class Timeslot {
 	Slot localSlot;
 	boolean forCourses;
-	LinkedList<courseItem> assignedItems;
+	public LinkedList<courseItem> assignedItems;
 	
 	public Timeslot(Slot inSlot, boolean isForCourses) {
 		localSlot = inSlot;
@@ -39,6 +39,13 @@ public class Timeslot {
 	
 	public LinkedList<courseItem> getAssignedItems() {
 		return assignedItems;
+	}
+	
+	public boolean equals(Timeslot otherSlot){
+		if(localSlot.isSameSlot(otherSlot.localSlot)&&(forCourses == otherSlot.forCourses)){
+			return true;
+		}
+		return false;
 	}
 	
 }

@@ -24,4 +24,16 @@ public class State {
 	public void setLabsToAssign(LinkedList<courseItem> labsToAssign) {
 		LabsToAssign = labsToAssign;
 	}
+	public int getEval_Value() {
+		return eval_Value;
+	}
+	public void setEval_Value(int eval_Value) {
+		this.eval_Value = eval_Value;
+	}
+	public boolean isSolvable() {
+		return isSolvable;
+	}
+	public void setSolvable(boolean isSolvable) {
+		this.isSolvable = isSolvable;
+	}
 }

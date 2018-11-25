@@ -11,15 +11,15 @@ public class Constr {
 //This section holds all functions that check the hard constraints of any given state
 
 	// Ensure courseMax or labMax isn't violated in a current state
-	public Boolean maxAndOverlapCheck(State currentState){
+	private Boolean maxAndOverlapCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
-		CourseItem item;
+		courseItem item;
 
 		int max = 0;
 		int count = 0;
 
-		// Check every timeslot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
+		// Check every time-slot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
 			labmax = currentSlot.localSlot.Max;
@@ -38,7 +38,7 @@ public class Constr {
 
 	}
 
-	public Boolean tuesdayCourseCheck(State currentState){
+	private Boolean tuesdayCourseCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -48,7 +48,7 @@ public class Constr {
 			labmax = currentSlot.localSlot.Max;
 
 			if((currentSlot.localSlot.day.equals("TU"))&& (currentSlot.localSlot.startTime.equals("11:00"))) {
-				if (currentSlot.assignedItems.isLec == false){
+				if (currentSlot.assignedItems.forCourses == false){
 					return true;
 				}
 				
@@ -60,7 +60,7 @@ public class Constr {
 		}
 	}
 
-	public Boolean eveningLecCheck(State currentState){
+	private Boolean eveningLecCheck(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
@@ -69,7 +69,7 @@ public class Constr {
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
 
-			if ((currentSlot.assignedItems.get(i).isLec == true) && (currentSlot.assignedItems.get(i).section.equals("09"))) {
+			if ((currentSlot.assignedItems.get(i).isALec == true) && (currentSlot.assignedItems.get(i).section.equals("09"))) {
 				if (Arrays.stream(eveningSlots).anyMatch(currentSlot.localSlot.startTime::equals)){
 					return true;
 				}
@@ -84,7 +84,7 @@ public class Constr {
 
 
 	// Check that no two 500 level courses are assigned in the same slot in any given state
-	public Boolean check500(State currentState){
+	private Boolean check500(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 		int count = 0;
@@ -93,7 +93,7 @@ public class Constr {
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
 
-			if ((currentSlot.assignedItems.get(i).isLec == true) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) >= 500) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) < 600)) {
+			if ((currentSlot.assignedItems.get(i).isALec == true) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) >= 500) && (Integer.parseInt(currentSlot.assignedItems.get(i).number) < 600)) {
 				count++;
 				if (count > 1){
 					return false;
@@ -106,7 +106,7 @@ public class Constr {
 	}
 
 	// Deal with the complicated CPSC 813/913 scheduling and overlap rules
-	public Boolean check13(State currentState){
+	private Boolean check13(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -147,7 +147,7 @@ public class Constr {
 	}
 
 	// Deal with the CPSC 813 overlap rules
-	public Boolean check13(State currentState){
+	private Boolean check13(State currentState){
 		State state = currentState;
 		LinkedList<Timeslot> timeslots = state.timeSlots; 
 
@@ -166,17 +166,51 @@ public class Constr {
 		}
 	}
 
+		// Check incompatible classes aren't scheduled at the same times
+	private Boolean checkIncompatible(State currentState, LinkedList<CoursePair> inc){
+		State state = currentState;
+		LinkedList<Timeslot> timeslots = state.timeSlots; 
+		LinkedList<courseItem> incompClasses = inc; 
+		int incompItems = 0;
+
+		for (int i=0; i < timeslots.size(); i++){	
+			Timeslot currentSlot = timeslots.get(i);
+			int counter = 0;
+
+			for (int j=0; j < incompClasses.size(); j++){
+				incompItems = 0;
+				CoursePair cp = incompClasses.get(j);
+				courseItem c1 = cp.getItemOne();
+				courseItem c2 = cp.getItemTwo();
+
+				for (int k=0; k < timeslots.assignedItems.size(); k++){
+					courseItem item = timeslots.assignedItems.get(k);
+
+					if((item.number.equals(c1.number)) && (item.section.equals(c1.section)) && (item.department.equals(c1.department))) || ((item.number.equals(c2.number)) && (item.section.equals(c2.section)) && (item.department.equals(c2.department))){
+						incompItems++;
+						
+						if(incompItems > 1){
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
 
 	// Check that you won't have more than one 500 level course in a given timeslot
-	public Boolean eveningLecAssign(Timeslot ts, courseItem ci){
+	private Boolean eveningLecAssign(Timeslot ts, courseItem ci){
 		Timeslot timeSlot = ts; 
 		courseItem item = ci;
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
 
-		if(item.isLec == true){
+		if(item.isALec == true){
 			String lecNum = item.section;
 
 			if (lecNum.equals("09")){
@@ -196,7 +230,7 @@ public class Constr {
 
 
 	// Check every assignment in a timeslot to ensure there are no other 500 level courses currently assigned
-	public Boolean assign500(Timeslot ts){
+	private Boolean assign500(Timeslot ts){
 		Timeslot timeSlot = ts; 
 
 		for (int i=0; i < timeslots.size(); i++){	
@@ -211,17 +245,17 @@ public class Constr {
 	}
 
 	// When assigning either CPSC 813 or 913, it must be assigned to TU at 18:00
-	public Boolean assign13(Timeslot ts, courseItem ci){
+	private Boolean assign13(Timeslot ts, courseItem ci){
 		Timeslot timeslot = ts;
 		courseItem item = ci;
 
-		if ((item.number.equals("813") && (item.isLec == true))){
+		if ((item.number.equals("813") && (item.isALec == true))){
 			if ((!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00")))){	
 				return false;
 			}
 		}
 		
-		else if (item.number.equals("913") && (item.isLec == true)){
+		else if (item.number.equals("913") && (item.isALec == true)){
 			if (!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00"))){	
 				return false;
 			}
@@ -239,20 +273,25 @@ public class Constr {
 //This section holds all the complete check possiblities for Constr; includes Constr.assign, Constr.partial and Constr.final
 
 	// Run Constr on a final solution
-	public Boolean final(State currentState){
+	public static Boolean finalCheck(State currentState){
 		State state = currentState;
 
-		if (!(state.CoursesToAssign.isEmpty()) && !(state.LabsToAssign.isEmpty())){
-			if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state))
+	
+		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state)){
+			if (!(state.CoursesToAssign.isEmpty()) && !(state.LabsToAssign.isEmpty())){	
+				return false;
+			}
 			return true;
 		}
+		
 
 		else
 			return false;
 	}
 	
+
 	// Run Constr on a partial solution
-	public Boolean partial(State currentState){
+	public static Boolean partial(State currentState){
 		State state = currentState;
 
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)))
@@ -261,19 +300,18 @@ public class Constr {
 			return false;
 	}
 
-	// Run Constr on a state
-	public Boolean partial(State currentState){
-		State state = currentState;
+	// Run Constr on an assignment
+	public static Boolean assign(Timeslot ts, courseItem ci){
+		Timeslot timeslot = ts;
+		courseItem item = ci; 
 
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)))
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci)){
 			return true;
+		}
 		else
 			return false;
-	}
-
-
-	public static void main(String[] args){
 
 	}
+
 
 }

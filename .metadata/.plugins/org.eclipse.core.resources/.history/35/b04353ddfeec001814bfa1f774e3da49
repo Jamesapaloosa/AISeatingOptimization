@@ -1,0 +1,21 @@
+import java.util.LinkedList;
+public class StateMaker {
+	
+	public static State convertFromFileData(FileData inData){
+		
+		State output = new State();
+		output.setCoursesToAssign((LinkedList<courseItem>)inData.getCourses().clone());
+		output.getCoursesToAssign().addAll(inData.getLabs());
+		LinkedList<Timeslot> tempTime = output.getTimeSlots();
+		Timeslot tempSlot;
+		for(int i = 0; i < inData.getLabSlots().size(); i++){
+			tempSlot = new Timeslot(inData.getLabSlots().get(i), false);
+			tempTime.add(tempSlot);
+		}
+		for(int i = 0; i < inData.getCourseSlots().size();i++){
+			tempSlot = new Timeslot(inData.getCourseSlots().get(i), true);
+			tempTime.add(tempSlot);
+		}
+		return output;
+	}
+}

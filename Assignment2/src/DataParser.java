@@ -12,6 +12,7 @@ public class DataParser {
 	public static String[] validDepartments = {"CPSC", "SENG"};
 	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
+	public static int generationSize = 10;
 	
 	public DataParser(String infile) {
 		if(infile == "") {
@@ -140,15 +141,20 @@ public class DataParser {
 			throw new IllegalArgumentException("Invalid Section number: " + dataSet[3] + " on row: " + rowNum);
 		
 		//Create a new course item based on the amount of data provided.
-		if(dataSet.length == 4)
-			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3]);
+		if(dataSet.length == 4){
+			boolean isCourse = true;
+			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
+				isCourse = false;
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
+			
+		}
 		else if (dataSet.length == 6){
 			//Type verification if there are the two extra data points
 			if(!Arrays.stream(validTutType).anyMatch(dataSet[4]::equals))
 				throw new IllegalArgumentException("Invalid type for the lab: " + dataSet[4] + " on row: " + rowNum);
 			if((!Arrays.stream(validSectionNum).anyMatch(dataSet[5]::equals))||(Integer.parseInt(dataSet[5]) > 100))
 				throw new IllegalArgumentException("Invalid Section number: " + dataSet[5] + " on row: " + rowNum);
-			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5]);
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5], false);
 		}
 		else{
 			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
@@ -190,7 +196,7 @@ public class DataParser {
 		String time = "";
 		int classIndex = 0;
 		String[] dataSet = input.split(",");
-		if(dataSet.length != 3)
+		if(dataSet.length != 4)
 			throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
 		for(int i = 0; i < dataSet.length; i++){
 			if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
@@ -206,7 +212,7 @@ public class DataParser {
 		}
 		if((day == "")||(time == ""))
 			throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
-		return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum));
+		return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum), Integer.parseInt(dataSet[3]));
 	}
 	
 	
