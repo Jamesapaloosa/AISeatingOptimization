@@ -120,10 +120,8 @@ public class DataParser {
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
-					if(line != null){
 					if(line.length() > 0)
 					dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum));
-					}
 				}
 				break;
 			}

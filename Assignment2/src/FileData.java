@@ -12,6 +12,17 @@ public class FileData {
 	LinkedList<TimeCoursePair> preferences;
 	LinkedList<TimeCoursePair> preAssigned;
 	
+	public FileData(){
+		courses = new LinkedList<courseItem>();
+		labs = new LinkedList<courseItem>();
+		courseSlots = new LinkedList<Slot>();
+		labSlots = new LinkedList<Slot>();
+		incompatible = new LinkedList<CoursePair>();
+		unwanted = new LinkedList<TimeCoursePair>();
+		pair = new LinkedList<CoursePair>();
+		preferences = new LinkedList<TimeCoursePair>();
+		preAssigned = new LinkedList<TimeCoursePair>();
+	}
 	
 	public LinkedList<courseItem> getCourses() {
 		return courses;
