@@ -230,6 +230,39 @@ public class Constr {
 		}		
 		return true;
 	}
+	
+	// Check incompatible classes aren't scheduled at the same times
+	private static Boolean checkIncompatibleAssign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc){
+		courseItem item = ci;
+		Timeslot timeslot = ts; 
+		LinkedList<CoursePair> incompClasses = inc; 
+		int incompItems = 0;
+	
+		for (int i=0; i < timeslot.assignedItems.size(); i++){	
+	
+			for (int j=0; j < incompClasses.size(); j++){
+				incompItems = 0;
+				CoursePair cp = incompClasses.get(j);
+				courseItem c1 = cp.getItemOne();
+				courseItem c2 = cp.getItemTwo();
+				
+				if(item.isSameCourseItems(c1) || item.isSameCourseItems(c2)){
+					incompItems++;
+				}
+				
+				for (int k=0; k < timeslot.assignedItems.size(); k++){
+					courseItem currentItem = timeslot.assignedItems.get(k);
+	
+					if(currentItem.isSameCourseItems(c1)||currentItem.isSameCourseItems(c2)){
+						incompItems++;
+						if(incompItems > 1)
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 
 
@@ -264,12 +297,11 @@ public class Constr {
 			return false;
 	}
 
+	
 	// Run Constr on an assignment
-	public static Boolean assign(Timeslot ts, courseItem ci){
-		Timeslot timeslot = ts;
-		courseItem item = ci; 
-
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci)){
+	public static Boolean assign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc){
+		
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc)){
 			return true;
 		}
 		else
