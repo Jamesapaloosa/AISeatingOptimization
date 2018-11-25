@@ -166,6 +166,40 @@ public class Constr {
 		}
 	}
 
+		// Check incompatible classes aren't scheduled at the same times
+	public Boolean checkIncompatible(State currentState, LinkedList<CoursePair> inc){
+		State state = currentState;
+		LinkedList<Timeslot> timeslots = state.timeSlots; 
+		LinkedList<CourseItem> incompClasses = inc; 
+		int incompItems = 0;
+
+		for (int i=0; i < timeslots.size(); i++){	
+			Timeslot currentSlot = timeslots.get(i);
+			int counter = 0;
+
+			for (int j=0; j < incompClasses.size(); j++){
+				incompItems = 0;
+				CoursePair cp = incompClasses.get(j);
+				courseItem c1 = cp.getItemOne();
+				courseItem c2 = cp.getItemTwo();
+
+				for (int k=0; k < timeslots.assignedItems.size(); k++){
+					courseItem item = timeslots.assignedItems.get(k);
+
+					if((item.number.equals(c1.number)) && (item.section.equals(c1.section)) && (item.department.equals(c1.department))) || ((item.number.equals(c2.number)) && (item.section.equals(c2.section)) && (item.department.equals(c2.department))){
+						incompItems++;
+						
+						if(incompItems > 1){
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
@@ -255,6 +289,7 @@ public class Constr {
 			return false;
 	}
 	
+
 	// Run Constr on a partial solution
 	public Boolean partial(State currentState){
 		State state = currentState;
