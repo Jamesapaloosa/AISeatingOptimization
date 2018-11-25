@@ -40,21 +40,19 @@ public class Ext {
 	/*
 	Mutate takes a state and returns a new state that has been mutated
 	by taking an already assigned course and randomly re-assigning it to any empty slot
+	Mutate does NOT ensure hard constraints are not violated, this must be done later!
 	*/
 	public State mutate(State state){
-		State newState = state;//should be a deep copy
+		State newState = state; //should be a deep copy
 		Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
 		courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
 
 
 		int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
 		while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
-			State newState2 = newState; //should be a deep copy
-			Timeslot slotToAdd = newState2.timeSlots.get(random.nextInt(newState2.timeSlots.size())); //randomly select a timeslot to add the item that was removed to
+			Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was removed to
 			if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
-				if(Constr.finalCheck(newState2)){
-					return newState2;
-				}
+				return newState;
 			}
 			x--;
 		}
