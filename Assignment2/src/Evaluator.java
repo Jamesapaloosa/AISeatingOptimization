@@ -5,6 +5,7 @@
 
 // ----- Import Utilities ----- //
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 // ----- Object used for Evaluating Given Soft Constraints for a Timeslot ----- //
@@ -62,14 +63,16 @@ public class Evaluator
 			int lab_count = 0;
 			for (courseItem item : aTimeSlot.getAssignedItems())
 			{
-				if (item.getLecVsTut() == "LEC") course_count++;
-				else if (item.getLecVsTut() == "TUT") lab_count++;
+				if (Arrays.stream(DataParser.validLecType).anyMatch(item.getLecVsTut()::equals)) course_count++;
+				else if (Arrays.stream(DataParser.validTutType).anyMatch(item.getLecVsTut()::equals)) lab_count++;
 			}
-			if ((aTimeSlot.getLocalSlot().getSlotType() == "LAB") & (aTimeSlot.getLocalSlot().getMin() > lab_count)) result = (result + getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMinLabs() - lab_count);
-			else if ((aTimeSlot.getLocalSlot().getSlotType() == "COURSE") & (aTimeSlot.getLocalSlot().getMin() > course_count)) result = (result + getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMinCourses() - course_count);
+			if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) result = (result + getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count);
+			else if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) result = (result + getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMax() - course_count);
 		}
 		return result;
 	}
+	
+	
 	
 	/* Description: Evaluates a given list of Timeslots with an integer based on how many prefered assignments of courses to TimeSlots are met
 	> inTimeSlots : the set of timeslots to be evaluated
@@ -119,7 +122,7 @@ public class Evaluator
 		int result = 0;
 		for (Timeslot aTimeSlot : inTimeSlots)
 		{
-			result = result + (getSectionPairs(aTimeSlot).length * getPenSection());
+			result = result + (getSectionPairs(aTimeSlot).size() * getPenSection());
 		}
 		return result;
 	}
@@ -133,9 +136,9 @@ public class Evaluator
 	public LinkedList<CoursePair> getSectionPairs(Timeslot inTimeSlot)
 	{
 		LinkedList<CoursePair> sec_pairs = new LinkedList<CoursePair>();
-		for (int i = 0; i < inTimeSlot.getAssignedItems().length; i++)
+		for (int i = 0; i < inTimeSlot.getAssignedItems().size(); i++)
 		{
-			for (int j =  i + 1; i < inTimeSlot.getAssignedItems().length; j++)
+			for (int j =  i + 1; i < inTimeSlot.getAssignedItems().size(); j++)
 			{
 				if (isSameCourseDifferentSection(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)))
 				{
