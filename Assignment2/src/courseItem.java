@@ -33,6 +33,12 @@ public class courseItem {
 		isALec = inIsALec;
 	}
 	
+	//Copy the item
+	public courseItem copy(){
+		courseItem output = new courseItem(department, number, lec, section, tutVLab, tutSection, isALec);
+		return output;
+	}
+	
 	//compare two course items to see if they are the same;
 	public Boolean isSameCourseItems(courseItem OtherCourseItem){
 		if(department != OtherCourseItem.getDepartment())

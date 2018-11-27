@@ -4,8 +4,8 @@ public class StateMaker {
 	public static State convertFromFileData(FileData inData){
 		
 		State output = new State();
-		output.setCoursesToAssign((LinkedList<courseItem>)inData.getCourses().clone());
-		output.getCoursesToAssign().addAll(inData.getLabs());
+		output.setCoursesLabsToAssign((LinkedList<courseItem>)inData.getCourses().clone());
+		output.getCoursesLabsToAssign().addAll(inData.getLabs());
 		LinkedList<Timeslot> tempTime = output.getTimeSlots();
 		Timeslot tempSlot;
 		for(int i = 0; i < inData.getLabSlots().size(); i++){

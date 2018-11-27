@@ -25,6 +25,15 @@ public class Timeslot {
 		return false;
 	}
 	
+	//Copy a time-slot
+	public Timeslot Copy(){
+		Timeslot output = new Timeslot(new Slot(localSlot.Max, localSlot.Min, localSlot.startTime, localSlot.day), this.forCourses);
+		for(int i = 0; i < assignedItems.size(); i++){
+			output.assignedItems.add(this.assignedItems.get(i).copy());
+		}
+		return output;
+	}
+	
 	//Removes the last item in this time slot from this location and returns that Item if it can.
 	public courseItem popItemFromTimeslot() {
 		if(assignedItems.size() > 0) {

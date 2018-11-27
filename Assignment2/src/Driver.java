@@ -36,8 +36,9 @@ public class Driver {
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i++){
-			thisOrTree = new OrTree(currentState);
-			InitialStates.add(thisOrTree.fillState());
+			thisOrTree = new OrTree(new State(currentState), inputFileData);
+			thisOrTree.fillStateRecursive();
+			InitialStates.add(thisOrTree.currentState);
 		}
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
@@ -46,7 +47,8 @@ public class Driver {
 		
 		//Genetic algorithm here
 		startTime = System.nanoTime();
-		currentState = new Ext().getOptomized(InitialStates);
+		Ext rules = new Ext(InitialStates);
+		currentState = rules.getOptomized(InitialStates);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);

@@ -6,8 +6,9 @@ public class Ext {
 	Random random = new Random();
 	Constr constr = new Constr();
 	boolean breedValid = true;
+	
 	public Ext(LinkedList <State> list) {
-
+			
 	}
 
 	public State getOptomized(LinkedList<State> FactsSet){
