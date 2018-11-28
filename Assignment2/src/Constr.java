@@ -48,13 +48,9 @@ public class Constr {
                 for (int k=0; k<items.size(); k++){
                     if(currentItem.isSameCourseItems(items.get(k))){
                         return false;
-                    }
-                    else{
-                        continue;
-                    }
-
-                    items.add(currentItem);    
+                    } 
                 }
+                items.add(currentItem);
             }
         }
         return true;
