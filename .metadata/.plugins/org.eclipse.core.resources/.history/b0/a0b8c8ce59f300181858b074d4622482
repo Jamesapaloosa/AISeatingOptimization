@@ -41,7 +41,12 @@ public class Driver {
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 			if(thisOrTree.fillStateRecursive())
 				InitialStates.add(thisOrTree.currentState);
-		}		
+		}
+		
+		thisOrTree = new OrTree(new State(currentState), inputFileData);
+		thisOrTree.fillStateRecursive();
+		currentState = thisOrTree.currentState; 
+				
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
