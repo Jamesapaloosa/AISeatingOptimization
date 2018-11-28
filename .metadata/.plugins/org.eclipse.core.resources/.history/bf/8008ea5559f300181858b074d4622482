@@ -53,13 +53,13 @@ public class Driver {
 		
 		
 		//Genetic algorithm here
-		startTime = System.nanoTime();
-		Ext rules = new Ext();
+		/*startTime = System.nanoTime();
+		Ext rules = new Ext(InitialStates);
 		currentState = rules.getOptomized(InitialStates);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
-		
+		*/
 		
 		//Print output to the console.
 		startTime = System.nanoTime();

@@ -37,7 +37,7 @@ public class Constr {
 	private static Boolean noDuplicates(State currentState) {
         State state = currentState;
         LinkedList<Timeslot> timeslots = state.timeSlots;
-        LinkedList<courseItem> items = new LinkedList<courseItem>();
+        LinkedList<courseItem> items;
         courseItem currentItem;
 
         for (int i=0; i < timeslots.size(); i++){    

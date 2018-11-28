@@ -37,7 +37,7 @@ public class Constr {
 	private static Boolean noDuplicates(State currentState) {
         State state = currentState;
         LinkedList<Timeslot> timeslots = state.timeSlots;
-        LinkedList<courseItem> items = new LinkedList<courseItem>();
+        LinkedList<courseItem> items;
         courseItem currentItem;
 
         for (int i=0; i < timeslots.size(); i++){    
@@ -46,7 +46,7 @@ public class Constr {
                 currentItem = currentSlot.assignedItems.get(j);
 
                 for (int k=0; k<items.size(); k++){
-                    if(currentItem.isSameCourseItems(items.get(k))){
+                    if(currentItem.isSameCourseItems(items.get(h))){
                         return false;
                     }
                     else{
