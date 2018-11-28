@@ -275,7 +275,7 @@ public class Constr {
 
 	
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state)){
-			if (!(state.CoursesToAssign.isEmpty()) && !(state.LabsToAssign.isEmpty())){	
+			if (!(state.CoursesLabsToAssign.isEmpty())){	
 				return false;
 			}
 			return true;

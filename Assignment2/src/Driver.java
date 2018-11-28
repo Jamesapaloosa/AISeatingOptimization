@@ -27,6 +27,7 @@ public class Driver {
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
 		startTime = System.nanoTime();
 		currentState = StateMaker.convertFromFileData(inputFileData);
+		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
 		
@@ -35,22 +36,30 @@ public class Driver {
 		startTime = System.nanoTime();
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
-		for(int i = 0; i < DataParser.generationSize; i++){
-			thisOrTree = new OrTree(currentState);
-			InitialStates.add(thisOrTree.fillState());
+
+		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
+			thisOrTree = new OrTree(new State(currentState), inputFileData);
+			if(thisOrTree.fillStateRecursive())
+				InitialStates.add(thisOrTree.currentState);
 		}
+		
+		thisOrTree = new OrTree(new State(currentState), inputFileData);
+		thisOrTree.fillStateRecursive();
+		currentState = thisOrTree.currentState; 
+				
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
 		
 		
 		//Genetic algorithm here
-		startTime = System.nanoTime();
-		currentState = new Ext().getOptomized(InitialStates);
+		/*startTime = System.nanoTime();
+		Ext rules = new Ext(InitialStates);
+		currentState = rules.getOptomized(InitialStates);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
-		
+		*/
 		
 		//Print output to the console.
 		startTime = System.nanoTime();
