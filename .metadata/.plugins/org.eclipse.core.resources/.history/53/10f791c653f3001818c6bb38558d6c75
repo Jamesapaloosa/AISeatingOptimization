@@ -37,10 +37,10 @@ public class Driver {
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
 
-		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
+		for(int i = 0; i < DataParser.generationSize; i++){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-			if(thisOrTree.fillStateRecursive())
-				InitialStates.add(thisOrTree.currentState);
+			thisOrTree.fillStateRecursive();
+			InitialStates.add(thisOrTree.currentState);
 		}
 		
 		thisOrTree = new OrTree(new State(currentState), inputFileData);

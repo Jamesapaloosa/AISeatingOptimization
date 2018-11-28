@@ -1,10 +1,11 @@
-
+import java.util.LinkedList;
 public class Driver {
 	public static void main(String[] args) {
 		State currentState;
 		long startTime;
 		long endTime;
 		long duration;
+
 		FileData inputFileData;
 		//command line inputs required here
 		
@@ -15,6 +16,7 @@ public class Driver {
 		try{
 			inputFileData = inputFileParser.readfile();
 		}catch(Exception e){
+			System.out.println("Fatal error in inputFileParser method! ");
 			return;
 		}
 		endTime = System.nanoTime();
@@ -31,14 +33,25 @@ public class Driver {
 		
 		//Or tree
 		startTime = System.nanoTime();
-		OrTree thisOrTree = new OrTree(currentState);
+		OrTree thisOrTree;
+		LinkedList<State> InitialStates = new LinkedList<State>();
+		for(int i = 0; i < DataParser.generationSize; i++){
+			thisOrTree = new OrTree(new State(currentState), inputFileData);
+			thisOrTree.fillStateRecursive();
+			InitialStates.add(thisOrTree.currentState);
+		}
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
 		
 		
 		//Genetic algorithm here
-		//
+		startTime = System.nanoTime();
+		Ext rules = new Ext(InitialStates);
+		currentState = rules.getOptomized(InitialStates);
+		endTime = System.nanoTime();
+		duration = endTime - startTime;
+		System.out.println("or tree speed: " + duration);
 		
 		
 		//Print output to the console.

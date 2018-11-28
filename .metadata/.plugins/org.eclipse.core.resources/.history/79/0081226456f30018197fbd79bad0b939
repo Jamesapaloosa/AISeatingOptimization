@@ -19,14 +19,10 @@ public class OrTree {
 		int ranNum;
 		boolean found;
 		LinkedList<Integer> altern = new LinkedList<Integer>();
-
+		ranNum = new Random().nextInt(currentState.getCoursesLabsToAssign().size() - 1);
+		addingItem = currentState.getCoursesLabsToAssign().get(ranNum);
 		if(currentState.getCoursesLabsToAssign().size() == 0)
 			return true;
-		if(currentState.getCoursesLabsToAssign().size() == 1)
-			ranNum = 0;
-		else
-			ranNum = new Random().nextInt(currentState.getCoursesLabsToAssign().size() - 1);
-		addingItem = currentState.getCoursesLabsToAssign().get(ranNum);
 		
 		//make a list of the indexes of different choices to make at this point
 		found = false;

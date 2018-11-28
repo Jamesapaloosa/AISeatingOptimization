@@ -6,6 +6,7 @@ public class OutputGenerator {
 	
 	//Constructor that takes in a state
 	public OutputGenerator(State inState){
+		outputData = new LinkedList<String>();
 		resultState = inState;
 	}
 	
