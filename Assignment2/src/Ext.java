@@ -3,39 +3,56 @@ import java.util.*;
 public class Ext {
 	private int max;
 	private int randNum;
+	private int randNum2;
 	Random random = new Random();
-	Constr constr = new Constr();
-	boolean breedValid = true;
-	
-	public Ext(LinkedList <State> list) {
-			
-	}
+	State newState = new State();
+	boolean perfectState = false;
+	LinkedList <State> scedhules;
 
-	public State getOptomized(LinkedList<State> FactsSet){
+	public State getOptomized(LinkedList<State> factsSet){
+		scedhules = factsSet;
+		while (perfectState) {
+			randNum = random.nextInt(100);
+			if (randNum < 50) {
+				randNum = random.nextInt(scedhules.size());
+				randNum2 = random.nextInt(scedhules.size());
+				newState = breed(scedhules.get(randNum), scedhules.get(randNum2));
+				if (Constr.finalCheck(newState)) {
+					scedhules.add(newState);
+				}
+			}else {
+				randNum = random.nextInt(scedhules.size());
+				newState = mutate(scedhules.get(randNum));
+				if (Constr.finalCheck(newState)) {
+					scedhules.add(newState);
+				}
+			}
+			
+			if (scedhules.size() > 20) {
+				scedhules = purge(scedhules);
+			}
+			
+		}
 		return new State();
 	}
 
 	private State breed (State state1, State state2) {
-
+		
 		State newState = state2;
 		max = state2.timeSlots.size();
 
-		while (breedValid) {
+		randNum = random.nextInt(max);
+		Timeslot t = state1.timeSlots.get(randNum);
 
-			randNum = random.nextInt(max);
-			Timeslot t = state1.timeSlots.get(randNum);
-
-			for (int i = 0; i < state2.timeSlots.size(); i++) {
-				for (courseItem course : state2.timeSlots.get(i).assignedItems) {
-					if (t.assignedItems.contains(course))
-						state2.timeSlots.get(i).assignedItems.remove(course);
-				}
+		for (int i = 0; i < state2.timeSlots.size(); i++) {
+			for (courseItem course : state2.timeSlots.get(i).assignedItems) {
+				if (t.assignedItems.contains(course))
+					state2.timeSlots.get(i).assignedItems.remove(course);
 			}
-			newState.timeSlots.set(randNum, t);
-			if (Constr.finalCheck(newState))
-				return newState;
 		}
-		return null;
+		newState.timeSlots.set(randNum, t);
+		return newState;
+		
 	}
 
 	/*
@@ -43,7 +60,7 @@ public class Ext {
 	by taking an already assigned course and randomly re-assigning it to any empty slot
 	Mutate does NOT ensure hard constraints are not violated, this must be done later!
 	*/
-	public State mutate(State state){
+	private State mutate(State state){
 		State newState = state; //should be a deep copy
 		Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
 		courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
