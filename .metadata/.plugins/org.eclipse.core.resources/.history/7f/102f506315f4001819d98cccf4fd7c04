@@ -1,0 +1,297 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.*;
+import java.io.*; 
+public class DataParser {
+	String sourcefile;
+	public static String[] validDays = {"MO", "TU", "FR"};
+	public static String[] validCourseMondayTimes = {"8:00","9:00", "10:00", "11:00","12:00","13:00","14:00", "15:00","16:00", "17:00","18:00","19:00","20:00"};
+	public static String[] validTuesdayTimes = {"8:00", "9:30","11:00","12:30","14:00","15:30","17:00","18:30"};
+	public static String[] validLabFridayTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
+
+	public static String[] validClassType = {"LEC", "TUT", "LAB", "tut", "lab", "lec"};
+	public static String[] validTutType = {"TUT", "LAB", "tut", "lab"};
+	public static String[] validLecType = {"LEC", "lec"};
+	public static String[] validDepartments = {"CPSC", "SENG"};
+	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
+	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
+	public static int generationSize = 10;
+	
+	public DataParser(String infile) {
+		if(infile == "") {
+			sourcefile = "E:\\CPSC433\\testCase1.txt";
+		}else {
+			sourcefile = infile;
+		}
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//This method reads the file and adds data to the file data object and returns everything from the input file into
+	//a format for the program to read and do optimization on.
+	public FileData readfile() throws IOException {
+		File file = new File(sourcefile);
+		FileData dataOutput = new FileData();
+		int rowNum = 0;
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(file));
+		}catch(FileNotFoundException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		String line;
+		while ((line = br.readLine()) != null){
+			rowNum++;
+			//Switch to bounce between different data sets
+			switch(line){
+			case "Name:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0){
+						dataOutput.setName(line);
+					}
+				}
+				break;
+			case "Course slots:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0){
+					dataOutput.getCourseSlots().add(readCourseSlot(line, rowNum));
+					}
+				}
+				break;
+			case "Lab slots:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0){
+					dataOutput.getLabSlots().add(readCourseSlot(line, rowNum));
+					}
+				}
+				break;
+			case "Courses:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0){
+					dataOutput.getCourses().add(readCourseLine(line, rowNum));
+					}
+				}
+				break;
+			case "Labs:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0)
+					dataOutput.getLabs().add(readCourseLine(line, rowNum));
+				}
+				break;
+			case "Not compatible:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0)
+					dataOutput.getIncompatible().add(readCoursePair(line, rowNum));
+				}
+				break;
+			case "Unwanted:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0)
+					dataOutput.getUnwanted().add(readTimeCoursePair(line, rowNum));
+				}
+				break;
+			case "Preferences:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0)
+					dataOutput.getPreferences().add(readTimeCoursePair(line, rowNum));
+				}
+				break;
+			case "Pair:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line.length() > 0)
+					dataOutput.getPair().add(readCoursePair(line, rowNum));
+				}
+				break;
+			case "Partial assignments:":
+				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
+					line = br.readLine();
+					rowNum++;
+					if(line != null){
+					if(line.length() > 0)
+					dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum));
+					}
+				}
+				break;
+			}
+		}
+		return dataOutput;
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//Overload for possibility of directly throwing in a file path
+	public void readfile(String infile) throws IOException {
+		sourcefile = infile;
+		readfile();
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//Method for reading a line that contains a course or lab data set
+	private courseItem readCourseLine(String input, int rowNum) {
+		courseItem outCL;
+		input = input.trim();
+		String[] dataSet = input.split("\\s+");
+		//Type verification for each of the input types
+		if(!Arrays.stream(validClassType).anyMatch(dataSet[2]::equals))
+			throw new IllegalArgumentException("Invalid input " + dataSet[2] + " is not a valid Class type on row: " + rowNum);
+		try{
+			int temp = Integer.parseInt(dataSet[1]);
+			if((temp < 100)||(temp > 999))
+				throw new IllegalArgumentException("Invalid input " + dataSet[1] + " is not a valid course number on row: " + rowNum);
+		}catch(NumberFormatException e){
+			throw new IllegalArgumentException("Invalid course number " + dataSet[1] + " on row: " + rowNum);
+		}
+		if((dataSet[0].length() != 4)||(Arrays.stream(invalidDepartmentChar).anyMatch(dataSet[0]::equals)))
+			throw new IllegalArgumentException("Invalid department input " + dataSet[0] + " on row: " + rowNum);
+		if((!Arrays.stream(validSectionNum).anyMatch(dataSet[3]::equals))||(Integer.parseInt(dataSet[3]) > 100))
+			throw new IllegalArgumentException("Invalid Section number: " + dataSet[3] + " on row: " + rowNum);
+		
+		//Create a new course item based on the amount of data provided.
+		if(dataSet.length == 4){
+			boolean isCourse = true;
+			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
+				isCourse = false;
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
+			
+		}
+		else if (dataSet.length == 6){
+			//Type verification if there are the two extra data points
+			if(!Arrays.stream(validTutType).anyMatch(dataSet[4]::equals))
+				throw new IllegalArgumentException("Invalid type for the lab: " + dataSet[4] + " on row: " + rowNum);
+			if((!Arrays.stream(validSectionNum).anyMatch(dataSet[5]::equals))||(Integer.parseInt(dataSet[5]) > 100))
+				throw new IllegalArgumentException("Invalid Section number: " + dataSet[5] + " on row: " + rowNum);
+			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5], false);
+		}
+		else{
+			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
+		}
+		return outCL;
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//Method for reading a line that contains a slot data set 
+	private Slot readCourseSlot(String input, int rowNum){
+		Slot outSlot;
+		input = input.trim();
+		String[] dataSet = input.split("\\s*,\\s*");
+		if(dataSet.length != 4)
+			throw new IllegalArgumentException("The number of arguments found in row: " + rowNum + " is incorrect.");
+		if(!Arrays.stream(validDays).anyMatch(dataSet[0]::equals))
+			throw new IllegalArgumentException("Invalid format for day found in: " + dataSet[0] + " in row: " + rowNum);
+		switch(dataSet[0]){
+		case "MO":	
+			if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[1]::equals))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+			break;
+		case "TU":
+			if(!Arrays.stream(validTuesdayTimes).anyMatch(dataSet[1]::equals))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+			break;
+		case "FR":
+			if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[1]::equals))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+		}
+		if(!Arrays.stream(validTuesdayTimes).anyMatch(dataSet[1]::equals))
+			throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+		int tempMax = Integer.parseInt(dataSet[2]);
+		int tempMin = Integer.parseInt(dataSet[3]);
+		if(tempMax < tempMin)
+			throw new IllegalArgumentException("The format for the max and min for a slot are invalid: " + dataSet[2] + ", " + dataSet[3] + "in row: " + rowNum);
+		outSlot = new Slot(tempMax, tempMin, dataSet[1], dataSet[0]);
+		return outSlot;
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//Method for reading a line that contains a pair of courses
+	private CoursePair readCoursePair(String input, int rowNum){
+		input = input.trim();
+		String[] dataSet = input.split("\\s*,\\s*");
+		if(dataSet.length != 2)
+			throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
+		courseItem ItemOne = readCourseLine(dataSet[0], rowNum);
+		courseItem ItemTwo = readCourseLine(dataSet[1], rowNum); 
+		return new CoursePair(ItemOne, ItemTwo);
+	}
+	//------------------------------------------------------------------------------------------------------------
+	//Method for reading a line that contains a pair of time and course data sets.
+	private TimeCoursePair readTimeCoursePair(String input, int rowNum){
+		input = input.trim();
+		String day = "";
+		String time = "";
+		int classIndex = 0;
+		String[] dataSet = input.split("\\s*,\\s*");
+		if(dataSet.length == 3){
+			for(int i = 0; i < dataSet.length; i++){
+				if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
+					day = dataSet[i];
+					switch(day){
+					case "MO":	
+						if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "TU":
+						if(!Arrays.stream(validTuesdayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "FR":
+						if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+					}
+					time = dataSet[i+ 1];
+					if(i == 0)
+						classIndex = i + 2;
+					else
+						classIndex = i - 1;
+					break;
+				}
+			}
+			if((day == "")||(time == ""))
+				throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
+			return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum), 0);
+		}
+		else if(dataSet.length == 4){
+			for(int i = 0; i < dataSet.length; i++){
+				if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
+					day = dataSet[i];
+					switch(day){
+					case "MO":	
+						if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "TU":
+						if(!Arrays.stream(validTuesdayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "FR":
+						if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+					}
+					time = dataSet[i+ 1];
+					if(i == 0)
+						classIndex = i + 2;
+					else
+						classIndex = i - 1;
+					break;
+				}
+			}
+			if((day == "")||(time == ""))
+				throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
+			return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum), Integer.parseInt(dataSet[3]));
+		}
+		throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
+	}
+	
+	
+}

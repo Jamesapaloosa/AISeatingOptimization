@@ -1,11 +1,27 @@
 import java.util.regex.Matcher;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.*;
 import java.io.*; 
 public class DataParser {
 	String sourcefile;
 	public static String[] validDays = {"MO", "TU", "FR"};
-	public static String[] validTimes = {"8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "14:00", "15:00", "15:30", "16:00", "17:00", "18:00", "18:30", "19:00", "20:00"};
+	public static String[] validMondays = {"Mo", "mO", "mo", "MO"};
+	public static String[] validTuesdays = {"TU", "Tu", "tu", "tU"};
+	public static String[] validFridays = {"FR", "Fr", "fr", "fR"};
+	
+	public static Map<String, String> CourseMondayEndTimes;
+	public static Map<String, String> CourseTuesdayEndTimes;
+	public static Map<String, String> TutMondayTuesdayEndTimes;
+	public static Map<String, String> TutFridayEndTimes;
+	
+	public static String[] validCourseMondayTimes = {"8:00","9:00", "10:00", "11:00","12:00","13:00","14:00", "15:00","16:00", "17:00","18:00","19:00","20:00"};
+	public static String[] validTutMondayTuesdayTimes = {"8:00","9:00", "10:00", "11:00","12:00","13:00","14:00", "15:00","16:00", "17:00","18:00","19:00","20:00"};
+	public static String[] validCourseTuesdayTimes = {"8:00", "9:30","11:00","12:30","14:00","15:30","17:00","18:30"};
+	public static String[] validLabFridayTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
+	
 	public static String[] validClassType = {"LEC", "TUT", "LAB", "tut", "lab", "lec"};
 	public static String[] validTutType = {"TUT", "LAB", "tut", "lab"};
 	public static String[] validLecType = {"LEC", "lec"};
@@ -20,7 +36,77 @@ public class DataParser {
 		}else {
 			sourcefile = infile;
 		}
+		CourseMondayEndTimes = new HashMap<String, String>();
+		setCourseMondayEndTimes();
+
+		CourseTuesdayEndTimes = new HashMap<String, String>();
+		setCourseTuesdayEndTimes();
+		
+		TutMondayTuesdayEndTimes = new HashMap<String, String>();
+		setTutMondayTuesdayEndTimes();
+		
+		TutFridayEndTimes = new HashMap<String, String>();
+		setTutFridayEndTimes();
+		
 	}
+	
+	private void setTutFridayEndTimes(){
+		TutFridayEndTimes.put("8:00", "10:00");
+		TutFridayEndTimes.put("10:00", "12:00");
+		TutFridayEndTimes.put("12:00", "14:00");
+		TutFridayEndTimes.put("14:00", "16:00");
+		TutFridayEndTimes.put("16:00", "18:00");
+		TutFridayEndTimes.put("18:00", "20:00");
+		
+	}
+	
+	private void setCourseTuesdayEndTimes(){
+		CourseTuesdayEndTimes.put("8:00", "9:30");
+		CourseTuesdayEndTimes.put("9:30", "11:00");
+		CourseTuesdayEndTimes.put("11:00", "12:30");
+		CourseTuesdayEndTimes.put("12:30", "14:00");
+		CourseTuesdayEndTimes.put("14:00", "15:30");
+		CourseTuesdayEndTimes.put("15:30", "17:00");
+		CourseTuesdayEndTimes.put("17:00", "18:30");
+		CourseTuesdayEndTimes.put("18:30", "20:00");
+	}
+	
+	private void setTutMondayTuesdayEndTimes(){
+		CourseTuesdayEndTimes.put("8:00", "9:00");
+		CourseTuesdayEndTimes.put("9:00", "10:00");
+		CourseTuesdayEndTimes.put("10:00", "11:00");
+		CourseTuesdayEndTimes.put("11:00", "12:00");
+		CourseTuesdayEndTimes.put("12:00", "13:00");
+		CourseTuesdayEndTimes.put("13:00", "14:00");
+		CourseTuesdayEndTimes.put("14:00", "15:00");
+		CourseTuesdayEndTimes.put("15:00", "16:00");
+		CourseTuesdayEndTimes.put("16:00", "17:00");
+		CourseTuesdayEndTimes.put("17:00", "18:00");
+		CourseTuesdayEndTimes.put("18:00", "19:00");
+		CourseTuesdayEndTimes.put("19:00", "20:00");
+		CourseTuesdayEndTimes.put("20:00", "21:00");
+	}
+	
+	//Set course endings for Monday courses
+	private void setCourseMondayEndTimes(){
+		CourseMondayEndTimes.put("8:00", "9:00");
+		CourseMondayEndTimes.put("9:00", "10:00");
+		CourseMondayEndTimes.put("10:00", "11:00");
+		CourseMondayEndTimes.put("11:00", "12:00");
+		CourseMondayEndTimes.put("12:00", "13:00");
+		CourseMondayEndTimes.put("13:00", "14:00");
+		CourseMondayEndTimes.put("14:00", "15:00");
+		CourseMondayEndTimes.put("15:00", "16:00");
+		CourseMondayEndTimes.put("16:00", "17:00");
+		CourseMondayEndTimes.put("17:00", "18:00");
+		CourseMondayEndTimes.put("18:00", "19:00");
+		CourseMondayEndTimes.put("19:00", "20:00");
+		CourseMondayEndTimes.put("20:00", "21:00");
+		
+	}
+	
+	
+	
 	//------------------------------------------------------------------------------------------------------------
 	//This method reads the file and adds data to the file data object and returns everything from the input file into
 	//a format for the program to read and do optimization on.
@@ -183,14 +269,24 @@ public class DataParser {
 	private Slot readCourseSlot(String input, int rowNum){
 		Slot outSlot;
 		input = input.trim();
-		input = input.replaceAll("\\s","");
-		String[] dataSet = input.split(",");
+		String[] dataSet = input.split("\\s*,\\s*");
 		if(dataSet.length != 4)
 			throw new IllegalArgumentException("The number of arguments found in row: " + rowNum + " is incorrect.");
 		if(!Arrays.stream(validDays).anyMatch(dataSet[0]::equals))
 			throw new IllegalArgumentException("Invalid format for day found in: " + dataSet[0] + " in row: " + rowNum);
-		if(!Arrays.stream(validTimes).anyMatch(dataSet[1]::equals))
-			throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+		switch(dataSet[0]){
+		case "MO":	
+			if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[1]::equals))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+			break;
+		case "TU":
+			if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[1]::equals))))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+			break;
+		case "FR":
+			if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[1]::equals))
+				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+		}
 		int tempMax = Integer.parseInt(dataSet[2]);
 		int tempMin = Integer.parseInt(dataSet[3]);
 		if(tempMax < tempMin)
@@ -201,9 +297,8 @@ public class DataParser {
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a pair of courses
 	private CoursePair readCoursePair(String input, int rowNum){
-		//input = input.replaceAll("\\s",  "");
 		input = input.trim();
-		String[] dataSet = input.split(",");
+		String[] dataSet = input.split("\\s*,\\s*");
 		if(dataSet.length != 2)
 			throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
 		courseItem ItemOne = readCourseLine(dataSet[0], rowNum);
@@ -217,14 +312,25 @@ public class DataParser {
 		String day = "";
 		String time = "";
 		int classIndex = 0;
-		//input = input.replaceAll("\\s",  "");
-		String[] dataSet = input.split(",\\s*");
+		String[] dataSet = input.split("\\s*,\\s*");
 		if(dataSet.length == 3){
 			for(int i = 0; i < dataSet.length; i++){
 				if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
 					day = dataSet[i];
-					if(Arrays.stream(validTimes).anyMatch(dataSet[i + 1]::equals))
-						time = dataSet[i+ 1];
+					switch(day){
+					case "MO":	
+						if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "TU":
+						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "FR":
+						if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+					}
+					time = dataSet[i+ 1];
 					if(i == 0)
 						classIndex = i + 2;
 					else
@@ -240,8 +346,20 @@ public class DataParser {
 			for(int i = 0; i < dataSet.length; i++){
 				if((Arrays.stream(validDays).anyMatch(dataSet[i]::equals))){
 					day = dataSet[i];
-					if(Arrays.stream(validTimes).anyMatch(dataSet[i + 1]::equals))
-						time = dataSet[i+ 1];
+					switch(day){
+					case "MO":	
+						if(!Arrays.stream(validCourseMondayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "TU":
+						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+						break;
+					case "FR":
+						if(!Arrays.stream(validLabFridayTimes).anyMatch(dataSet[i + 1]::equals))
+							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
+					}
+					time = dataSet[i+ 1];
 					if(i == 0)
 						classIndex = i + 2;
 					else

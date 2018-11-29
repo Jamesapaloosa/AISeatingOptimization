@@ -18,7 +18,7 @@ public class testGenerator {
 	int preAssignedCount;
 	FileWriter write;
 	
-	
+	/*
 	public testGenerator(String inDestination, String inName, int coursesCount, int inLabsCount, int inCourseSlotCount, int labSlotCount, int inIncompatibleCount, int inUnwantedCount, int inPairCount, int inPreferencesCount, int inPreAssignedCount ) throws IOException{
 		File file = new File(inDestination);
 		if(file.isDirectory())
@@ -179,4 +179,5 @@ public class testGenerator {
 			createLab();
 		createNoMaxSlot();
 	}
+	*/
 }

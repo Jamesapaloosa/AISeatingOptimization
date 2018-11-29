@@ -1,6 +1,7 @@
 
 public class Slot {
 	String startTime;
+	String endTime;
 	String day;
 	int Max;
 	int Min;
@@ -11,6 +12,14 @@ public class Slot {
 		startTime = inStart;
 		
 		day = inDay;
+	}
+	
+	public String getEndTime(){
+		return endTime;
+	}
+	
+	public void setEndTime(String endTimeIn){
+		endTime = endTimeIn;
 	}
 	
 	public String getStartTime() {

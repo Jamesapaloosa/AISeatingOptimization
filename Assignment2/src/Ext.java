@@ -18,7 +18,7 @@ public class Ext {
 		this.eval = eval;
 	}
 
-	public State getOptomized(LinkedList<State> factsSet){
+	public State getOptomized(LinkedList<State> factsSet, FileData FD){
 		
 		scedhules = factsSet;
 		lowestEvalState = scedhules.get(0);
@@ -43,7 +43,7 @@ public class Ext {
 				newState = mutate(scedhules.get(randNum));
 			}
 			
-			if (Constr.finalCheck(newState)) {
+			if (Constr.finalCheck(newState, FD.incompatible)) {
 				scedhules.add(newState);
 				if (eval.evaluateTimeslots(newState.timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots)) {
 					lowestEvalState = newState;
