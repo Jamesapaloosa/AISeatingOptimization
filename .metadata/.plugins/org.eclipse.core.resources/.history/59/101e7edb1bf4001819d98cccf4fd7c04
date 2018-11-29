@@ -38,26 +38,12 @@ public class DataParser {
 		}
 		CourseMondayEndTimes = new HashMap<String, String>();
 		setCourseMondayEndTimes();
-
+		
+		
+		
 		CourseTuesdayEndTimes = new HashMap<String, String>();
-		setCourseTuesdayEndTimes();
-		
 		TutMondayTuesdayEndTimes = new HashMap<String, String>();
-		setTutMondayTuesdayEndTimes();
-		
 		TutFridayEndTimes = new HashMap<String, String>();
-		setTutFridayEndTimes();
-		
-	}
-	
-	private void setTutFridayEndTimes(){
-		TutFridayEndTimes.put("8:00", "10:00");
-		TutFridayEndTimes.put("10:00", "12:00");
-		TutFridayEndTimes.put("12:00", "14:00");
-		TutFridayEndTimes.put("14:00", "16:00");
-		TutFridayEndTimes.put("16:00", "18:00");
-		TutFridayEndTimes.put("18:00", "20:00");
-		
 	}
 	
 	private void setCourseTuesdayEndTimes(){

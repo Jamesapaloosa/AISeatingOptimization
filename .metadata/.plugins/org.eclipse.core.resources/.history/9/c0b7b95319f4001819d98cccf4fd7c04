@@ -14,14 +14,6 @@ public class Slot {
 		day = inDay;
 	}
 	
-	public String getEndTime(){
-		return endTime;
-	}
-	
-	public void setEndTime(String endTimeIn){
-		endTime = endTimeIn;
-	}
-	
 	public String getStartTime() {
 		return startTime;
 	}
