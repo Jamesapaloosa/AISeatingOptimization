@@ -41,17 +41,17 @@ public class courseItem {
 	
 	//compare two course items to see if they are the same;
 	public Boolean isSameCourseItems(courseItem OtherCourseItem){
-		if(!department.equals(OtherCourseItem.getDepartment()))
+		if(department != OtherCourseItem.getDepartment())
 			return false;
-		if(!number.equals(OtherCourseItem.getNumber()))
+		if(number != OtherCourseItem.getNumber())
 			return false;
-		if(!lec.equals(OtherCourseItem.getLecVsTut()))
+		if(lec != OtherCourseItem.getLecVsTut())
 			return false;
-		if(!section.equals(OtherCourseItem.getSection()))
+		if(section != OtherCourseItem.getSection())
 			return false;
-		if(tutVLab.equals(OtherCourseItem.getTutVLab()))
+		if(tutVLab != OtherCourseItem.getTutVLab())
 			return false;
-		if(tutSection.equals(OtherCourseItem.getTutSection()))
+		if(tutSection != OtherCourseItem.getTutSection())
 			return false;
 		return true;
 	}
