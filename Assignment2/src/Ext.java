@@ -6,25 +6,43 @@ public class Ext {
 	private int randNum2;
 	Random random = new Random();
 	State newState = new State();
-	boolean perfectState = false;
+	State tempState1 = new State();
+	State tempState2 = new State();
+	State lowestEvalState = new State();
+	Evaluator eval = new Evaluator();
+	long start = System.currentTimeMillis();
+	long end = start + 120*1000;
 	LinkedList <State> scedhules;
 
-	public State getOptomized(LinkedList<State> factsSet){
+	public State getOptomized(LinkedList<State> factsSet, Evaluator eval){
+		
 		scedhules = factsSet;
-		while (perfectState) {
+		lowestEvalState = scedhules.get(0);
+		for (int i = 1; i < scedhules.size(); i++) {
+			if (eval.evaluateTimeslots(scedhules.get(i).timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots)) {
+				lowestEvalState = scedhules.get(i);
+			}
+		}
+		while (System.currentTimeMillis() < end) {
+			if (eval.evaluateTimeslots(lowestEvalState.timeSlots) == 0) {
+				return lowestEvalState;
+			}
+			
 			randNum = random.nextInt(100);
 			if (randNum < 50) {
 				randNum = random.nextInt(scedhules.size());
 				randNum2 = random.nextInt(scedhules.size());
 				newState = breed(scedhules.get(randNum), scedhules.get(randNum2));
-				if (Constr.finalCheck(newState)) {
-					scedhules.add(newState);
-				}
+				
 			}else {
 				randNum = random.nextInt(scedhules.size());
 				newState = mutate(scedhules.get(randNum));
-				if (Constr.finalCheck(newState)) {
-					scedhules.add(newState);
+			}
+			
+			if (Constr.finalCheck(newState)) {
+				scedhules.add(newState);
+				if (eval.evaluateTimeslots(newState.timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots)) {
+					lowestEvalState = newState;
 				}
 			}
 			
@@ -32,26 +50,33 @@ public class Ext {
 				scedhules = purge(scedhules);
 			}
 			
+			
 		}
-		return new State();
+		return lowestEvalState;
 	}
 
 	private State breed (State state1, State state2) {
 		
-		State newState = state2;
-		max = state2.timeSlots.size();
+		if (eval.evaluateTimeslots(state1.timeSlots) < eval.evaluateTimeslots(state2.timeSlots)) {
+			tempState1 = state1;
+			tempState2 = state2;
+		}else {
+			tempState1 = state2;
+			tempState2 = state1;
+		}
+		max = tempState1.timeSlots.size();
 
 		randNum = random.nextInt(max);
-		Timeslot t = state1.timeSlots.get(randNum);
+		Timeslot t = tempState2.timeSlots.get(randNum);
 
-		for (int i = 0; i < state2.timeSlots.size(); i++) {
-			for (courseItem course : state2.timeSlots.get(i).assignedItems) {
+		for (int i = 0; i < tempState1.timeSlots.size(); i++) {
+			for (courseItem course : tempState1.timeSlots.get(i).assignedItems) {
 				if (t.assignedItems.contains(course))
-					state2.timeSlots.get(i).assignedItems.remove(course);
+					tempState1.timeSlots.get(i).assignedItems.remove(course);
 			}
 		}
-		newState.timeSlots.set(randNum, t);
-		return newState;
+		tempState1.timeSlots.set(randNum, t);
+		return tempState1;
 		
 	}
 
@@ -82,21 +107,19 @@ public class Ext {
 
 		int statesSize = states.size();
 		int [][] evalValues = new int [statesSize][2];
-		int eval = 0;
 
 		for (int i = 0; i < statesSize ; i++) {
-			//Get eval of state
-			evalValues [i][0] = eval;
+			evalValues [i][0] = eval.evaluateTimeslots(states.get(i).timeSlots);
 			evalValues [i][1] = i;
 		}
 
 		Arrays.sort(evalValues, new Comparator<int[]>() {
 		    public int compare(int[] a, int[] b) {
-		        return Integer.compare(a[0], b[0]);
+		        return Integer.compare(b[0], a[0]);
 		    }
 		});
 
-		for (int i = 0; i < statesSize/2 ; i++) {
+		for (int i = statesSize/2; i < statesSize ; i++) {
 			states.remove(evalValues[i][1]);
 		}
 
