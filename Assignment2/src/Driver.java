@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.Scanner;
 public class Driver {
 	public static void main(String[] args) {
 		State currentState;
@@ -7,8 +8,9 @@ public class Driver {
 		long duration;
 
 		FileData inputFileData;
-		//command line inputs required here
 		
+		//command line inputs required here
+		EvalData.promptUserForValues();
 		
 		//Code to call and parse file
 		startTime = System.nanoTime();
@@ -41,25 +43,20 @@ public class Driver {
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 			if(thisOrTree.fillStateRecursive())
 				InitialStates.add(thisOrTree.currentState);
-		}
-		
-		thisOrTree = new OrTree(new State(currentState), inputFileData);
-		thisOrTree.fillStateRecursive();
-		currentState = thisOrTree.currentState; 
-				
+		}		
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
 		
 		
 		//Genetic algorithm here
-		/*startTime = System.nanoTime();
-		Ext rules = new Ext(InitialStates);
+		startTime = System.nanoTime();
+		Ext rules = new Ext(new Evaluator(inputFileData));
 		currentState = rules.getOptomized(InitialStates);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
-		*/
+		
 		
 		//Print output to the console.
 		startTime = System.nanoTime();

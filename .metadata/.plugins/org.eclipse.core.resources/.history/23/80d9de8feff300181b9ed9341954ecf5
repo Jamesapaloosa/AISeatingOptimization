@@ -1,0 +1,49 @@
+import java.util.Scanner;
+
+public class EvalData {
+	private static int Evalminfilled;
+	private static int Evalpref;
+	private static int Evalpair;
+	private static int Evalsecdiff;
+	
+	
+	public static void promptUserForValues(){
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Please enter your values for eval below: ");
+		boolean cont = true;
+		int temp;
+		System.out.print("Please Enter Eval min filled value: " );
+		temp = scanner.nextInt();
+		Evalminfilled = temp;
+		
+		System.out.print("Please Enter Evalpref value: ");
+		temp = scanner.nextInt();
+		Evalpref = temp;
+		
+		System.out.print("Please Enter Evalpair value: " );
+		temp = scanner.nextInt();
+		Evalpair = temp;
+		
+		System.out.print("Please Enter Evalsecdiff value: ");
+		temp = scanner.nextInt();
+		Evalsecdiff = temp;
+	}
+	
+	
+	public static int getEvalminfilled() {
+		return Evalminfilled;
+	}
+
+	public static int getEvalpref() {
+		return Evalpref;
+	}
+
+	public static int getEvalpair() {
+		return Evalpair;
+	}
+
+	public static int getEvalsecdiff() {
+		return Evalsecdiff;
+	}
+
+}

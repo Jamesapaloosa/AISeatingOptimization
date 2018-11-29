@@ -33,6 +33,28 @@ public class Constr {
 		}
 		return true;
 	}
+	
+	private static Boolean noDuplicates(State currentState) {
+        State state = currentState;
+        LinkedList<Timeslot> timeslots = state.timeSlots;
+        LinkedList<courseItem> items = new LinkedList<courseItem>();
+        courseItem currentItem;
+
+        for (int i=0; i < timeslots.size(); i++){    
+            Timeslot currentSlot = timeslots.get(i);
+            for (int j = 0; j < currentSlot.assignedItems.size(); j++){
+                currentItem = currentSlot.assignedItems.get(j);
+
+                for (int k=0; k<items.size(); k++){
+                    if(currentItem.isSameCourseItems(items.get(k))){
+                        return false;
+                    } 
+                }
+                items.add(currentItem);
+            }
+        }
+        return true;
+    }
 
 	private static Boolean tuesdayCourseCheck(State currentState){
 		State state = currentState;
@@ -274,7 +296,7 @@ public class Constr {
 		State state = currentState;
 
 	
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state)){
+		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && noDuplicates(state)){
 			if (!(state.CoursesLabsToAssign.isEmpty())){	
 				return false;
 			}

@@ -18,17 +18,21 @@ public class StateMaker {
 		}
 		TimeCoursePair tempPair;
 		Timeslot destinationTime;
+		boolean found;
 		for(int i = 0; i < inData.getPreAssigned().size(); i++){
+			found = false;
 			tempPair = inData.getPreAssigned().get(i);
 			for(int j = 0; j < output.getTimeSlots().size(); j++){
 				destinationTime = output.getTimeSlots().get(j);
 				if(destinationTime.localSlot.isSameSlot(tempPair.time)){
-					if(destinationTime.addItemToTimeslot(tempPair.item))
+					if(destinationTime.addItemToTimeslot(tempPair.item)){
+						found = true;
 						break;
-					else
-						throw new IllegalArgumentException("Unexpected error when trying to add: " + tempPair.item.department + " " + tempPair.item.number + " " + tempPair.item.lec);
+					}
 				}
 			}
+			if(!found)
+				throw new IllegalArgumentException("Unexpected error when trying to add: " + tempPair.item.department + " " + tempPair.item.number + " " + tempPair.item.lec);
 		}
 		return output;
 	}

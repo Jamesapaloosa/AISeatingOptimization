@@ -1,0 +1,32 @@
+import java.util.Scanner;
+public class EvalData {
+	private static int Evalminfilled;
+	private static int Evalpref;
+	private static int Evalpair;
+	private static int Evalsecdiff;
+	
+	public static int getEvalminfilled() {
+		return Evalminfilled;
+	}
+	public static void setEvalminfilled(int evalminfilled) {
+		Evalminfilled = evalminfilled;
+	}
+	public static int getEvalpref() {
+		return Evalpref;
+	}
+	public static void setEvalpref(int evalpref) {
+		Evalpref = evalpref;
+	}
+	public static int getEvalpair() {
+		return Evalpair;
+	}
+	public static void setEvalpair(int evalpair) {
+		Evalpair = evalpair;
+	}
+	public static int getEvalsecdiff() {
+		return Evalsecdiff;
+	}
+	public static void setEvalsecdiff(int evalsecdiff) {
+		Evalsecdiff = evalsecdiff;
+	}
+}
