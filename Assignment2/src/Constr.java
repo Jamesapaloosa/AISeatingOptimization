@@ -213,9 +213,7 @@ public class Constr {
 //This section holds all functions that check the hard constraints when attempting an assignment
 
 	// Check that you won't have more than one 500 level course in a given timeslot
-	private static Boolean eveningLecAssign(Timeslot ts, courseItem ci){
-		Timeslot timeSlot = ts; 
-		courseItem item = ci;
+	private static Boolean eveningLecAssign(Timeslot timeSlot, courseItem item){
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
 
 		if(item.isALec == true){
@@ -241,9 +239,7 @@ public class Constr {
 	}
 
 	// When assigning either CPSC 813 or 913, it must be assigned to TU at 18:00
-	private static Boolean assign13(Timeslot ts, courseItem ci){
-		Timeslot timeslot = ts;
-		courseItem item = ci;
+	private static Boolean assign13(Timeslot timeslot, courseItem item){
 
 		if ((item.number.equals("813") && (item.isALec == true))){
 			if ((!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00")))){	
@@ -260,10 +256,7 @@ public class Constr {
 	}
 	
 	// Check incompatible classes aren't scheduled at the same times
-	private static Boolean checkIncompatibleAssign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc){
-		courseItem item = ci;
-		Timeslot timeslot = ts; 
-		LinkedList<CoursePair> incompClasses = inc; 
+	private static Boolean checkIncompatibleAssign(Timeslot timeslot, courseItem item, LinkedList<CoursePair> incompClasses){
 		int incompItems = 0;
 	
 		for (int i=0; i < timeslot.assignedItems.size(); i++){	
