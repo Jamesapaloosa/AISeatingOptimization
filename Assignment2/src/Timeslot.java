@@ -9,6 +9,39 @@ public class Timeslot {
 	public Timeslot(Slot inSlot, boolean isForCourses) {
 		localSlot = inSlot;
 		forCourses = isForCourses;
+		String lecVTut;
+		if(isForCourses){
+			lecVTut = " Lecture";
+			if(Arrays.stream(DataParser.validMondays).anyMatch(localSlot.getDay()::equals)){
+				if(!Arrays.stream(DataParser.validCourseMondayTimes).anyMatch(localSlot.getStartTime()::equals))
+					throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime + lecVTut);
+				inSlot.setEndTime(DataParser.CourseMondayEndTimes.get(localSlot.startTime));
+			}
+			else if(Arrays.stream(DataParser.validTuesdays).anyMatch(localSlot.getDay()::equals)){
+				if(!Arrays.stream(DataParser.validCourseTuesdayTimes).anyMatch(localSlot.getStartTime()::equals))
+					throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime + lecVTut);
+				inSlot.setEndTime(DataParser.CourseTuesdayEndTimes.get(localSlot.startTime));
+			}
+			else
+				throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime  + lecVTut);
+		}
+		else{
+			lecVTut = " Lab";
+			if((Arrays.stream(DataParser.validMondays).anyMatch(localSlot.getDay()::equals))||(Arrays.stream(DataParser.validTuesdays).anyMatch(localSlot.getDay()::equals))){
+				if(!Arrays.stream(DataParser.validTutMondayTuesdayTimes).anyMatch(localSlot.getStartTime()::equals))
+					throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime + lecVTut);
+				inSlot.setEndTime(DataParser.TutMondayTuesdayEndTimes.get(localSlot.startTime));
+			}
+			else if(Arrays.stream(DataParser.validFridays).anyMatch(localSlot.getDay()::equals)){
+				if(!Arrays.stream(DataParser.validLabFridayTimes).anyMatch(localSlot.getStartTime()::equals))
+					throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime + lecVTut);
+				inSlot.setEndTime(DataParser.TutFridayEndTimes.get(localSlot.startTime));
+			}
+			else
+				throw new IllegalArgumentException("Invalid Timeslot " + localSlot.day + " at " + localSlot.startTime  + lecVTut);
+		}
+		
+		
 		assignedItems = new LinkedList<courseItem>();
 	}
 	

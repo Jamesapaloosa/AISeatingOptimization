@@ -1,0 +1,7 @@
+import java.util.Scanner;
+public class EvalData {
+	private static int Evalminfilled;
+	private static int Evalpref;
+	private static int Evalpair;
+	private static int Evalsecdiff;
+}

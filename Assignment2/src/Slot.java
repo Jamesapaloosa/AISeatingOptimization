@@ -1,6 +1,7 @@
 
 public class Slot {
 	String startTime;
+	String endTime;
 	String day;
 	int Max;
 	int Min;
@@ -11,6 +12,14 @@ public class Slot {
 		startTime = inStart;
 		
 		day = inDay;
+	}
+	
+	public String getEndTime(){
+		return endTime;
+	}
+	
+	public void setEndTime(String endTimeIn){
+		endTime = endTimeIn;
 	}
 	
 	public String getStartTime() {
@@ -31,9 +40,9 @@ public class Slot {
 	
 	//Method for making sure that two slots are the same, does not compare max and min because those are not always relevant
 	public Boolean isSameSlot(Slot OtherSlot){
-		if(OtherSlot.getStartTime() != this.startTime)
+		if(!OtherSlot.getStartTime().equals(this.startTime))
 			return false;
-		if(OtherSlot.getDay() != this.day)
+		if(!OtherSlot.getDay().equals( this.day))
 			return false;
 		return true;
 	}

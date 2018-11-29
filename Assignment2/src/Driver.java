@@ -1,4 +1,6 @@
 import java.util.LinkedList;
+
+import java.util.Scanner;
 public class Driver {
 	public static void main(String[] args) {
 		State currentState;
@@ -7,8 +9,9 @@ public class Driver {
 		long duration;
 
 		FileData inputFileData;
-		//command line inputs required here
 		
+		//command line inputs required here
+		EvalData.promptUserForValues();
 		
 		//Code to call and parse file
 		startTime = System.nanoTime();
@@ -49,7 +52,7 @@ public class Driver {
 		
 		//Genetic algorithm here
 		startTime = System.nanoTime();
-		Ext rules = new Ext();
+		Ext rules = new Ext(new Evaluator(inputFileData));
 		currentState = rules.getOptomized(InitialStates);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
@@ -63,6 +66,7 @@ public class Driver {
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("Ouput generator speed: " + duration);
-		
+		Scanner scanner = new Scanner(System.in);
+		scanner.nextInt();
 	}
 }

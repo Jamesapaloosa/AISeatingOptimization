@@ -28,17 +28,32 @@ public class Evaluator
 	// ----- Constructors ----- //
 	
 	// Description: Constructor that sets up the weights, penalties, and other values
-	public void Evaluator(LinkedList<CoursePair> inCoursePairs, LinkedList<TimeCoursePair> inTimeCoursePairs, 
+	public Evaluator(LinkedList<CoursePair> inCoursePairs, LinkedList<TimeCoursePair> inTimeCoursePairs, 
 	int inPenCourseMin, int inPenLabsMin, int inPenNotPaired, int inPenSection, int inWeightMinFilled, int inWeightPref, int inWeightPair, int inWeightSecDiff)
 	{
 		setCoursePairs(inCoursePairs); setTimeCoursePairs(inTimeCoursePairs); setPenCourseMin(inPenCourseMin); setPenLabsMin(inPenLabsMin); setPenNotPaired(inPenNotPaired);
 		setPenSection(inPenSection); setWeightMinFilled(inWeightMinFilled); setWeightPref(inWeightPref); setWeightPair(inWeightPair); setWeightSecDiff(inWeightSecDiff);
 	}
 	// Description: Constructor used in absence of weight values
-	public void Evaluator(LinkedList<CoursePair> inCoursePairs, LinkedList<TimeCoursePair> inTimeCoursePairs, int inPenCourseMin, int inPenLabsMin, int inPenNotPaired, int inPenSection)
+	public Evaluator(LinkedList<CoursePair> inCoursePairs, LinkedList<TimeCoursePair> inTimeCoursePairs, int inPenCourseMin, int inPenLabsMin, int inPenNotPaired, int inPenSection)
 	{
 		setCoursePairs(inCoursePairs); setTimeCoursePairs(inTimeCoursePairs); setPenCourseMin(inPenCourseMin); setPenLabsMin(inPenLabsMin); setPenNotPaired(inPenNotPaired);
 		setPenSection(inPenSection); setWeightMinFilled(1); setWeightPref(1); setWeightPair(1); setWeightSecDiff(1);
+	}
+	
+	//Eval data is a static class where all eval data can be obtained and placed in where needed.
+	//Added this constructor so that the number of parameters were not so crazy
+	public Evaluator(FileData inFileData){
+		course_pairs = (LinkedList<CoursePair>)inFileData.pair.clone();
+		time_course_pairs = inFileData.getPreferences();
+		weight_minfilled = EvalData.getWminfilled();
+		weight_pref = EvalData.getWpref();
+		weight_pair = EvalData.getWpair();
+		weight_secdiff = EvalData.getWsecdiff();
+		pen_coursemin = EvalData.getPen_coursemin();
+		pen_labsmin = EvalData.getPen_labsmin();
+		pen_notpaired = EvalData.getPen_notpaired();
+		pen_section = EvalData.getPen_section();
 	}
 	
 	// ----- Evaluators ----- //
@@ -65,9 +80,10 @@ public class Evaluator
 				if (Arrays.stream(DataParser.validLecType).anyMatch(item.getLecVsTut()::equals)) course_count++;
 				else if (Arrays.stream(DataParser.validTutType).anyMatch(item.getLecVsTut()::equals)) lab_count++;
 			}
-			if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) result = (result + getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count);
-			else if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) result = (result + getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMax() - course_count);
+			if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) result = (result + getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count);
+			else if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) result = (result + getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMax() - course_count);
 		}
+		System.out.println("Eval for Min Filled is: " + result);
 		return result;
 	}
 	
@@ -87,11 +103,13 @@ public class Evaluator
 				{
 					if (!existsInTimeslot(tcp.getCourseItem(), ts))
 					{
+						System.out.println("exists: ");
 						result = result + tcp.prefVal;
 					}
 				}
 			}
 		}
+		System.out.println("Eval for Pref is: " + result);
 		return result;
 	}
 	
@@ -106,9 +124,12 @@ public class Evaluator
 		{
 			for (CoursePair aCoursePair : getCoursePairs())
 			{
-				if (!(existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot))) result = result + getPenNotPaired();
+				if (!(existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot))) {
+					result = result + getPenNotPaired(); 
+				}
 			}
 		}
+		System.out.println("Eval for Pair is: " + result);
 		return result;
 	}
 	
@@ -123,6 +144,7 @@ public class Evaluator
 		{
 			result = result + (getSectionPairs(aTimeSlot).size() * getPenSection());
 		}
+		System.out.println("Eval for Sec Diff is: " + result);
 		return result;
 	}
 	
@@ -135,16 +157,21 @@ public class Evaluator
 	public LinkedList<CoursePair> getSectionPairs(Timeslot inTimeSlot)
 	{
 		LinkedList<CoursePair> sec_pairs = new LinkedList<CoursePair>();
-		for (int i = 0; i < inTimeSlot.getAssignedItems().size(); i++)
-		{
-			for (int j =  i + 1; i < inTimeSlot.getAssignedItems().size(); j++)
+		for (int i = 0; i < (inTimeSlot.getAssignedItems().size() - 1); i++)
+		{	
+			System.out.println("item i is: " + inTimeSlot.getAssignedItems().get(i).getNumber() + " " + inTimeSlot.getAssignedItems().get(i).getSection());
+			for (int j =  i + 1; j < inTimeSlot.getAssignedItems().size(); j++)
 			{
+				System.out.println("item j is: " + inTimeSlot.getAssignedItems().get(j).getNumber() + " " + inTimeSlot.getAssignedItems().get(j).getSection());
+				//System.out.println("j is: " + j);
 				if (isSameCourseDifferentSection(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)))
 				{
+					System.out.println("got here");
 					sec_pairs.add(new CoursePair(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)));
 				}
 			}
 		}
+		//System.out.println("Eval for Sec pair size is: " + sec_pairs.size());
 		return sec_pairs;
 	}
 	
@@ -169,18 +196,30 @@ public class Evaluator
 	*/
 	public Boolean isSameCourseDifferentSection(courseItem inItem1, courseItem inItem2)
 	{
-		if(inItem1.getDepartment() != inItem2.getDepartment())
+		if(!inItem1.getDepartment().equals(inItem2.getDepartment())) {
+			//System.out.println("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
 			return false;
-		if(inItem1.getNumber() != inItem2.getNumber())
+		}
+		if(!inItem1.getNumber().equals(inItem2.getNumber())) {
+			//System.out.println("got here 1" + inItem1.getNumber() + inItem2.getNumber());
 			return false;
-		if(inItem1.getLecVsTut() != inItem2.getLecVsTut())
+		}
+		if(!inItem1.getLecVsTut().equals(inItem2.getLecVsTut())) {
+			//System.out.println("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
 			return false;
-		if(inItem1.getSection() == inItem2.getSection())
+		}
+		if(inItem1.getSection().equals(inItem2.getSection())) {
+			//System.out.println("got here 1" + inItem1.getSection() + inItem2.getSection());
 			return false;
-		if(inItem1.getTutVLab() != inItem2.getTutVLab())
+		}
+		if(!inItem1.getTutVLab().equals(inItem2.getTutVLab())) {
+			//System.out.println("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
 			return false;
-		if(inItem1.getTutSection() != inItem2.getTutSection())
+		}
+		if(!inItem1.getTutSection().equals(inItem2.getTutSection())) {
+			//System.out.println("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
 			return false;
+		}
 		return true;
 	}
 	
