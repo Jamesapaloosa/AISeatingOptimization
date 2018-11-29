@@ -48,8 +48,6 @@ public class EvalData {
 		System.out.print("Please enter the section penalty: ");
 		temp = scanner.nextInt();
 		pen_section = temp;
-		
-		scanner.close();
 	}
 	
 	
