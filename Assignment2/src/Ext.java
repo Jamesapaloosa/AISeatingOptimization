@@ -90,21 +90,26 @@ public class Ext {
 	Mutate does NOT ensure hard constraints are not violated, this must be done later!
 	*/
 	private State mutate(State state){
-		State newState = state; //should be a deep copy
-		Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
-		courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
-
-
-		int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
-		while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
-			Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was removed to
-			if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
-				return newState;
+		try{
+			State newState = state; //should be a deep copy
+			Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
+			courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
+			
+			int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
+			while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
+				Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was 	removed to
+				if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
+					return newState;
+				}
+				x--;
 			}
-			x--;
-		}
 
-		return state; //if a mutated state could not be found, just return the one given as input
+			return state; //if a mutated state could not be found, just return the one given as input
+		}
+		catch(Exception e){
+			return state;
+		}
+		
 	}
 
 	public LinkedList <State> purge (LinkedList <State> states){
