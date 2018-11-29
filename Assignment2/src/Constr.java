@@ -124,11 +124,12 @@ public class Constr {
 		state = currentState;
 		timeslots = state.timeSlots; 
 
-		// Ensure CPSC 813 and 913 are scheudled only during the TU timeslot starting at 18:00.
+		// Ensure CPSC 813 and 913 are scheduled only during the TU timeslot starting at 18:00.
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
 
 			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
+				
 				// If CPSC 813 or 913 are not scheduled TU at 18:00, return false
 				if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
 					if ((currentSlot.assignedItems.get(j).isALec == true) && ((currentSlot.assignedItems.get(j).number.equals("813")) || (currentSlot.assignedItems.get(j).number.equals("913")))){
@@ -139,19 +140,24 @@ public class Constr {
 	
 				// If CPSC 813 is scheduled TU at 18:00 but so is any element of CPSC 313, return false
 				else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.get(j).number.equals("813"))){
-						if (currentSlot.assignedItems.get(j).number.equals("313")){
+						
+					for(int k = 0; k < currentSlot.assignedItems.size(); k++) {
+						if (currentSlot.assignedItems.get(k).number.equals("313")){
 							return false;
 						}
+					}
 				}
 				
 				// If CPSC 913 is scheduled TU at 18:00 but so is any element of CPSC 413, return false
 				else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.get(j).number.equals("913"))){
-						if (currentSlot.assignedItems.get(j).number.equals("413")){
+					for(int k = 0; k < currentSlot.assignedItems.size(); k++) {
+						if (currentSlot.assignedItems.get(k).number.equals("413")){
 							return false;
 						}
-				}		
+					}
+				}
 			}
-		}
+		}		
 		return true;
 	}
 
