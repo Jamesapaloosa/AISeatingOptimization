@@ -9,12 +9,16 @@ public class Ext {
 	State tempState1 = new State();
 	State tempState2 = new State();
 	State lowestEvalState = new State();
-	Evaluator eval = new Evaluator();
+	Evaluator eval;
 	long start = System.currentTimeMillis();
 	long end = start + 120*1000;
 	LinkedList <State> scedhules;
+	
+	public Ext(Evaluator eval){
+		this.eval = eval;
+	}
 
-	public State getOptomized(LinkedList<State> factsSet, Evaluator eval){
+	public State getOptomized(LinkedList<State> factsSet){
 		
 		scedhules = factsSet;
 		lowestEvalState = scedhules.get(0);

@@ -41,15 +41,11 @@ public class Evaluator
 		setPenSection(inPenSection); setWeightMinFilled(1); setWeightPref(1); setWeightPair(1); setWeightSecDiff(1);
 	}
 	
-	//Eval data is a static class where all eval data can be obtained and placed in where needed.
 	//Added this constructor so that the number of parameters were not so crazy
 	public Evaluator(FileData inFileData){
 		course_pairs = (LinkedList<CoursePair>)inFileData.pair.clone();
 		time_course_pairs = inFileData.getPreferences();
-		weight_minfilled = EvalData.getWminfilled();
-		weight_pref = EvalData.getWpref();
-		weight_pair = EvalData.getWpair();
-		weight_secdiff = EvalData.getWsecdiff();
+		
 	}
 	
 	// ----- Evaluators ----- //

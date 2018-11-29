@@ -8,7 +8,6 @@ public class Driver {
 		long duration;
 
 		FileData inputFileData;
-		
 		//command line inputs required here
 		EvalData.promptUserForValues();
 		

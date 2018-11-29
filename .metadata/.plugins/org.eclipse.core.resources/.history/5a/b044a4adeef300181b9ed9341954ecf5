@@ -46,10 +46,7 @@ public class Evaluator
 	public Evaluator(FileData inFileData){
 		course_pairs = (LinkedList<CoursePair>)inFileData.pair.clone();
 		time_course_pairs = inFileData.getPreferences();
-		weight_minfilled = EvalData.getWminfilled();
-		weight_pref = EvalData.getWpref();
-		weight_pair = EvalData.getWpair();
-		weight_secdiff = EvalData.getWsecdiff();
+		
 	}
 	
 	// ----- Evaluators ----- //

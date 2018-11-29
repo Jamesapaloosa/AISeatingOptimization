@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Scanner;
 public class Driver {
 	public static void main(String[] args) {
 		State currentState;
@@ -8,9 +7,8 @@ public class Driver {
 		long duration;
 
 		FileData inputFileData;
-		
 		//command line inputs required here
-		EvalData.promptUserForValues();
+		
 		
 		//Code to call and parse file
 		startTime = System.nanoTime();
