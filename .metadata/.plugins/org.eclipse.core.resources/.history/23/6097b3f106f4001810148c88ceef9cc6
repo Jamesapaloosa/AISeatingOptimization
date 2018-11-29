@@ -5,10 +5,6 @@ public class EvalData {
 	private static int Wpair;
 	private static int Wminfilled;
 	private static int Wsecdiff;
-	private static int pen_coursemin;
-	private static int pen_labsmin;
-	private static int pen_notpaired;
-	private static int pen_section;
 	
 	
 	
@@ -33,21 +29,6 @@ public class EvalData {
 		temp = scanner.nextInt();
 		Wsecdiff = temp;
 		
-		System.out.print("Please Enter the coursemin penalty: ");
-		temp = scanner.nextInt();
-		pen_coursemin = temp;
-		
-		System.out.print("Please Enter the labs min penalty: ");
-		temp = scanner.nextInt();
-		pen_labsmin = temp;
-		
-		System.out.print("Please enter the not paired penalty: ");
-		temp = scanner.nextInt();
-		pen_notpaired = temp;
-		
-		System.out.print("Please enter the section penalty: ");
-		temp = scanner.nextInt();
-		pen_section = temp;
 	}
 	
 	
@@ -66,28 +47,5 @@ public class EvalData {
 	public static int getWsecdiff() {
 		return Wsecdiff;
 	}
-
-
-	public static int getPen_coursemin() {
-		return pen_coursemin;
-	}
-
-
-	public static int getPen_labsmin() {
-		return pen_labsmin;
-	}
-
-
-
-	public static int getPen_notpaired() {
-		return pen_notpaired;
-	}
-
-
-
-	public static int getPen_section() {
-		return pen_section;
-	}
-
 
 }

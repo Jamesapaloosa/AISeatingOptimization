@@ -67,27 +67,4 @@ public class EvalData {
 		return Wsecdiff;
 	}
 
-
-	public static int getPen_coursemin() {
-		return pen_coursemin;
-	}
-
-
-	public static int getPen_labsmin() {
-		return pen_labsmin;
-	}
-
-
-
-	public static int getPen_notpaired() {
-		return pen_notpaired;
-	}
-
-
-
-	public static int getPen_section() {
-		return pen_section;
-	}
-
-
 }

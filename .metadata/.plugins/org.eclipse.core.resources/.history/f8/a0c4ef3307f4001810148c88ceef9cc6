@@ -50,10 +50,6 @@ public class Evaluator
 		weight_pref = EvalData.getWpref();
 		weight_pair = EvalData.getWpair();
 		weight_secdiff = EvalData.getWsecdiff();
-		pen_coursemin = EvalData.getPen_coursemin();
-		pen_labsmin = EvalData.getPen_labsmin();
-		pen_notpaired = EvalData.getPen_notpaired();
-		pen_section = EvalData.getPen_section();
 	}
 	
 	// ----- Evaluators ----- //
