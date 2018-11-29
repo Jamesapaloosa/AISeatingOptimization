@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-
 import java.util.Scanner;
 public class Driver {
 	public static void main(String[] args) {
@@ -66,7 +65,6 @@ public class Driver {
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
 		System.out.println("Ouput generator speed: " + duration);
-		Scanner scanner = new Scanner(System.in);
-		scanner.nextInt();
+		
 	}
 }

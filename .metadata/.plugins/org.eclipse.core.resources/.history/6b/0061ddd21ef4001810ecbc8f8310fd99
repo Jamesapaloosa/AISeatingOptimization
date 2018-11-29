@@ -280,7 +280,7 @@ public class DataParser {
 				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 			break;
 		case "TU":
-			if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[1]::equals))))
+			if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[1]::equals))||((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[1]::equals))))
 				throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 			break;
 		case "FR":
@@ -323,7 +323,7 @@ public class DataParser {
 							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 						break;
 					case "TU":
-						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
+						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))||((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
 							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 						break;
 					case "FR":
@@ -352,7 +352,7 @@ public class DataParser {
 							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 						break;
 					case "TU":
-						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))&&((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
+						if((!Arrays.stream(validCourseTuesdayTimes).anyMatch(dataSet[i + 1]::equals))||((!Arrays.stream(validTutMondayTuesdayTimes).anyMatch(dataSet[i + 1]::equals))))
 							throw new IllegalArgumentException("Invalid format for time found in: " + dataSet[1] + " in row: " + rowNum);
 						break;
 					case "FR":
