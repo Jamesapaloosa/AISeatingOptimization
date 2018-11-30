@@ -36,16 +36,17 @@ public class Ext {
 			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
 			}
+			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
 			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
 				if (randNum < 50) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
-					newState = breed(schedule.get(randNum), schedule.get(randNum2), lowestEvalState.eval_Value/DataParser.generationMutationModifier);
+					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
 				}else {
 					randNum = random.nextInt(schedule.size());
-					newState = mutate(schedule.get(randNum), lowestEvalState.eval_Value/DataParser.generationMutationModifier);
+					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
 					schedule.add(newState);

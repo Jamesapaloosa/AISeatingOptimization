@@ -40,7 +40,32 @@ public class Constr {
         timeslots = state.timeSlots;
         LinkedList<courseItem> items = new LinkedList<courseItem>();
         courseItem currentItem;
-
+        Timeslot fromSlot;
+        Timeslot toSlot;
+        courseItem fromCourse;
+        courseItem toCourse;
+        int compareToIndex;
+        for(int i = 0; i < timeslots.size(); i++){
+        	fromSlot = timeslots.get(i);
+        	for(int j = 0; j < fromSlot.assignedItems.size(); j++){
+        		fromCourse = fromSlot.assignedItems.get(j);
+        		for(int k = i; k < timeslots.size(); k++){
+        			toSlot = timeslots.get(k);
+        			if (k == i)
+        				compareToIndex = j + 1;
+        			else 
+        				compareToIndex = 0;
+        			for(int l = compareToIndex; l < toSlot.assignedItems.size(); l++){
+        				toCourse = toSlot.assignedItems.get(l);
+        				if(fromCourse.isSameCourseItems(toCourse))
+        					return false;
+        					
+        			}
+        		}
+        	}
+        }
+        return true;
+        /*Christians version
         for (int i=0; i < timeslots.size(); i++){    
             Timeslot currentSlot = timeslots.get(i);
             for (int j = 0; j < currentSlot.assignedItems.size(); j++){
@@ -55,6 +80,7 @@ public class Constr {
             }
         }
         return true;
+        */
     }
 
 	private static Boolean tuesdayCourseCheck(State currentState){

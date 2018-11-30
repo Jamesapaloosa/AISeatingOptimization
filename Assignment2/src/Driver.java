@@ -32,7 +32,7 @@ public class Driver {
 		currentState = StateMaker.convertFromFileData(inputFileData);
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
-		System.out.println("input file parser speed: " + duration);
+		System.out.println("making the initial state speed: " + duration);
 		
 		
 		//Or tree
@@ -42,7 +42,8 @@ public class Driver {
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 			if(thisOrTree.fillStateRecursive())
-				InitialStates.add(thisOrTree.currentState);
+				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned))
+					InitialStates.add(thisOrTree.currentState);
 		}		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
