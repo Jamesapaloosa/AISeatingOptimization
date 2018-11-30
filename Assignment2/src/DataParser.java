@@ -31,9 +31,9 @@ public class DataParser {
 	
 	public static String emptyData = "<EMPTY>";
 	
-	public static int generationSize = 10;
-	public static int generationMultiplier = 10;
-	public static int generationsWithoutChangeForResult = 20;
+	public static int generationSize = 50;
+	public static int generationMultiplier = 100;
+	public static int generationsWithoutChangeForResult = 40;
 	public static int generationMutationModifier = 10;
 	
 	
