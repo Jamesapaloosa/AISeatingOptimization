@@ -14,7 +14,7 @@ public class Driver {
 		EvalData.promptUserForValues();
 		
 		//Code to call and parse file
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		DataParser inputFileParser = new DataParser(args[0]);
 		try{
 			inputFileData = inputFileParser.readfile();
@@ -22,21 +22,21 @@ public class Driver {
 			System.out.println("Fatal error in inputFileParser method! ");
 			return;
 		}
-		endTime = System.nanoTime();
+		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
 		
 		
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		currentState = StateMaker.convertFromFileData(inputFileData);
-		endTime = System.nanoTime();
+		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
 		
 		
 		//Or tree
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
@@ -44,29 +44,26 @@ public class Driver {
 			if(thisOrTree.fillStateRecursive())
 				InitialStates.add(thisOrTree.currentState);
 		}		
-		endTime = System.nanoTime();
+		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
 		
 		
 		//Genetic algorithm here
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		Ext rules = new Ext(new Evaluator(inputFileData));
 		currentState = rules.getOptomized(InitialStates, inputFileData);
 		endTime = System.nanoTime();
 		duration = endTime - startTime;
-		System.out.println("or tree speed: " + duration);
+		System.out.println("Genetic speed: " + duration);
 		
 		
 		//Print output to the console.
-		startTime = System.nanoTime();
+		startTime = System.currentTimeMillis();
 		OutputGenerator output = new OutputGenerator(currentState);
 		output.OutputResultToCommandLine();
-		endTime = System.nanoTime();
+		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("Ouput generator speed: " + duration);
-		Scanner scanner = new Scanner(System.in);
-		int temp = scanner.nextInt();
-		scanner.close();
 	}
 }
