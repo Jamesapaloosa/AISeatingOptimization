@@ -47,7 +47,7 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), lowestEvalState.eval_Value/DataParser.generationMutationModifier);
 				}
-				if (Constr.finalCheck(newState, FD.incompatible)) {
+				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
 					if (newState.eval_Value < lowestEvalState.eval_Value)
