@@ -33,6 +33,8 @@ public class OutputGenerator {
 			time =  resultState.getTimeSlots().get(i).localSlot;
 			for(int j = 0; j < resultState.getTimeSlots().get(i).getAssignedItems().size(); j++){
 				item = resultState.getTimeSlots().get(i).getAssignedItems().get(j);
+				if(item.getTutVLab() == "")
+					item.tutVLab = "     ";
 				temp = item.department + " " + item.number + " " + item.lec + " " + item.section + " " + item.getTutVLab() + " " + item.tutSection + "     : ";
 				temp = temp + time.getDay() + ", " + time.getStartTime();
 				outputData.add(temp);

@@ -13,49 +13,50 @@ public class Ext {
 	Evaluator eval;
 	long start = System.currentTimeMillis();
 	long end = start + 120*1000;
-	LinkedList <State> scedhules;
+	LinkedList <State> schedule;
+	FileData fd;
 	
 	public Ext(Evaluator eval){
 		this.eval = eval;
 	}
 
 	public State getOptomized(LinkedList<State> factsSet, FileData FD){
-		
-		scedhules = factsSet;
-		lowestEvalState = scedhules.get(0);
-		for (int i = 1; i < scedhules.size(); i++) {
-			if (eval.evaluateTimeslots(scedhules.get(i).timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots)) {
-				lowestEvalState = scedhules.get(i);
+		start = System.currentTimeMillis();
+		fd = FD;
+		end = start + 120*100;
+		schedule = factsSet;
+		lowestEvalState = schedule.get(0);
+		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
+		for (int i = 1; i < schedule.size(); i++) {
+			schedule.get(i).eval_Value = eval.evaluateTimeslots(schedule.get(i).timeSlots);
+			if (schedule.get(i).eval_Value < lowestEvalState.eval_Value) {
+				lowestEvalState = schedule.get(i);
 			}
 		}
 		while (System.currentTimeMillis() < end) {
-			if (eval.evaluateTimeslots(lowestEvalState.timeSlots) == 0) {
+			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
 			}
-			
-			randNum = random.nextInt(100);
-			if (randNum < 50) {
-				randNum = random.nextInt(scedhules.size());
-				randNum2 = random.nextInt(scedhules.size());
-				newState = breed(scedhules.get(randNum), scedhules.get(randNum2));
+			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
+				randNum = random.nextInt(100);
+				if (randNum < 50) {
+					randNum = random.nextInt(schedule.size());
+					randNum2 = random.nextInt(schedule.size());
+					newState = breed(schedule.get(randNum), schedule.get(randNum2));
+					
+				}else {
+					randNum = random.nextInt(schedule.size());
+					newState = mutate(schedule.get(randNum));
+				}
 				
-			}else {
-				randNum = random.nextInt(scedhules.size());
-				newState = mutate(scedhules.get(randNum));
-			}
-			
-			if (Constr.finalCheck(newState, FD.incompatible)) {
-				scedhules.add(newState);
-				if (eval.evaluateTimeslots(newState.timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots)) {
-					lowestEvalState = newState;
+				if (Constr.finalCheck(newState, FD.incompatible)) {
+					schedule.add(newState);
+					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
+					if (eval.evaluateTimeslots(newState.timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots))
+						lowestEvalState = newState;
 				}
 			}
-			
-			if (scedhules.size() > 20) {
-				scedhules = purge(scedhules);
-			}
-			
-			
+			schedule = purge(schedule);
 		}
 		return new State(lowestEvalState);
 	}
@@ -158,7 +159,7 @@ public class Ext {
 		    }
 		});
 		LinkedList <State> output = new LinkedList<State>();
-		for (int i = states.size()/2; i <= DataParser.generationSize ; i = i) {
+		for (int i = 0; i <= DataParser.generationSize ; i++) {
 			output.add(states.get(evalValues[i][1]));
 		}
 		states.clear();
