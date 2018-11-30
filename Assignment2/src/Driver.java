@@ -53,7 +53,7 @@ public class Driver {
 		startTime = System.currentTimeMillis();
 		Ext rules = new Ext(new Evaluator(inputFileData));
 		currentState = rules.getOptomized(InitialStates, inputFileData);
-		endTime = System.nanoTime();
+		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("Genetic speed: " + duration);
 		

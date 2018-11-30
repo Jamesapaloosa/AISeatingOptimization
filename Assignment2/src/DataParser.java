@@ -29,9 +29,13 @@ public class DataParser {
 	public static String[] validSectionNum = {"01", "02", "03", "04", "05", "06", "07", "09"};
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
 	
+	public static String emptyData = "<EMPTY>";
 	
-	public static int generationSize = 10;
-	public static int generationMultiplier = 10;
+	public static int generationSize = 50;
+	public static int generationMultiplier = 100;
+	public static int generationsWithoutChangeForResult = 40;
+	public static int generationMutationModifier = 10;
+	
 	
 	public DataParser(String infile) {
 		if(infile == "") {

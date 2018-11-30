@@ -22,6 +22,12 @@ public class StateMaker {
 		for(int i = 0; i < inData.getPreAssigned().size(); i++){
 			found = false;
 			tempPair = inData.getPreAssigned().get(i);
+			//Remove pre-assigned from to be assigned list
+			for(int j = 0; j < output.getCoursesLabsToAssign().size(); j++){
+				if(tempPair.item.isSameCourseItems(output.getCoursesLabsToAssign().get(j)))
+					output.getCoursesLabsToAssign().remove(j);
+			}
+			//Assign courses as per file data
 			for(int j = 0; j < output.getTimeSlots().size(); j++){
 				destinationTime = output.getTimeSlots().get(j);
 				if(destinationTime.localSlot.isSameSlot(tempPair.time)){
