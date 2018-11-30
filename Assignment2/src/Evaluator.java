@@ -84,17 +84,16 @@ public class Evaluator
 				if (item.isALec) course_count++;
 				else lab_count++;
 			}
-			//System.out.println("timeslot contains " + course_count + " courses and, " + lab_count + " labs");
+			//("timeslot contains " + course_count + " courses and, " + lab_count + " labs");
 			if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) {result = (result + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
-				//System.out.println("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + lab_count + "labs, and penalty multiplier is: " + getPenLabsMin());
-				//System.out.println("adding: " + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
+				//("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + lab_count + "labs, and penalty multiplier is: " + getPenLabsMin());
+				//("adding: " + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
 			}
 			else if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) { result = (result + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
-			//System.out.println("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + course_count + "courses, and penalty multiplier is: " + getPenCourseMin());
-			//System.out.println("adding: " + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
+			//("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + course_count + "courses, and penalty multiplier is: " + getPenCourseMin());
+			//("adding: " + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
 			}
 		}
-		System.out.println("Eval for Min Filled is: " + result);
 		return result;
 	}
 	
@@ -108,37 +107,36 @@ public class Evaluator
 	{
 		
 		for (Timeslot ts : inTimeSlots){
-			//System.out.println(ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
+			//(ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
 			for (courseItem c : ts.getAssignedItems()) {
-				//System.out.println("contains: " + c.getNumber() + " " + c.getSection() + c.getTutVLab());
+				//("contains: " + c.getNumber() + " " + c.getSection() + c.getTutVLab());
 			}
 		}
 		int result = 0;
 		for (TimeCoursePair tcp : getTimeCoursePairs())
 		{
 			boolean not_found = true;
-			//System.out.println("Course is: " + tcp.getCourseItem().getNumber() + tcp.getCourseItem().getSection() + tcp.getCourseItem().getTutVLab() + " Timeslot is: " + tcp.getTime().getDay() + tcp.getTime().getStartTime());
+			//("Course is: " + tcp.getCourseItem().getNumber() + tcp.getCourseItem().getSection() + tcp.getCourseItem().getTutVLab() + " Timeslot is: " + tcp.getTime().getDay() + tcp.getTime().getStartTime());
 			for (Timeslot ts : inTimeSlots){
 				boolean forCourse = false; 
 				if (tcp.getCourseItem().isALec) forCourse = true;
-				if (ts.equals(new Timeslot(tcp.getTime(), forCourse)))
+				if (ts.localSlot.equals(tcp.getTime())&&(ts.forCourses == tcp.item.isALec))
 				{
 					not_found = false;
-					//System.out.println("got here" + ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
+					//("got here" + ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
 					if (!existsInTimeslot(tcp.getCourseItem(), ts))
 					{
-						//System.out.println("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
+						//("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
 						result = result + tcp.prefVal;
 					}
 					continue;
 				}	
 			}
 			if (not_found) {
-				//System.out.println("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
+				//("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
 				result = result + tcp.prefVal;
 			}
 		}
-		System.out.println("Eval for Pref is: " + result);
 		return result;
 	}
 	
@@ -153,15 +151,14 @@ public class Evaluator
 		{
 			for (Timeslot aTimeSlot : inTimeSlots)
 			{
-				//System.out.println("Checking course pairs: " + aCoursePair.getItemOne().getNumber() + " " + aCoursePair.getItemTwo().getNumber() + "in timeslot : " + aTimeSlot.getLocalSlot().getDay() + aTimeSlot.getLocalSlot().getStartTime());
+				//("Checking course pairs: " + aCoursePair.getItemOne().getNumber() + " " + aCoursePair.getItemTwo().getNumber() + "in timeslot : " + aTimeSlot.getLocalSlot().getDay() + aTimeSlot.getLocalSlot().getStartTime());
 				if ((!existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot)) || (existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & !existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot))) {
-					//System.out.println(aCoursePair.getItemOne().getNumber() + "is not paired with" + aCoursePair.getItemTwo().getNumber() + "adding penalty : " + getPenNotPaired());
+					//(aCoursePair.getItemOne().getNumber() + "is not paired with" + aCoursePair.getItemTwo().getNumber() + "adding penalty : " + getPenNotPaired());
 					result = result + getPenNotPaired(); 
 					break;
 				}
 			}
 		}
-		System.out.println("Eval for Pair is: " + result);
 		return result;
 	}
 	
@@ -176,7 +173,6 @@ public class Evaluator
 		{
 			result = result + (getSectionPairs(aTimeSlot).size() * getPenSection());
 		}
-		System.out.println("Eval for Sec Diff is: " + result);
 		return result;
 	}
 	
@@ -191,19 +187,19 @@ public class Evaluator
 		LinkedList<CoursePair> sec_pairs = new LinkedList<CoursePair>();
 		for (int i = 0; i < (inTimeSlot.getAssignedItems().size() - 1); i++)
 		{	
-			//System.out.println(inTimeSlot.getAssignedItems().get(i).getNumber() + " " + inTimeSlot.getAssignedItems().get(i).getSection() + inTimeSlot.getAssignedItems().get(i).getTutVLab());
+			//(inTimeSlot.getAssignedItems().get(i).getNumber() + " " + inTimeSlot.getAssignedItems().get(i).getSection() + inTimeSlot.getAssignedItems().get(i).getTutVLab());
 			for (int j =  i + 1; j < inTimeSlot.getAssignedItems().size(); j++)
 			{
-				//System.out.println("item j is: " + inTimeSlot.getAssignedItems().get(j).getNumber() + " " + inTimeSlot.getAssignedItems().get(j).getSection() + inTimeSlot.getAssignedItems().get(j).getTutVLab());
-				//System.out.println("j is: " + j);
+				//("item j is: " + inTimeSlot.getAssignedItems().get(j).getNumber() + " " + inTimeSlot.getAssignedItems().get(j).getSection() + inTimeSlot.getAssignedItems().get(j).getTutVLab());
+				//("j is: " + j);
 				if (isSameCourseDifferentSection(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)))
 				{
-					//System.out.println("got here");
+					//("got here");
 					sec_pairs.add(new CoursePair(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)));
 				}
 			}
 		}
-		//System.out.println("Eval for Sec pair size is: " + sec_pairs.size());
+		//("Eval for Sec pair size is: " + sec_pairs.size());
 		return sec_pairs;
 	}
 	
@@ -229,27 +225,27 @@ public class Evaluator
 	public Boolean isSameCourseDifferentSection(courseItem inItem1, courseItem inItem2)
 	{
 		if(!inItem1.getDepartment().equals(inItem2.getDepartment())) {
-			//System.out.println("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
+			//("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
 			return false;
 		}
 		if(!inItem1.getNumber().equals(inItem2.getNumber())) {
-			//System.out.println("got here 1" + inItem1.getNumber() + inItem2.getNumber());
+			//("got here 1" + inItem1.getNumber() + inItem2.getNumber());
 			return false;
 		}
 		if(!inItem1.getLecVsTut().equals(inItem2.getLecVsTut())) {
-			//System.out.println("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
+			//("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
 			return false;
 		}
 		if(inItem1.getSection().equals(inItem2.getSection())) {
-			//System.out.println("got here 1" + inItem1.getSection() + inItem2.getSection());
+			//("got here 1" + inItem1.getSection() + inItem2.getSection());
 			return false;
 		}
 		if(!inItem1.getTutVLab().equals(inItem2.getTutVLab())) {
-			//System.out.println("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
+			//("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
 			return false;
 		}
 		if(!inItem1.getTutSection().equals(inItem2.getTutSection())) {
-			//System.out.println("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
+			//("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
 			return false;
 		}
 		return true;

@@ -66,7 +66,7 @@ public class Driver {
 		duration = endTime - startTime;
 		System.out.println("Ouput generator speed: " + duration);
 		Scanner scanner = new Scanner(System.in);
-		scanner.nextInt();
+		int temp = scanner.nextInt();
 		scanner.close();
 	}
 }
