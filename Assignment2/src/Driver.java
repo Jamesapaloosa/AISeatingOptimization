@@ -19,7 +19,7 @@ public class Driver {
 		try{
 			inputFileData = inputFileParser.readfile();
 		}catch(Exception e){
-			System.out.println("Fatal error in inputFileParser method! ");
+			System.out.println("Fatal error in inputFileParser method! " + e.getMessage());
 			return;
 		}
 		endTime = System.currentTimeMillis();

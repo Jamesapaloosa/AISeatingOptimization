@@ -30,6 +30,7 @@ public class DataParser {
 	public static String[] invalidDepartmentChar = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "?"};
 	
 	public static String emptyData = "<EMPTY>";
+	public static String[] FileDataHeaders = {"Name", "Course slots:", "Lab slots:","Courses:","Labs:", "Not compatible:","Unwanted:","Preferences:", "Pair:","Partial assignments:"};
 	
 	public static int generationSize = 50;
 	public static int generationMultiplier = 100;
@@ -128,85 +129,124 @@ public class DataParser {
 			System.out.println(e.getMessage());
 			return null;
 		}
-		String line;
-		while ((line = br.readLine()) != null){
-			rowNum++;
+		boolean readNewLine = true;
+		String line = "";
+		while (true){
 			//Switch to bounce between different data sets
+			if(readNewLine){
+				if((line = br.readLine()) == null)
+					break;
+			}
+			else
+				readNewLine = true;
 			switch(line){
 			case "Name:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
-					if(line.length() > 0){
-						dataOutput.setName(line);
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
 					}
+					if(line.length() > 0)
+						dataOutput.setName(line);
 				}
 				break;
+		
 			case "Course slots:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
-					if(line.length() > 0){
-					dataOutput.getCourseSlots().add(readCourseSlot(line, rowNum));
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
 					}
+					if(line.length() > 0)
+						dataOutput.getCourseSlots().add(readCourseSlot(line, rowNum));
 				}
 				break;
 			case "Lab slots:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
-					if(line.length() > 0){
-					dataOutput.getLabSlots().add(readCourseSlot(line, rowNum));
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
 					}
+					if(line.length() > 0)
+						dataOutput.getLabSlots().add(readCourseSlot(line, rowNum));
 				}
 				break;
 			case "Courses:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
-					if(line.length() > 0){
-					dataOutput.getCourses().add(readCourseLine(line, rowNum));
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
 					}
+					if(line.length() > 0)
+						dataOutput.getCourses().add(readCourseLine(line, rowNum));
 				}
 				break;
 			case "Labs:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
+					}
 					if(line.length() > 0)
-					dataOutput.getLabs().add(readCourseLine(line, rowNum));
+						dataOutput.getLabs().add(readCourseLine(line, rowNum));
 				}
 				break;
 			case "Not compatible:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
+					}
 					if(line.length() > 0)
-					dataOutput.getIncompatible().add(readCoursePair(line, rowNum));
+						dataOutput.getIncompatible().add(readCoursePair(line, rowNum));
 				}
 				break;
 			case "Unwanted:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
+					}
 					if(line.length() > 0)
-					dataOutput.getUnwanted().add(readTimeCoursePair(line, rowNum));
+						dataOutput.getUnwanted().add(readTimeCoursePair(line, rowNum));
 				}
 				break;
 			case "Preferences:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
+					}
 					if(line.length() > 0)
-					dataOutput.getPreferences().add(readTimeCoursePair(line, rowNum));
+						dataOutput.getPreferences().add(readTimeCoursePair(line, rowNum));
 				}
 				break;
 			case "Pair:":
 				while((line != "\n")&&(line != "\r")&&(line != null)&&(line.length() > 0)){
 					line = br.readLine();
 					rowNum++;
+					if(Arrays.stream(FileDataHeaders).anyMatch(line::equals)){
+						readNewLine = false;
+						break;
+					}
 					if(line.length() > 0)
-					dataOutput.getPair().add(readCoursePair(line, rowNum));
+						dataOutput.getPair().add(readCoursePair(line, rowNum));
 				}
 				break;
 			case "Partial assignments:":
@@ -214,9 +254,11 @@ public class DataParser {
 					line = br.readLine();
 					rowNum++;
 					if(line != null){
-					if(line.length() > 0)
-					dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum));
+						if(line.length() > 0)
+							dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum));
 					}
+					else 
+						break;
 				}
 				break;
 			}
