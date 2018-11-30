@@ -77,13 +77,23 @@ public class Evaluator
 			int lab_count = 0;
 			for (courseItem item : aTimeSlot.getAssignedItems())
 			{
+				/*
 				if (Arrays.stream(DataParser.validLecType).anyMatch(item.getLecVsTut()::equals)) course_count++;
 				else if (Arrays.stream(DataParser.validTutType).anyMatch(item.getLecVsTut()::equals)) lab_count++;
+				*/
+				if (item.isALec) course_count++;
+				else lab_count++;
 			}
-			if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) result = (result + getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count);
-			else if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) result = (result + getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMax() - course_count);
+			//("timeslot contains " + course_count + " courses and, " + lab_count + " labs");
+			if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) {result = (result + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
+				//("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + lab_count + "labs, and penalty multiplier is: " + getPenLabsMin());
+				//("adding: " + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
+			}
+			else if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) { result = (result + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
+			//("min is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + course_count + "courses, and penalty multiplier is: " + getPenCourseMin());
+			//("adding: " + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
+			}
 		}
-		System.out.println("Eval for Min Filled is: " + result);
 		return result;
 	}
 	
@@ -95,21 +105,38 @@ public class Evaluator
 	*/
 	public int EvalPref(LinkedList<Timeslot> inTimeSlots)
 	{
+		
+		for (Timeslot ts : inTimeSlots){
+			//(ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
+			for (courseItem c : ts.getAssignedItems()) {
+				//("contains: " + c.getNumber() + " " + c.getSection() + c.getTutVLab());
+			}
+		}
 		int result = 0;
 		for (TimeCoursePair tcp : getTimeCoursePairs())
 		{
+			boolean not_found = true;
+			//("Course is: " + tcp.getCourseItem().getNumber() + tcp.getCourseItem().getSection() + tcp.getCourseItem().getTutVLab() + " Timeslot is: " + tcp.getTime().getDay() + tcp.getTime().getStartTime());
 			for (Timeslot ts : inTimeSlots){
-				if (ts.getLocalSlot().isSameSlot(tcp.getTime()))
+				boolean forCourse = false; 
+				if (tcp.getCourseItem().isALec) forCourse = true;
+				if (ts.localSlot.equals(tcp.getTime())&&(ts.forCourses == tcp.item.isALec))
 				{
+					not_found = false;
+					//("got here" + ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
 					if (!existsInTimeslot(tcp.getCourseItem(), ts))
 					{
-						System.out.println("exists: ");
+						//("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
 						result = result + tcp.prefVal;
 					}
-				}
+					continue;
+				}	
+			}
+			if (not_found) {
+				//("doesnt exist: " + tcp.getCourseItem().getNumber() + "adding penalty : " + tcp.prefVal);
+				result = result + tcp.prefVal;
 			}
 		}
-		System.out.println("Eval for Pref is: " + result);
 		return result;
 	}
 	
@@ -120,16 +147,18 @@ public class Evaluator
 	public int EvalPair(LinkedList<Timeslot> inTimeSlots)
 	{
 		int result = 0;
-		for (Timeslot aTimeSlot : inTimeSlots)
+		for (CoursePair aCoursePair : getCoursePairs())
 		{
-			for (CoursePair aCoursePair : getCoursePairs())
+			for (Timeslot aTimeSlot : inTimeSlots)
 			{
-				if (!(existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot))) {
+				//("Checking course pairs: " + aCoursePair.getItemOne().getNumber() + " " + aCoursePair.getItemTwo().getNumber() + "in timeslot : " + aTimeSlot.getLocalSlot().getDay() + aTimeSlot.getLocalSlot().getStartTime());
+				if ((!existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot)) || (existsInTimeslot(aCoursePair.getItemOne(), aTimeSlot) & !existsInTimeslot(aCoursePair.getItemTwo(), aTimeSlot))) {
+					//(aCoursePair.getItemOne().getNumber() + "is not paired with" + aCoursePair.getItemTwo().getNumber() + "adding penalty : " + getPenNotPaired());
 					result = result + getPenNotPaired(); 
+					break;
 				}
 			}
 		}
-		System.out.println("Eval for Pair is: " + result);
 		return result;
 	}
 	
@@ -144,7 +173,6 @@ public class Evaluator
 		{
 			result = result + (getSectionPairs(aTimeSlot).size() * getPenSection());
 		}
-		System.out.println("Eval for Sec Diff is: " + result);
 		return result;
 	}
 	
@@ -159,19 +187,19 @@ public class Evaluator
 		LinkedList<CoursePair> sec_pairs = new LinkedList<CoursePair>();
 		for (int i = 0; i < (inTimeSlot.getAssignedItems().size() - 1); i++)
 		{	
-			System.out.println("item i is: " + inTimeSlot.getAssignedItems().get(i).getNumber() + " " + inTimeSlot.getAssignedItems().get(i).getSection());
+			//(inTimeSlot.getAssignedItems().get(i).getNumber() + " " + inTimeSlot.getAssignedItems().get(i).getSection() + inTimeSlot.getAssignedItems().get(i).getTutVLab());
 			for (int j =  i + 1; j < inTimeSlot.getAssignedItems().size(); j++)
 			{
-				System.out.println("item j is: " + inTimeSlot.getAssignedItems().get(j).getNumber() + " " + inTimeSlot.getAssignedItems().get(j).getSection());
-				//System.out.println("j is: " + j);
+				//("item j is: " + inTimeSlot.getAssignedItems().get(j).getNumber() + " " + inTimeSlot.getAssignedItems().get(j).getSection() + inTimeSlot.getAssignedItems().get(j).getTutVLab());
+				//("j is: " + j);
 				if (isSameCourseDifferentSection(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)))
 				{
-					System.out.println("got here");
+					//("got here");
 					sec_pairs.add(new CoursePair(inTimeSlot.getAssignedItems().get(i), inTimeSlot.getAssignedItems().get(j)));
 				}
 			}
 		}
-		//System.out.println("Eval for Sec pair size is: " + sec_pairs.size());
+		//("Eval for Sec pair size is: " + sec_pairs.size());
 		return sec_pairs;
 	}
 	
@@ -197,27 +225,27 @@ public class Evaluator
 	public Boolean isSameCourseDifferentSection(courseItem inItem1, courseItem inItem2)
 	{
 		if(!inItem1.getDepartment().equals(inItem2.getDepartment())) {
-			//System.out.println("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
+			//("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
 			return false;
 		}
 		if(!inItem1.getNumber().equals(inItem2.getNumber())) {
-			//System.out.println("got here 1" + inItem1.getNumber() + inItem2.getNumber());
+			//("got here 1" + inItem1.getNumber() + inItem2.getNumber());
 			return false;
 		}
 		if(!inItem1.getLecVsTut().equals(inItem2.getLecVsTut())) {
-			//System.out.println("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
+			//("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
 			return false;
 		}
 		if(inItem1.getSection().equals(inItem2.getSection())) {
-			//System.out.println("got here 1" + inItem1.getSection() + inItem2.getSection());
+			//("got here 1" + inItem1.getSection() + inItem2.getSection());
 			return false;
 		}
 		if(!inItem1.getTutVLab().equals(inItem2.getTutVLab())) {
-			//System.out.println("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
+			//("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
 			return false;
 		}
 		if(!inItem1.getTutSection().equals(inItem2.getTutSection())) {
-			//System.out.println("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
+			//("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
 			return false;
 		}
 		return true;

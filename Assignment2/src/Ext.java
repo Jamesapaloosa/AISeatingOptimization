@@ -1,5 +1,6 @@
 import java.util.*;
-
+import java.util.LinkedList;
+import java.util.Dictionary;
 public class Ext {
 	private int max;
 	private int randNum;
@@ -56,7 +57,7 @@ public class Ext {
 			
 			
 		}
-		return lowestEvalState;
+		return new State(lowestEvalState);
 	}
 
 	private State breed (State state1, State state2) {
@@ -68,20 +69,47 @@ public class Ext {
 			tempState1 = state2;
 			tempState2 = state1;
 		}
-		max = tempState1.timeSlots.size();
-
-		randNum = random.nextInt(max);
-		Timeslot t = tempState2.timeSlots.get(randNum);
-
-		for (int i = 0; i < tempState1.timeSlots.size(); i++) {
-			for (courseItem course : tempState1.timeSlots.get(i).assignedItems) {
-				if (t.assignedItems.contains(course))
-					tempState1.timeSlots.get(i).assignedItems.remove(course);
+		LinkedList<Integer> altern = new LinkedList<Integer>();
+		for(int i = 0; i < tempState2.timeSlots.size(); i++){
+			altern.add(i);
+		}
+		Timeslot timeslot2 = null;
+		boolean cont = true;
+		while(altern.size() > 0){
+			randNum = random.nextInt(altern.size());
+			timeslot2 = tempState2.timeSlots.get(altern.get(randNum));
+			if(timeslot2.assignedItems.size() > 0){
+				cont = false;
+				break;
+			}
+			altern.remove(randNum);
+		}
+		
+		if(cont == true)
+			return state2;
+		int courseIndex = random.nextInt(timeslot2.assignedItems.size());
+		courseItem courseToMove = timeslot2.getAssignedItems().get(courseIndex);
+		List<courseItem> temp;
+		boolean found;
+		
+		for(int i = 0; i < tempState1.timeSlots.size(); i++){
+			found = false;
+			if(tempState1.timeSlots.get(i).equals(timeslot2))
+				tempState1.timeSlots.get(i).addItemToTimeslot(courseToMove);
+			 temp = tempState1.timeSlots.get(i).getAssignedItems();
+			if(temp.size() > 0){
+				for(int j = 0; j < temp.size(); j++){
+					if(temp.get(j).isSameCourseItems(courseToMove)){
+						temp.remove(j);
+						found = true;
+						break;
+					}
+				}
+				if(found)
+					break;
 			}
 		}
-		tempState1.timeSlots.set(randNum, t);
-		return tempState1;
-		
+		return new State(tempState1);
 	}
 
 	/*
@@ -90,31 +118,38 @@ public class Ext {
 	Mutate does NOT ensure hard constraints are not violated, this must be done later!
 	*/
 	private State mutate(State state){
-		State newState = state; //should be a deep copy
-		Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
-		courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
-
-
-		int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
-		while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
-			Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was removed to
-			if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
-				return newState;
+		try{
+			State newState = state; //should be a deep copy
+			Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
+			courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
+			
+			int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
+			while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
+				Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was 	removed to
+				if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
+					return newState;
+				}
+				x--;
 			}
-			x--;
-		}
 
-		return state; //if a mutated state could not be found, just return the one given as input
+			return state; //if a mutated state could not be found, just return the one given as input
+		}
+		catch(Exception e){
+			return state;
+		}
+		
 	}
 
+	
 	public LinkedList <State> purge (LinkedList <State> states){
-
+		//Dictionary statesEval = new Hashtable();
 		int statesSize = states.size();
 		int [][] evalValues = new int [statesSize][2];
 
 		for (int i = 0; i < statesSize ; i++) {
 			evalValues [i][0] = eval.evaluateTimeslots(states.get(i).timeSlots);
 			evalValues [i][1] = i;
+			//statesEval.put(states.get(i), eval.evaluateTimeslots(states.get(i).timeSlots));
 		}
 
 		Arrays.sort(evalValues, new Comparator<int[]>() {
@@ -122,11 +157,11 @@ public class Ext {
 		        return Integer.compare(b[0], a[0]);
 		    }
 		});
-
-		for (int i = statesSize/2; i < statesSize ; i++) {
-			states.remove(evalValues[i][1]);
+		LinkedList <State> output = new LinkedList<State>();
+		for (int i = states.size()/2; i <= DataParser.generationSize ; i = i) {
+			output.add(states.get(evalValues[i][1]));
 		}
-
-		return states;
+		states.clear();
+		return output;
 	}
 }
