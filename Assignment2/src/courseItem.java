@@ -17,8 +17,8 @@ public class courseItem {
 		number = inNumber;
 		lec = inLecVsTut;
 		section = inSection;
-		tutVLab = "";
-		tutSection = "";
+		tutVLab = "";//DataParser.emptyData;
+		tutSection = "";//DataParser.emptyData;
 		isALec = inIsALec;
 	}
 	
@@ -49,10 +49,14 @@ public class courseItem {
 			return false;
 		if(!section.equals(OtherCourseItem.getSection()))
 			return false;
-		if(tutVLab.equals(OtherCourseItem.getTutVLab()))
-			return false;
-		if(tutSection.equals(OtherCourseItem.getTutSection()))
-			return false;
+		if((tutVLab == "")&&(OtherCourseItem.getTutVLab() == ""))
+			return true;
+		else if(!tutVLab.equalsIgnoreCase(OtherCourseItem.getTutVLab()))
+			return true;
+		if((tutSection == "")&&(OtherCourseItem.getTutSection() == ""))
+			return true;
+		else if(!tutSection.equalsIgnoreCase(OtherCourseItem.getTutSection()))
+			return true;
 		return true;
 	}
 	

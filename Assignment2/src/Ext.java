@@ -6,9 +6,7 @@ public class Ext {
 	private int randNum;
 	private int randNum2;
 	Random random = new Random();
-	State newState = new State();
-	State tempState1 = new State();
-	State tempState2 = new State();
+	State newState;
 	State lowestEvalState = new State();
 	Evaluator eval;
 	long start = System.currentTimeMillis();
@@ -23,7 +21,7 @@ public class Ext {
 	public State getOptomized(LinkedList<State> factsSet, FileData FD){
 		start = System.currentTimeMillis();
 		fd = FD;
-		end = start + 120*100;
+		end = start + 120*1000;
 		schedule = factsSet;
 		lowestEvalState = schedule.get(0);
 		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
@@ -33,6 +31,7 @@ public class Ext {
 				lowestEvalState = schedule.get(i);
 			}
 		}
+		int genCount = 0;
 		while (System.currentTimeMillis() < end) {
 			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
@@ -42,103 +41,145 @@ public class Ext {
 				if (randNum < 50) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
-					newState = breed(schedule.get(randNum), schedule.get(randNum2));
+					newState = breed(schedule.get(randNum), schedule.get(randNum2), lowestEvalState.eval_Value/DataParser.generationMutationModifier);
 					
 				}else {
 					randNum = random.nextInt(schedule.size());
-					newState = mutate(schedule.get(randNum));
+					newState = mutate(schedule.get(randNum), lowestEvalState.eval_Value/DataParser.generationMutationModifier);
 				}
-				
 				if (Constr.finalCheck(newState, FD.incompatible)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
-					if (eval.evaluateTimeslots(newState.timeSlots) < eval.evaluateTimeslots(lowestEvalState.timeSlots))
+					if (newState.eval_Value < lowestEvalState.eval_Value)
 						lowestEvalState = newState;
 				}
+				else
+					i--;
 			}
+			genCount++;
+			if(genCount == DataParser.generationsWithoutChangeForResult)
+				return new State(lowestEvalState);
 			schedule = purge(schedule);
 		}
 		return new State(lowestEvalState);
 	}
 
-	private State breed (State state1, State state2) {
-		
-		if (eval.evaluateTimeslots(state1.timeSlots) < eval.evaluateTimeslots(state2.timeSlots)) {
-			tempState1 = state1;
-			tempState2 = state2;
+	
+	
+	private State breed (State state1, State state2, int numberOfMutations) {
+		State FromState;
+		State ToState;
+		if (state1.eval_Value < state2.eval_Value) {
+			FromState = new State(state1);
+			ToState = new State(state2);
 		}else {
-			tempState1 = state2;
-			tempState2 = state1;
+			FromState = new State(state2);
+			ToState = new State(state1);
 		}
-		LinkedList<Integer> altern = new LinkedList<Integer>();
-		for(int i = 0; i < tempState2.timeSlots.size(); i++){
-			altern.add(i);
-		}
-		Timeslot timeslot2 = null;
-		boolean cont = true;
-		while(altern.size() > 0){
-			randNum = random.nextInt(altern.size());
-			timeslot2 = tempState2.timeSlots.get(altern.get(randNum));
-			if(timeslot2.assignedItems.size() > 0){
-				cont = false;
-				break;
+		LinkedList<Integer> altern;
+		Timeslot sourceTimeslot;
+		//Do a number of mutations based on the input provided to the method
+		for(int k = 0; k <= numberOfMutations; k++){
+			//Choose a timeslot to grab a course from
+			altern = new LinkedList<Integer>();
+			//Provide alternatives for the program to choose as a source timeslot.
+			for(int i = 0; i < FromState.timeSlots.size(); i++){
+				altern.add(i);
 			}
-			altern.remove(randNum);
-		}
-		
-		if(cont == true)
-			return state2;
-		int courseIndex = random.nextInt(timeslot2.assignedItems.size());
-		courseItem courseToMove = timeslot2.getAssignedItems().get(courseIndex);
-		List<courseItem> temp;
-		boolean found;
-		
-		for(int i = 0; i < tempState1.timeSlots.size(); i++){
-			found = false;
-			if(tempState1.timeSlots.get(i).equals(timeslot2))
-				tempState1.timeSlots.get(i).addItemToTimeslot(courseToMove);
-			 temp = tempState1.timeSlots.get(i).getAssignedItems();
-			if(temp.size() > 0){
+			sourceTimeslot = null;
+			boolean cont = true;
+			while(altern.size() > 0){
+				randNum = random.nextInt(altern.size());
+				sourceTimeslot = FromState.timeSlots.get(altern.get(randNum));
+				if(sourceTimeslot.assignedItems.size() > 0){
+					cont = false;
+					break;
+				}
+				altern.remove(randNum);
+			}
+			
+			//If all of altern is exhausted and none of the slots have a course in them then return
+			if(cont == true)
+				return FromState;
+			
+			//Choose the course to modify to look more like the best
+			int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
+			courseItem courseToMove = sourceTimeslot.getAssignedItems().get(courseIndex);
+			List<courseItem> temp;
+			
+			//Remove the course that is to be added
+			for(int i = 0; i < ToState.timeSlots.size(); i++){
+				temp = ToState.timeSlots.get(i).getAssignedItems();
 				for(int j = 0; j < temp.size(); j++){
 					if(temp.get(j).isSameCourseItems(courseToMove)){
 						temp.remove(j);
-						found = true;
+						i = ToState.timeSlots.size();
 						break;
 					}
 				}
-				if(found)
+			}
+			
+			//Add the course to the proper location
+			for(int i = 0; i < ToState.timeSlots.size(); i++){
+				if(ToState.timeSlots.get(i).equals(sourceTimeslot)){
+					ToState.timeSlots.get(i).addItemToTimeslot(courseToMove);
 					break;
+				}
 			}
 		}
-		return new State(tempState1);
+		return ToState;
 	}
+	
 
 	/*
 	Mutate takes a state and returns a new state that has been mutated
 	by taking an already assigned course and randomly re-assigning it to any empty slot
 	Mutate does NOT ensure hard constraints are not violated, this must be done later!
 	*/
-	private State mutate(State state){
-		try{
-			State newState = state; //should be a deep copy
-			Timeslot t = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //gets a random timeSlot from the state
-			courseItem c = t.assignedItems.remove(random.nextInt(t.assignedItems.size())); //removes a random item from the timeslot
-			
-			int x = 10000; //number of times to run the loop, to prevent infinite loops - can be changed
-			while(x > 0){//repeatedly try to add the item that was removed back into an empty timeslot
-				Timeslot slotToAdd = newState.timeSlots.get(random.nextInt(newState.timeSlots.size())); //randomly select a timeslot to add the item that was 	removed to
-				if(slotToAdd.addItemToTimeslot(c)){ //break if the item was added successfully
-					return newState;
-				}
-				x--;
+	private State mutate(State state, int numberOfMutations){
+		State newState = new State(state);
+		LinkedList<Integer> altern = new LinkedList<Integer>();
+		Timeslot source;
+		Timeslot destination;
+		boolean cont;
+		//Loop to go through the number of mutations required
+		for(int j = 0; j < numberOfMutations; j++){
+			for(int i = 0; i < newState.timeSlots.size(); i++){
+				altern.add(i);
 			}
-
-			return state; //if a mutated state could not be found, just return the one given as input
+			source = null;
+			cont = false;
+			//Find a source timeslot to take a class from
+			while(altern.size() > 0){
+				randNum = random.nextInt(altern.size());
+				source = newState.timeSlots.get(altern.get(randNum));
+				if(source.assignedItems.size() > 0){
+					cont = true;
+					break;
+				}
+				altern.remove(randNum);
+			}
+			if(cont){
+				//Grab a course at random
+				int courseIndex = random.nextInt(source.assignedItems.size());
+				courseItem courseToMove = source.getAssignedItems().remove(courseIndex);
+				
+				//Find a destination time-slot to put that class into
+				for(int i = 0; i < newState.timeSlots.size(); i++){
+					altern.add(i);
+				}
+				while(altern.size() > 0){
+					randNum = random.nextInt(altern.size());
+					destination = newState.timeSlots.get(altern.get(randNum));
+					if((destination.assignedItems.size() > 0)&&(!destination.equals(source))){
+						destination.assignedItems.add(courseToMove);
+						break;
+					}
+					altern.remove(randNum);
+				}
+			}
 		}
-		catch(Exception e){
-			return state;
-		}
-		
+		return newState;
 	}
 
 	

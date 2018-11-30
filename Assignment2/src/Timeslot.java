@@ -89,5 +89,4 @@ public class Timeslot {
 		}
 		return false;
 	}
-	
 }
