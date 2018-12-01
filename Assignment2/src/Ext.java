@@ -71,10 +71,10 @@ public class Ext {
 		State FromState;
 		State ToState;
 		if (state1.eval_Value < state2.eval_Value) {
-			FromState = new State(state1);
+			FromState = state1;
 			ToState = new State(state2);
 		}else {
-			FromState = new State(state2);
+			FromState = state2;
 			ToState = new State(state1);
 		}
 		LinkedList<Integer> altern;

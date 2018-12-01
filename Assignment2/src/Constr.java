@@ -92,7 +92,7 @@ public class Constr {
 			Timeslot currentSlot = timeslots.get(i);
 
 			if((currentSlot.localSlot.day.equals("TU"))&& (currentSlot.localSlot.startTime.equals("11:00"))) {
-				if (currentSlot.forCourses == true){
+				if ((currentSlot.forCourses == true)&&(currentSlot.assignedItems.size() > 0)){
 					return false;
 				}
 			}
@@ -162,11 +162,9 @@ public class Constr {
 						return false;
 					}
 				}
-	
-	
+
 				// If CPSC 813 is scheduled TU at 18:00 but so is any element of CPSC 313, return false
 				else if (((currentSlot.localSlot.day.equals("TU")) && (currentSlot.localSlot.startTime.equals("18:00"))) && (currentSlot.assignedItems.get(j).number.equals("813"))){
-						
 					for(int k = 0; k < currentSlot.assignedItems.size(); k++) {
 						if (currentSlot.assignedItems.get(k).number.equals("313")){
 							return false;
@@ -290,7 +288,6 @@ public class Constr {
 
 	// When assigning either CPSC 813 or 913, it must be assigned to TU at 18:00
 	private static Boolean assign13(Timeslot timeslot, courseItem item){
-
 		if ((item.number.equals("813") && (item.isALec == true))){
 			if ((!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00")))){	
 				return false;
@@ -308,7 +305,6 @@ public class Constr {
 	// Check incompatible classes aren't scheduled at the same times
 	private static Boolean checkIncompatibleAssign(Timeslot timeslot, courseItem item, LinkedList<CoursePair> incompClasses){
 		int incompItems = 0;
-	
 		for (int i=0; i < timeslot.assignedItems.size(); i++){	
 	
 			for (int j=0; j < incompClasses.size(); j++){
