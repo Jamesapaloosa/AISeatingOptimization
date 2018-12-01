@@ -25,7 +25,7 @@ public class OrTree {
 		if(currentState.getCoursesLabsToAssign().size() == 1)
 			ranNum = 0;
 		else
-			ranNum = new Random().nextInt(currentState.getCoursesLabsToAssign().size() - 1);
+			ranNum = new Random().nextInt(currentState.getCoursesLabsToAssign().size());
 		addingItem = currentState.getCoursesLabsToAssign().get(ranNum);
 		
 		//make a list of the indexes of different choices to make at this point
@@ -44,20 +44,20 @@ public class OrTree {
 		int alternChoice;
 		int addingItemIndex;
 		while(altern.size() > 0){
-			alternChoice = new Random().nextInt(altern.size() - 1);
+			alternChoice = new Random().nextInt(altern.size());
 			destinationTimeslot = currentState.timeSlots.get(altern.get(alternChoice));
 			altern.remove(alternChoice);
 			if(addingItem.isALec == destinationTimeslot.forCourses){
-				found = destinationTimeslot.addItemToTimeslot(addingItem);
-				if(found){
-					addingItemIndex = destinationTimeslot.assignedItems.size() - 1;		
-					currentState.CoursesLabsToAssign.remove(ranNum);
-					if(fillStateRecursive()){
-						return true;
+					found = destinationTimeslot.addItemToTimeslot(addingItem);
+					if(found){
+						addingItemIndex = destinationTimeslot.assignedItems.size() - 1;		
+						currentState.CoursesLabsToAssign.remove(ranNum);
+						if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&&fillStateRecursive()){
+							return true;
+						}
+						else
+							currentState.CoursesLabsToAssign.add(destinationTimeslot.assignedItems.remove(addingItemIndex));
 					}
-					else
-						currentState.CoursesLabsToAssign.add(destinationTimeslot.assignedItems.remove(addingItemIndex));
-				}
 			}
 		}
 		return false;

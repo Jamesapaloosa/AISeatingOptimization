@@ -40,7 +40,32 @@ public class Constr {
         timeslots = state.timeSlots;
         LinkedList<courseItem> items = new LinkedList<courseItem>();
         courseItem currentItem;
-
+        Timeslot fromSlot;
+        Timeslot toSlot;
+        courseItem fromCourse;
+        courseItem toCourse;
+        int compareToIndex;
+        for(int i = 0; i < timeslots.size(); i++){
+        	fromSlot = timeslots.get(i);
+        	for(int j = 0; j < fromSlot.assignedItems.size(); j++){
+        		fromCourse = fromSlot.assignedItems.get(j);
+        		for(int k = i; k < timeslots.size(); k++){
+        			toSlot = timeslots.get(k);
+        			if (k == i)
+        				compareToIndex = j + 1;
+        			else 
+        				compareToIndex = 0;
+        			for(int l = compareToIndex; l < toSlot.assignedItems.size(); l++){
+        				toCourse = toSlot.assignedItems.get(l);
+        				if(fromCourse.isSameCourseItems(toCourse))
+        					return false;
+        					
+        			}
+        		}
+        	}
+        }
+        return true;
+        /*Christians version
         for (int i=0; i < timeslots.size(); i++){    
             Timeslot currentSlot = timeslots.get(i);
             for (int j = 0; j < currentSlot.assignedItems.size(); j++){
@@ -55,6 +80,7 @@ public class Constr {
             }
         }
         return true;
+        */
     }
 
 	private static Boolean tuesdayCourseCheck(State currentState){
@@ -180,10 +206,9 @@ public class Constr {
 	}
 
 		// Check incompatible classes aren't scheduled at the same times
-	private static Boolean checkIncompatible(State currentState, LinkedList<CoursePair> inc){
+	private static Boolean checkIncompatible(State currentState, LinkedList<CoursePair> incompClasses){
 		state = currentState;
 		timeslots = state.timeSlots; 
-		LinkedList<CoursePair> incompClasses = inc; 
 		int incompItems = 0;
 
 		for (int i=0; i < timeslots.size(); i++){	
@@ -200,6 +225,31 @@ public class Constr {
 					if(item.isSameCourseItems(c1)||item.isSameCourseItems(c2)){
 						incompItems++;
 						if(incompItems > 1)
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	private static Boolean checkPreassigned(State currentState, LinkedList<TimeCoursePair> preAssigned) {
+		state = currentState;
+		timeslots = state.timeSlots;
+		
+		for (int i=0; i < timeslots.size(); i++){	
+
+			for (int j=0; j < preAssigned.size(); j++){
+
+				TimeCoursePair pa = preAssigned.get(j);
+				courseItem c = pa.getCourseItem();
+				Slot s = pa.getTime();
+
+				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
+					courseItem item = timeslots.get(i).assignedItems.get(k);
+
+					if(item.isSameCourseItems(c)){
+						if (!timeslots.get(i).localSlot.startTime.equals(s.startTime))
 							return false;
 					}
 				}
@@ -291,11 +341,11 @@ public class Constr {
 //This section holds all the complete check possiblities for Constr; includes Constr.assign, Constr.partial and Constr.final
 
 	// Run Constr on a final solution
-	public static Boolean finalCheck(State currentState, LinkedList<CoursePair> inc ){
+	public static Boolean finalCheck(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
 
 	
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc)){
+		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)){
 			if (!(state.CoursesLabsToAssign.isEmpty())){	
 				return false;
 			}
@@ -309,10 +359,10 @@ public class Constr {
 	
 
 	// Run Constr on a partial solution
-	public static Boolean partial(State currentState, LinkedList<CoursePair> inc){
+	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
 
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc)) 
+		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
 			return true;
 		else
 			return false;

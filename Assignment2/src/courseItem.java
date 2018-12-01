@@ -52,11 +52,11 @@ public class courseItem {
 		if((tutVLab == "")&&(OtherCourseItem.getTutVLab() == ""))
 			return true;
 		else if(!tutVLab.equalsIgnoreCase(OtherCourseItem.getTutVLab()))
-			return true;
+			return false;
 		if((tutSection == "")&&(OtherCourseItem.getTutSection() == ""))
 			return true;
 		else if(!tutSection.equalsIgnoreCase(OtherCourseItem.getTutSection()))
-			return true;
+			return false;
 		return true;
 	}
 	
