@@ -84,7 +84,7 @@ public class Timeslot {
 	}
 	
 	public boolean equals(Timeslot otherSlot){
-		if(localSlot.isSameSlot(otherSlot.localSlot)&&(forCourses == otherSlot.forCourses)){
+		if(localSlot.isSameSlot(otherSlot.localSlot)&&((forCourses & otherSlot.forCourses) || (!forCourses & !otherSlot.forCourses))){
 			return true;
 		}
 		return false;
