@@ -41,6 +41,7 @@ public class Evaluator
 		setCoursePairs(inCoursePairs); setTimeCoursePairs(inTimeCoursePairs); setPenCourseMin(inPenCourseMin); setPenLabsMin(inPenLabsMin); setPenNotPaired(inPenNotPaired);
 		setPenSection(inPenSection); setWeightMinFilled(1); setWeightPref(1); setWeightPair(1); setWeightSecDiff(1);
 	}
+
 	//Eval data is a static class where all eval data can be obtained and placed in where needed.
 	//Added this constructor so that the number of parameters were not so crazy
 	public Evaluator(FileData inFileData){
@@ -55,7 +56,7 @@ public class Evaluator
 		pen_notpaired = EvalData.getPen_notpaired();
 		pen_section = EvalData.getPen_section();
 	}
-	
+
 	// ----- Evaluators ----- //
 	
 	/* Description: Evaluates a given list of Timeslots with an integer based on satisfacton of the soft constraints
@@ -64,12 +65,12 @@ public class Evaluator
 	*/ 
 	public int evaluateTimeslots(LinkedList<Timeslot> inTimeSlots)
 	{
-		enable_debug_mode = true;
+		enable_debug_mode = false;
 		if(enable_debug_mode) {
 			for (Timeslot ts : inTimeSlots){
-				System.out.println(ts.getLocalSlot().getDay() + " " + ts.getLocalSlot().getStartTime() + " Contains: ");
+				//System.out.println(ts.getLocalSlot().getDay() + " " + ts.getLocalSlot().getStartTime() + " Contains: ");
 				for (courseItem c : ts.getAssignedItems()) {
-					System.out.println(c.getNumber() + " " + c.getSection() + c.getTutVLab());
+					//System.out.println(c.getNumber() + " " + c.getSection() + c.getTutVLab());
 				}
 			}
 		}
@@ -95,12 +96,12 @@ public class Evaluator
 			}
 			if(enable_debug_mode) System.out.println(("Timeslot contains " + course_count + " courses and, " + lab_count + " labs"));
 			if ((!aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > lab_count)) {result = (result + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count));
-				if(enable_debug_mode) System.out.println(("Minimum amount of courses for this Timeslot: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + lab_count + " labs, and penalty multiplier is: " + getPenLabsMin()));
-				if(enable_debug_mode) System.out.println(("Adding: " + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count)));
+				//if(enable_debug_mode) System.out.println(("Minimum amount of courses for this Timeslot: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + lab_count + " labs, and penalty multiplier is: " + getPenLabsMin()));
+				//if(enable_debug_mode) System.out.println(("Adding: " + (getPenLabsMin()) * (aTimeSlot.getLocalSlot().getMin() - lab_count)));
 			}
 			else if ((aTimeSlot.forCourses) && (aTimeSlot.getLocalSlot().getMin() > course_count)) { result = (result + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count));
-				if(enable_debug_mode) System.out.println(("Minmum amount of courses for this Timeslot is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + course_count + " courses, and penalty multiplier is: " + getPenCourseMin()));
-				if(enable_debug_mode) System.out.println(("Adding: " + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count)));
+				//if(enable_debug_mode) System.out.println(("Minmum amount of courses for this Timeslot is: " + aTimeSlot.getLocalSlot().getMin() + " and there are " + course_count + " courses, and penalty multiplier is: " + getPenCourseMin()));
+				//if(enable_debug_mode) System.out.println(("Adding: " + (getPenCourseMin()) * (aTimeSlot.getLocalSlot().getMin() - course_count)));
 			}
 		}
 		return result;
@@ -113,15 +114,19 @@ public class Evaluator
 	public int EvalPref(LinkedList<Timeslot> inTimeSlots)
 	{
 		int result = 0;
+		
 		for (TimeCoursePair tcp : getTimeCoursePairs())
 		{
 			boolean not_found = true;
 			//("Course is: " + tcp.getCourseItem().getNumber() + tcp.getCourseItem().getSection() + tcp.getCourseItem().getTutVLab() + " Timeslot is: " + tcp.getTime().getDay() + tcp.getTime().getStartTime());
+			//int counter = 0;
 			for (Timeslot ts : inTimeSlots){
-				boolean forCourse = false; 
-				if (tcp.getCourseItem().isALec) forCourse = true;
-				if (ts.getLocalSlot().isSameSlot(tcp.getTime()) /*&& (ts.forCourses == forCourse)*/)
+				if (ts.getLocalSlot().isSameSlot(tcp.getTime()) && ((ts.forCourses && tcp.getCourseItem().isALec)||(!ts.forCourses && !tcp.getCourseItem().isALec)))
 				{
+					//System.out.print(counter);
+					if (tcp.getCourseItem().isALec) {
+						//System.out.print("this is a lecture");
+					}
 					not_found = false;
 					//("got here" + ts.getLocalSlot().getDay() + ts.getLocalSlot().getStartTime());
 					if (!existsInTimeslot(tcp.getCourseItem(), ts))
@@ -131,11 +136,13 @@ public class Evaluator
 					}
 					continue;
 				}	
+				//counter++;
 			}
 			if (not_found) {
 				if(enable_debug_mode) System.out.println(("Not found: " + tcp.getCourseItem().getNumber() + tcp.getCourseItem().getSection() + tcp.getCourseItem().getLecVsTut() + " doesnt exist: in: " + tcp.getTime().getDay() + " " + tcp.getTime().getStartTime() + " adding penalty : " + tcp.prefVal));
 				result = result + tcp.prefVal;
 			}
+			
 		}
 		return result;
 	}
