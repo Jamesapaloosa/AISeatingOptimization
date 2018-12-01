@@ -3,7 +3,6 @@ import java.util.LinkedList;
 import java.util.Dictionary;
 public class Ext {
 	private int max;
-	private int randNum;
 	private int randNum2;
 	Random random = new Random();
 	State newState;
@@ -26,6 +25,8 @@ public class Ext {
 		end = start + 120*100000;
 		schedule = factsSet;
 		OrTree newOr;
+		int randNum;
+		int genWithoutChange = 0;
 		lowestEvalState = schedule.get(0);
 		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
 		for (int i = 1; i < schedule.size(); i++) {
@@ -51,6 +52,10 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
+				else if(randNum < 90){
+					randNum = random.nextInt(schedule.size());
+					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
 					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
@@ -60,9 +65,15 @@ public class Ext {
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
-					if (newState.eval_Value < lowestEvalState.eval_Value)
+					if (newState.eval_Value < lowestEvalState.eval_Value){
 						lowestEvalState = newState;
+						genWithoutChange = 0;
+					}
+					else
+						genWithoutChange++;
 				}
+				else
+					genWithoutChange++;
 			}
 			genCount++;
 			if(genCount == DataParser.generationsWithoutChangeForResult)
@@ -71,12 +82,56 @@ public class Ext {
 		}
 		return new State(lowestEvalState);
 	}
+	
+	//Put some new preferred class in spots that they desire
+	private State placePreferredClass(State state, int numberOfMutations){
+		State output = new State(state);
+		int randNum;
+		TimeCoursePair TCP;
+		Timeslot destinationSlot;
+		//loop that assigns x number of courses to their preference
+		for(int i = 0; i < numberOfMutations; i++){
+			randNum = random.nextInt(fd.preferences.size());
+			TCP = fd.preferences.get(randNum);
+			
+			//Remove item from its current location
+			for(int j = 0; j < output.timeSlots.size(); j++){
+				destinationSlot = output.timeSlots.get(j);
+				for (int k = 0; k < destinationSlot.assignedItems.size(); k++){
+					if(destinationSlot.assignedItems.get(k).isSameCourseItems(TCP.item)){
+						destinationSlot.addItemToTimeslot(TCP.item);
+						break;
+					}
+				}
+			}
+			
+			//Loop that adds the course to its desired location
+			for(int j = 0; j < output.timeSlots.size(); j++){
+				if(output.timeSlots.get(j).localSlot.isSameSlot(TCP.time)){
+					output.timeSlots.get(j).addItemToTimeslot(TCP.item);
+					break;
+				}
+			}
+		}
+		return output;
+	}
+	
+	private State replaceUndesired(State state, int numberOfMutations){
+		State output = new State(state);
+		return output;
+	}
+	
+	private State pairTwoItems(State state, int numberOfMutations){
+		State output = new State(state);
+		return output;
+	}
 
 	
 	
 	private State breed (State state1, State state2, int numberOfMutations) {
 		State FromState;
 		State ToState;
+		int randNum;
 		if(numberOfMutations < 1){
 			numberOfMutations = 1;
 		}
@@ -156,6 +211,7 @@ public class Ext {
 		if(numberOfMutations < 1){
 			numberOfMutations = 1;
 		}
+		int randNum;
 		//Loop to go through the number of mutations required
 		for(int j = 0; j < numberOfMutations; j++){
 			for(int i = 0; i < newState.timeSlots.size(); i++){
