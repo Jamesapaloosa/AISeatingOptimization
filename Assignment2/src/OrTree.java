@@ -36,7 +36,7 @@ public class OrTree {
 		while(courseAltern.size() > 0){
 			ranNum = new Random().nextInt(courseAltern.size());
 			addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
-			System.out.println("CourseName" + addingItem.department + " " + addingItem.number + " " + addingItem.lec + " " + addingItem.section + " " + addingItem.tutSection + addingItem.tutVLab);
+			//System.out.println("CourseName" + addingItem.department + " " + addingItem.number + " " + addingItem.lec + " " + addingItem.section + " " + addingItem.tutSection + addingItem.tutVLab);
 			//Altern creates different choices of time slots
 			for(int k = 0; k < currentState.timeSlots.size(); k++){
 				altern.add(new Integer(k));

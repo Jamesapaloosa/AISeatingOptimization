@@ -43,8 +43,8 @@ public class Driver {
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign()))
 				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned)){
-					System.out.println("Made a valid or tree");
 					InitialStates.add(thisOrTree.currentState);
+					System.out.println("New solution created by or tree");
 				}
 		}		
 		endTime = System.currentTimeMillis();
@@ -54,7 +54,7 @@ public class Driver {
 		
 		//Genetic algorithm here
 		startTime = System.currentTimeMillis();
-		Ext rules = new Ext(new Evaluator(inputFileData));
+		Ext rules = new Ext(new Evaluator(inputFileData), currentState);
 		currentState = rules.getOptomized(InitialStates, inputFileData);
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;

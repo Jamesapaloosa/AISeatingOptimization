@@ -13,16 +13,19 @@ public class Ext {
 	long end = start + 120*1000;
 	LinkedList <State> schedule;
 	FileData fd;
+	State blankState;
 	
-	public Ext(Evaluator eval){
+	public Ext(Evaluator eval, State blankState){
 		this.eval = eval;
+		this.blankState = blankState;
 	}
 
 	public State getOptomized(LinkedList<State> factsSet, FileData FD){
 		start = System.currentTimeMillis();
 		fd = FD;
-		end = start + 120*1000;
+		end = start + 120*100000;
 		schedule = factsSet;
+		OrTree newOr;
 		lowestEvalState = schedule.get(0);
 		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
 		for (int i = 1; i < schedule.size(); i++) {
@@ -37,25 +40,29 @@ public class Ext {
 				return lowestEvalState;
 			}
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
-			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
+ 			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 50) {
+				if (randNum < 25) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else {
+				}else if(randNum < 50){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
+				else{
+					newOr = new OrTree(new State(blankState), FD);
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
+						newState = newOr.currentState;
+				}
+					
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
 					if (newState.eval_Value < lowestEvalState.eval_Value)
 						lowestEvalState = newState;
 				}
-				else
-					i--;
 			}
 			genCount++;
 			if(genCount == DataParser.generationsWithoutChangeForResult)
@@ -70,6 +77,9 @@ public class Ext {
 	private State breed (State state1, State state2, int numberOfMutations) {
 		State FromState;
 		State ToState;
+		if(numberOfMutations < 1){
+			numberOfMutations = 1;
+		}
 		if (state1.eval_Value < state2.eval_Value) {
 			FromState = state1;
 			ToState = new State(state2);
@@ -143,6 +153,9 @@ public class Ext {
 		Timeslot source;
 		Timeslot destination;
 		boolean cont;
+		if(numberOfMutations < 1){
+			numberOfMutations = 1;
+		}
 		//Loop to go through the number of mutations required
 		for(int j = 0; j < numberOfMutations; j++){
 			for(int i = 0; i < newState.timeSlots.size(); i++){
