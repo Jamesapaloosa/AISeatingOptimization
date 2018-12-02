@@ -282,7 +282,7 @@ public class Constr {
 		return true;
 	}
 
-	// Check that labs on Friday's don't overlap with any of their course sections 
+	// Check that labs on Fridays don't overlap with any of their course sections 
 	private static Boolean checkFridays(State currentState){
 		state = currentState;
 		timeslots = state.timeSlots; 
@@ -312,7 +312,7 @@ public class Constr {
 			int labStart = Integer.parseInt(startTime);
 			
 			for (int j = 0; j < fridayCourses.size(); j++) {
-				splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
+				splitStartTime = fridayCourses.get(i).localSlot.startTime.split(":");
 				startTime = splitStartTime[0];
 				int courseStart = Integer.parseInt(startTime);
 				
@@ -337,6 +337,7 @@ public class Constr {
 		}
 		return true;
 	}
+
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
