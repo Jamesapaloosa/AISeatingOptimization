@@ -77,14 +77,11 @@ public class Ext {
 						lowestEvalState = newState;
 						genWithoutChange = 0;
 					}
-					else
-						genWithoutChange++;
 				}
-				else
-					genWithoutChange++;
 			}
+ 			genWithoutChange++;
 			genCount++;
-			if(genCount == DataParser.generationsWithoutChangeForResult)
+			if(genWithoutChange == DataParser.generationsWithoutChangeForResult)
 				return new State(lowestEvalState);
 			schedule = purge(schedule);
 		}

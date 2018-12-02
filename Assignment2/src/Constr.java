@@ -37,16 +37,19 @@ public class Constr {
 	
 	private static Boolean confirmAllClassesAssigned(State currentState){
 		Timeslot timeslot;
+		int LoopSize;
 		LinkedList<courseItem> valuesToFind = (LinkedList<courseItem>)items.clone();
 		boolean found;
 		for(int j = 0; j < currentState.timeSlots.size(); j++){
 			timeslot = currentState.timeSlots.get(j);
-			for(int k = 0; k < timeslot.assignedItems.size(); k++){
+			LoopSize = timeslot.assignedItems.size();
+			for(int k = 0; k < LoopSize; k++){
 				found = false;
 				for(int i = 0; i < valuesToFind.size(); i++){
 					if(valuesToFind.get(i).isSameCourseItems(timeslot.assignedItems.get(k))){
 						found = true;
 						valuesToFind.remove(i);
+						LoopSize = timeslot.assignedItems.size();
 						break;
 					}
 				}
