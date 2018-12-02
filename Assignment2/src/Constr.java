@@ -282,6 +282,61 @@ public class Constr {
 		return true;
 	}
 
+	// Check that labs on Friday's don't overlap with any of their course sections 
+	private static Boolean checkFridays(State currentState){
+		state = currentState;
+		timeslots = state.timeSlots; 
+		LinkedList<Timeslot> fridayCourses = new LinkedList<Timeslot>();
+		LinkedList<Timeslot> fridayLabs = new LinkedList<Timeslot>();
+		
+		// A linked list holding courses that start in the middle of a lab slot, in the format: Course Slot -> Lab Slot etc. 
+		LinkedList<Timeslot> problemSlots = new LinkedList<Timeslot>();
+		
+		Timeslot currentCourseSlot;
+		Timeslot currentLabSlot;
+		
+		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
+		for (int i = 0; i < timeslots.size(); i++) {
+			if((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == false)) {
+				fridayLabs.add(timeslots.get(i));
+			}
+			else if ((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == true))
+				fridayCourses.add(timeslots.get(i));
+		}
+		
+		
+		// For every Friday Lab Timeslot, ensure none of its assigned items overlap with a corresponding course
+		for (int i=0; i < fridayLabs.size(); i++){		
+			String[] splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
+			String startTime = splitStartTime[0];
+			int labStart = Integer.parseInt(startTime);
+			
+			for (int j = 0; j < fridayCourses.size(); j++) {
+				splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
+				startTime = splitStartTime[0];
+				int courseStart = Integer.parseInt(startTime);
+				
+				if(courseStart == (labStart + 1)) {
+					problemSlots.add(fridayCourses.get(j));
+					problemSlots.add(fridayLabs.get(i));
+				}
+			}
+		}
+		// Loop to check if any of the problem slots house an overlap of a lab with its corresponding course
+		for (int i=0; i< problemSlots.size(); i+=2 ) {
+			currentCourseSlot = problemSlots.get(i);
+			currentLabSlot = problemSlots.get(i+1);
+			
+			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
+				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
+					if((currentCourseSlot.assignedItems.get(i).department.equals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.equals(currentLabSlot.assignedItems.get(j).number))) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
@@ -369,7 +424,7 @@ public class Constr {
 		if(!confirmAllClassesAssigned(state))
 			return false;
 		//(maxAndOverlapCheck(state)) was removed
-		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned))
+		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState))
 			return true;
 		return false;
 	}
@@ -379,7 +434,7 @@ public class Constr {
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
 		//(maxAndOverlapCheck(state)) was removed
-		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
+		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState)) 
 			return true;
 		return false;
 	}
