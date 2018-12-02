@@ -42,16 +42,16 @@ public class Ext {
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 15) {
+				if (randNum < 10) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else if(randNum < 30){
+				}else if(randNum < 20){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 40){
+				else if(randNum < 30){
 					randNum = random.nextInt(schedule.size());
 					putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
@@ -62,6 +62,10 @@ public class Ext {
 				else if(randNum < 60){
 					randNum = random.nextInt(schedule.size());
 					replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+				}
+				else if(randNum < 70){
+					randNum = random.nextInt(schedule.size());
+					assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 98){
 					randNum = random.nextInt(schedule.size());
@@ -129,15 +133,60 @@ public class Ext {
 	//Try and assign some courses to the same section
 	private State assignSectionPairsToSameSlot(State state, int numberOfMutations){
 		State output = new State(state);
-		
-		
-		
-		
-		
+		courseItem item1 = null;
+		courseItem item2 = null;
+		Timeslot temp1;
+		Timeslot temp2;
+		for(int i = 0; i < numberOfMutations; i++){
+			temp1 = state.timeSlots.get(random.nextInt(state.timeSlots.size()));
+			if(temp1.assignedItems.size() <= temp1.localSlot.Max - 2){
+				item1 = temp1.getAssignedItems().get(temp1.assignedItems.size());
+				for(int j = 0; j < state.timeSlots.size(); j++){
+					temp2 = state.getTimeSlots().get(j);
+					for(int k = 0; k < temp2.assignedItems.size(); k++){
+						item2 = temp2.assignedItems.get(k);
+						if(isSameCourseDifferentSection(item1, item2)){
+							j = state.timeSlots.size();
+							temp2.assignedItems.remove(k);
+							break;
+						}
+					}
+				}
+			}
+			temp1.addItemToTimeslot(item1);
+			temp1.addItemToTimeslot(item2);
+		}
 		return output;
 	}
 	
-	
+	private Boolean isSameCourseDifferentSection(courseItem inItem1, courseItem inItem2)
+	{
+		if(!inItem1.getDepartment().equals(inItem2.getDepartment())) {
+			//("got here 1" + inItem1.getDepartment() + inItem2.getDepartment());
+			return false;
+		}
+		if(!inItem1.getNumber().equals(inItem2.getNumber())) {
+			//("got here 1" + inItem1.getNumber() + inItem2.getNumber());
+			return false;
+		}
+		if(!inItem1.getLecVsTut().equals(inItem2.getLecVsTut())) {
+			//("got here 1" + inItem1.getLecVsTut() + inItem2.getLecVsTut());
+			return false;
+		}
+		if(inItem1.getSection().equals(inItem2.getSection())) {
+			//("got here 1" + inItem1.getSection() + inItem2.getSection());
+			return false;
+		}
+		if(!inItem1.getTutVLab().equals(inItem2.getTutVLab())) {
+			//("got here 1" + inItem1.getTutVLab() + inItem2.getTutVLab());
+			return false;
+		}
+		if(!inItem1.getTutSection().equals(inItem2.getTutSection())) {
+			//("got here 1" + inItem1.getTutSection() + inItem2.getTutSection());
+			return false;
+		}
+		return true;
+	}
 	
 	//Put some new preferred class in spots that they desire
 	private State placePreferredClass(State state, int numberOfMutations){
