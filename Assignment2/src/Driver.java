@@ -44,9 +44,10 @@ public class Driver {
 			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign()))
 				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned)){
 					InitialStates.add(thisOrTree.currentState);
-					System.out.println("New solution created by or tree");
+					System.out.print(".");
 				}
 		}		
+		System.out.println(".");
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);

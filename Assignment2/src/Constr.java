@@ -35,6 +35,29 @@ public class Constr {
 		return true;
 	}
 	
+	private static Boolean confirmAllClassesAssigned(State currentState){
+		Timeslot timeslot;
+		LinkedList<courseItem> valuesToFind = (LinkedList<courseItem>)items.clone();
+		boolean found;
+		for(int j = 0; j < currentState.timeSlots.size(); j++){
+			timeslot = currentState.timeSlots.get(j);
+			for(int k = 0; k < timeslot.assignedItems.size(); k++){
+				found = false;
+				for(int i = 0; i < valuesToFind.size(); i++){
+					if(valuesToFind.get(i).isSameCourseItems(timeslot.assignedItems.get(k))){
+						found = true;
+						valuesToFind.remove(i);
+						break;
+					}
+				}
+				if(!found)
+					return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	private static Boolean noDuplicates(State currentState) {
         state = currentState;
         timeslots = state.timeSlots;
@@ -357,7 +380,8 @@ public class Constr {
 	// Run Constr on a partial solution
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
-
+		//if(!confirmAllClassesAssigned(state))
+		//	return false;
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
 			return true;
 		else

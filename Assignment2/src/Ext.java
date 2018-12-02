@@ -43,14 +43,22 @@ public class Ext {
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 25) {
+				if (randNum < 20) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else if(randNum < 50){
+				}else if(randNum < 40){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+				}
+				else if(randNum < 50){
+					randNum = random.nextInt(schedule.size());
+					newState = pairTwoItems(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+				}
+				else if(randNum < 70){
+					randNum = random.nextInt(schedule.size());
+					replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 90){
 					randNum = random.nextInt(schedule.size());
@@ -85,6 +93,8 @@ public class Ext {
 	
 	//Put some new preferred class in spots that they desire
 	private State placePreferredClass(State state, int numberOfMutations){
+		if(numberOfMutations < 1)
+			numberOfMutations = 1;
 		State output = new State(state);
 		int randNum;
 		TimeCoursePair TCP;
@@ -116,13 +126,81 @@ public class Ext {
 		return output;
 	}
 	
+	//
 	private State replaceUndesired(State state, int numberOfMutations){
+		if(numberOfMutations > fd.unwanted.size())
+			numberOfMutations = fd.unwanted.size()/2;
+		if(numberOfMutations < 1)
+			numberOfMutations = 1;
 		State output = new State(state);
+		LinkedList<Integer> altern = new LinkedList<Integer>();
+		Slot source;
+		Timeslot destination;
+		for(int i = 0; i < fd.unwanted.size(); i++){
+			altern.add(i);
+		}
+		int ranNum;
+		boolean found = false;
+		for(int i = 0; i < numberOfMutations; i++){
+			ranNum = random.nextInt(fd.unwanted.size());
+			source = fd.unwanted.get(ranNum).time;
+			for(int j = 0; j < output.timeSlots.size(); j++){
+				if(source.isSameSlot(output.timeSlots.get(j).localSlot)){
+					for(int k = 0; k < output.timeSlots.get(j).assignedItems.size(); k++){
+						if(fd.unwanted.get(ranNum).item.isSameCourseItems(output.timeSlots.get(j).assignedItems.get(k))){
+							output.timeSlots.get(j).assignedItems.remove(k);
+							found = true;
+						}
+					}
+				}
+			}
+			while(found){
+				destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				if(destination.addItemToTimeslot(fd.unwanted.get(ranNum).item))
+					break;
+			}
+		}
+
 		return output;
 	}
 	
 	private State pairTwoItems(State state, int numberOfMutations){
 		State output = new State(state);
+		CoursePair CP;
+		Timeslot destination1;
+		Timeslot source;
+		int checks;
+		boolean validDest = false;
+		if(numberOfMutations > fd.pair.size())
+			numberOfMutations = fd.pair.size()/2;
+		for(int i = 0; i < numberOfMutations; i++){
+			CP = fd.pair.get(random.nextInt(fd.pair.size()));
+			if(((CP.itemOne.isALec == true)&&(CP.itemTwo.isALec == true))||(CP.itemOne.isALec == false && CP.itemTwo.isALec == true)){
+				for(int j = 0; j < output.timeSlots.size(); j++){
+					source = output.timeSlots.get(j);
+					for(int k = 0; k < source.assignedItems.size(); k++){
+						if(CP.itemOne.isSameCourseItems(source.assignedItems.get(k))||(CP.itemTwo.isSameCourseItems(source.assignedItems.get(k)))){
+							source.assignedItems.remove(k);
+						}
+					}
+				}
+				//In the case that the pairs are of the same type
+				
+					checks = 0;
+					destination1 = output.timeSlots.get(0);
+					while(!validDest && (checks < 20)){
+						destination1 = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+						if((destination1.assignedItems.size() < destination1.localSlot.Max - 2))
+							break;
+						checks++;
+					}
+					if(validDest){
+						if(!destination1.addItemToTimeslot(CP.itemOne)||!destination1.addItemToTimeslot(CP.itemOne))
+							throw new IllegalArgumentException("error adding both one course in pair two items extension rule");
+					}
+			}
+			
+		}
 		return output;
 	}
 
