@@ -1,54 +1,146 @@
 import java.util.Scanner;
-
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 public class EvalData {
-	private static int Wpref;
-	private static int Wpair;
-	private static int Wminfilled;
-	private static int Wsecdiff;
-	private static int pen_coursemin;
-	private static int pen_labsmin;
-	private static int pen_notpaired;
-	private static int pen_section;
+	private static int Wpref = -6969;
+	private static int Wpair = -6969;
+	private static int Wminfilled = -6969;
+	private static int Wsecdiff = -6969;
+	private static int pen_coursemin = -6969;
+	private static int pen_labsmin = -6969;
+	private static int pen_notpaired = -6969;
+	private static int pen_section = -6969;
 	
 	
 	
 	public static void promptUserForValues(){
 		Scanner scanner = new Scanner(System.in);
+		String input;
 		System.out.println("Please enter your values for eval below: ");
 		boolean cont = true;
-		int temp;
-		System.out.print("Please Enter Wminfilled value: " );
-		temp = scanner.nextInt();
+		int temp = -6969;
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+		while(cont){
+			System.out.print("Please Enter Wminfilled value: " );
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		Wminfilled = temp;
 		
-		System.out.print("Please Enter Wpref value: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please Enter Wpref value: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		Wpref = temp;
 		
-		System.out.print("Please Enter Wpair value: " );
-		temp = scanner.nextInt();
+		
+		cont = true;
+		while(cont){
+			System.out.print("Please Enter Wpair value: " );
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		Wpair = temp;
 		
-		System.out.print("Please Enter Wsecdiff value: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please Enter Wsecdiff value: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		Wsecdiff = temp;
 		
-		System.out.print("Please Enter the coursemin penalty: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please Enter the coursemin penalty: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		pen_coursemin = temp;
 		
-		System.out.print("Please Enter the labs min penalty: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please Enter the labs min penalty: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		pen_labsmin = temp;
 		
-		System.out.print("Please enter the not paired penalty: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please enter the not paired penalty: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		pen_notpaired = temp;
 		
-		System.out.print("Please enter the section penalty: ");
-		temp = scanner.nextInt();
+		cont = true;
+		while(cont){
+			System.out.print("Please enter the section penalty: ");
+			try{
+		        input = bufferedReader.readLine();
+		        temp = Integer.parseInt(input);
+				cont = false;
+			}catch(NumberFormatException ex){
+				System.out.println("Warning! Invalid input for weight.  Must be a number.");
+			}catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		}
 		pen_section = temp;
-		
 		scanner.close();
 	}
 	

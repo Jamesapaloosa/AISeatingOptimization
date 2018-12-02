@@ -32,10 +32,10 @@ public class DataParser {
 	public static String emptyData = "<EMPTY>";
 	public static String[] FileDataHeaders = {"Name", "Course slots:", "Lab slots:","Courses:","Labs:", "Not compatible:","Unwanted:","Preferences:", "Pair:","Partial assignments:"};
 	
-	public static int generationSize = 20;
-	public static int generationMultiplier = 20;
+	public static int generationSize = 10;
+	public static int generationMultiplier = 5;
 	public static int generationsWithoutChangeForResult = 40;
-	public static int generationMutationModifier = 1000;
+	public static int generationMutationModifier = 100;
 	
 	
 	public DataParser(String infile) {

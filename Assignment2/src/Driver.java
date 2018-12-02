@@ -13,6 +13,7 @@ public class Driver {
 		//command line inputs required here
 		EvalData.promptUserForValues();
 		
+		
 		//Code to call and parse file
 		startTime = System.currentTimeMillis();
 		DataParser inputFileParser = new DataParser(args[0]);
@@ -30,6 +31,10 @@ public class Driver {
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
 		startTime = System.currentTimeMillis();
 		currentState = StateMaker.convertFromFileData(inputFileData);
+		
+		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
+		Constr.items.addAll(inputFileData.getLabs());
+
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("making the initial state speed: " + duration);
@@ -41,10 +46,13 @@ public class Driver {
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-			if(thisOrTree.fillStateRecursive())
-				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned))
+			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign()))
+				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned)){
 					InitialStates.add(thisOrTree.currentState);
+					System.out.print(".");
+				}
 		}		
+		System.out.println(".");
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("or tree speed: " + duration);
@@ -52,7 +60,7 @@ public class Driver {
 		
 		//Genetic algorithm here
 		startTime = System.currentTimeMillis();
-		Ext rules = new Ext(new Evaluator(inputFileData));
+		Ext rules = new Ext(new Evaluator(inputFileData), currentState);
 		currentState = rules.getOptomized(InitialStates, inputFileData);
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
