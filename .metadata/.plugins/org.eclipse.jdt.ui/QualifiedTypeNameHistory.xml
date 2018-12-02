@@ -2,4 +2,6 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="EvalData"/>
 <fullyQualifiedTypeName name="DataParser"/>
+<fullyQualifiedTypeName name="Timeslot"/>
+<fullyQualifiedTypeName name="Constr"/>
 </qualifiedTypeNameHistroy>

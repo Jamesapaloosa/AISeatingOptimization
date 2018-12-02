@@ -56,11 +56,11 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = pairTwoItems(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 70){
+				else if(randNum < 60){
 					randNum = random.nextInt(schedule.size());
 					replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 90){
+				else if(randNum < 95){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
@@ -123,7 +123,7 @@ public class Ext {
 		return output;
 	}
 	
-	//
+	//Move a course if it is in a spot it shouldnt be
 	private State replaceUndesired(State state, int numberOfMutations){
 		if(numberOfMutations > fd.unwanted.size())
 			numberOfMutations = fd.unwanted.size()/2;
@@ -161,6 +161,8 @@ public class Ext {
 		return output;
 	}
 	
+	
+	//Method to get two items that are to be paired and put them together
 	private State pairTwoItems(State state, int numberOfMutations){
 		State output = new State(state);
 		CoursePair CP;
@@ -170,6 +172,9 @@ public class Ext {
 		boolean validDest = false;
 		if(numberOfMutations > fd.pair.size())
 			numberOfMutations = fd.pair.size()/2;
+		if(numberOfMutations < 1){
+			
+		}
 		for(int i = 0; i < numberOfMutations; i++){
 			CP = fd.pair.get(random.nextInt(fd.pair.size()));
 			if(((CP.itemOne.isALec == true)&&(CP.itemTwo.isALec == true))||(CP.itemOne.isALec == false && CP.itemTwo.isALec == true)){

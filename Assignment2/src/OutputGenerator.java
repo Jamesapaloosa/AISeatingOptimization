@@ -1,4 +1,7 @@
 import java.util.Collections;
+import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 public class OutputGenerator {
 	State resultState;
@@ -10,9 +13,19 @@ public class OutputGenerator {
 		resultState = inState;
 	}
 	
-	//Send the results to a file: NOT FINISHED
-	public void OutputResultToFile(String path){
+	//Send the results to a file: 
+	public void OutputResultToFile(){
 		sortResults();
+		try{
+			PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+			writer.println("Eval Value: " + resultState.eval_Value);
+			for(int i = 0; i < outputData.size(); i++){
+				writer.println(outputData.get(i));
+			}
+			writer.close();
+		}catch(Exception e){
+			System.out.println("Error trying to write to file: " + e.getMessage());
+		}
 	}
 	
 	//Send the results to the command line
