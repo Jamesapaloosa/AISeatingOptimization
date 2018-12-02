@@ -4,4 +4,5 @@
 <fullyQualifiedTypeName name="DataParser"/>
 <fullyQualifiedTypeName name="Timeslot"/>
 <fullyQualifiedTypeName name="Constr"/>
+<fullyQualifiedTypeName name="java.io.DataOutput"/>
 </qualifiedTypeNameHistroy>

@@ -13,28 +13,27 @@ public class Constr {
   
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints of any given state
-
+    /*
 	// Ensure courseMax or labMax isn't violated in a current state
 	private static Boolean maxAndOverlapCheck(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
-
-
+		//state = currentState;
+		//timeslots = state.timeSlots; 
+		/*
 		// Check every time-slot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
-			if((currentSlot.assignedItems.size() <= currentSlot.localSlot.getMax())) {
-				for(int j = 0; j < currentSlot.assignedItems.size(); j++){
-					boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) && currentSlot.assignedItems.get(j).getTutVLab() == "");
-					boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getTutVLab()::equals));
-					if(!validCourse && !validTut)
-						return false;
-				}
+			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
+				boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) && currentSlot.assignedItems.get(j).getTutVLab() == "");
+				boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getTutVLab()::equals));
+				if(!validCourse && !validTut)
+					return false;
 			}
 		}
+		
 		return true;
 	}
-	
+	*/
+	//Makes sure all classes that are needed are contained in the stimeslots
 	private static Boolean confirmAllClassesAssigned(State currentState){
 		Timeslot timeslot;
 		int LoopSize;
@@ -61,6 +60,7 @@ public class Constr {
 		return true;
 	}
 	
+	//Goes through the code and makes sure that no class exists twice
 	private static Boolean noDuplicates(State currentState) {
         state = currentState;
         timeslots = state.timeSlots;
@@ -368,38 +368,28 @@ public class Constr {
 
 		if(!confirmAllClassesAssigned(state))
 			return false;
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)){
-			if (!(state.CoursesLabsToAssign.isEmpty())){	
-				return false;
-			}
+		//(maxAndOverlapCheck(state)) was removed
+		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned))
 			return true;
-		}
-		
-
-		else
-			return false;
+		return false;
 	}
 	
 
 	// Run Constr on a partial solution
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
-
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
+		//(maxAndOverlapCheck(state)) was removed
+		if ((tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	
 	// Run Constr on an assignment
 	public static Boolean assign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc){
-		
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc)){
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc))
 			return true;
-		}
-		else
-			return false;
+		return false;
 
 	}
 

@@ -36,26 +36,22 @@ public class OrTree {
 		while(courseAltern.size() > 0){
 			ranNum = new Random().nextInt(courseAltern.size());
 			addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
-			//System.out.println("CourseName" + addingItem.department + " " + addingItem.number + " " + addingItem.lec + " " + addingItem.section + " " + addingItem.tutSection + addingItem.tutVLab);
 			//Altern creates different choices of time slots
 			for(int k = 0; k < currentState.timeSlots.size(); k++){
 				altern.add(new Integer(k));
 			}
-			int j = altern.size();
-			if(j == 0)
+			if(altern.size() == 0)
 				return false;
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
-				if(addingItem.isALec == destinationTimeslot.forCourses){
-					found = destinationTimeslot.addItemToTimeslot(addingItem);
-					if(found){
-						nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
-						nxtCoursesToAssign.remove(ranNum);
-						if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&&fillStateRecursive(nxtCoursesToAssign))
-							return true;
-						else
-							removeCourseFromTimeslot(addingItem, destinationTimeslot);
-					}
+				found = destinationTimeslot.addItemToTimeslot(addingItem);
+				if(found){
+					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
+					nxtCoursesToAssign.remove(ranNum);
+					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&&fillStateRecursive(nxtCoursesToAssign))
+						return true;
+					else
+						removeCourseFromTimeslot(addingItem, destinationTimeslot);
 				}
 			}
 		}

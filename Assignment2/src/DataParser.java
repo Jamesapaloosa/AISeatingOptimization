@@ -7,6 +7,7 @@ import java.util.*;
 import java.io.*; 
 public class DataParser {
 	String sourcefile;
+	FileData dataOutput;
 	public static String[] validDays = {"MO", "TU", "FR"};
 	public static String[] validMondays = {"Mo", "mO", "mo", "MO"};
 	public static String[] validTuesdays = {"TU", "Tu", "tu", "tU"};
@@ -120,7 +121,8 @@ public class DataParser {
 	//a format for the program to read and do optimization on.
 	public FileData readfile() throws IOException {
 		File file = new File(sourcefile);
-		FileData dataOutput = new FileData();
+		dataOutput = new FileData();
+		courseItem tempCourseItem;
 		int rowNum = 0;
 		BufferedReader br;
 		try {
@@ -197,8 +199,12 @@ public class DataParser {
 						readNewLine = false;
 						break;
 					}
-					if(line.length() > 0)
-						dataOutput.getLabs().add(readCourseLine(line, rowNum));
+					if(line.length() > 0){
+						tempCourseItem = readCourseLine(line, rowNum);
+						dataOutput.getLabs().add(tempCourseItem);
+						//Add an incompatible pair for each lab and its lecture
+						dataOutput.incompatible.add(new CoursePair(tempCourseItem, new courseItem(tempCourseItem.department, tempCourseItem.number, validLecType[0], tempCourseItem.section, true)));
+					}
 				}
 				break;
 			case "Not compatible:":
@@ -298,7 +304,6 @@ public class DataParser {
 			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
 				isCourse = false;
 			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
-			
 		}
 		else if (dataSet.length == 6){
 			//Type verification if there are the two extra data points
@@ -308,9 +313,8 @@ public class DataParser {
 				throw new IllegalArgumentException("Invalid Section number: " + dataSet[5] + " on row: " + rowNum);
 			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5], false);
 		}
-		else{
+		else
 			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
-		}
 		return outCL;
 	}
 	//------------------------------------------------------------------------------------------------------------

@@ -10,7 +10,6 @@ public class Slot {
 		Max = inMax;
 		Min = inMin;
 		startTime = inStart;
-		
 		day = inDay;
 	}
 	

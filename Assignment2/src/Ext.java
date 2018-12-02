@@ -2,14 +2,11 @@ import java.util.*;
 import java.util.LinkedList;
 import java.util.Dictionary;
 public class Ext {
-	private int max;
-	private int randNum2;
 	Random random = new Random();
-	State newState;
-	State lowestEvalState = new State();
+	State lowestEvalState;
 	Evaluator eval;
-	long start = System.currentTimeMillis();
-	long end = start + 120*1000;
+	long start;;
+	long end;
 	LinkedList <State> schedule;
 	FileData fd;
 	State blankState;
@@ -20,12 +17,14 @@ public class Ext {
 	}
 
 	public State getOptomized(LinkedList<State> factsSet, FileData FD){
+		State newState = null;
 		start = System.currentTimeMillis();
 		fd = FD;
 		end = start + 120*100000;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;
+		int randNum2;
 		int genWithoutChange = 0;
 		lowestEvalState = schedule.get(0);
 		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
@@ -43,14 +42,18 @@ public class Ext {
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 20) {
+				if (randNum < 15) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else if(randNum < 40){
+				}else if(randNum < 30){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+				}
+				else if(randNum < 40){
+					randNum = random.nextInt(schedule.size());
+					putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 50){
 					randNum = random.nextInt(schedule.size());
@@ -60,7 +63,7 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 95){
+				else if(randNum < 98){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
@@ -87,6 +90,54 @@ public class Ext {
 		}
 		return new State(lowestEvalState);
 	}
+	
+	//Moves a course to a timeslot that is below the minimum
+	private State putCoursesIntoSlotsUnderMin(State state, int numberOfMutations){
+		State output = new State(state);
+		int numberOfMutationsDone = 0;
+		Timeslot from;
+		Timeslot to;
+		int itemIndex = 0;
+		Timeslot temp;
+		while(numberOfMutationsDone < numberOfMutations){
+			from = to = null;
+			for(int i = 0; i < output.timeSlots.size(); i++){
+				temp = output.timeSlots.get(i);
+				if(temp.localSlot.Min > temp.assignedItems.size()){
+					to = temp;
+				}else if (temp.localSlot.Min < temp.assignedItems.size()){
+					from = temp;
+				}
+				if((from != null)&&(to != null)){
+					if(from.forCourses == to.forCourses)
+						break;
+				}
+			}
+			
+			if((from != null)){
+				if(to != null){
+					itemIndex = random.nextInt(from.assignedItems.size());
+					if(to.addItemToTimeslot(from.assignedItems.get(itemIndex)))
+						from.assignedItems.remove(itemIndex);
+					}
+			}
+			numberOfMutationsDone++;
+		}
+		return output;
+	}
+	
+	//Try and assign some courses to the same section
+	private State assignSectionPairsToSameSlot(State state, int numberOfMutations){
+		State output = new State(state);
+		
+		
+		
+		
+		
+		return output;
+	}
+	
+	
 	
 	//Put some new preferred class in spots that they desire
 	private State placePreferredClass(State state, int numberOfMutations){
@@ -123,7 +174,7 @@ public class Ext {
 		return output;
 	}
 	
-	//Move a course if it is in a spot it shouldnt be
+	//Move a course if it is in a spot it shouldn't be
 	private State replaceUndesired(State state, int numberOfMutations){
 		if(numberOfMutations > fd.unwanted.size())
 			numberOfMutations = fd.unwanted.size()/2;
@@ -207,7 +258,7 @@ public class Ext {
 	}
 
 	
-	
+	//method to breed two objects
 	private State breed (State state1, State state2, int numberOfMutations) {
 		State FromState;
 		State ToState;
@@ -224,6 +275,7 @@ public class Ext {
 		}
 		LinkedList<Integer> altern;
 		Timeslot sourceTimeslot;
+		Timeslot destinationTimeslot = null;
 		//Do a number of mutations based on the input provided to the method
 		for(int k = 0; k <= numberOfMutations; k++){
 			//Choose a timeslot to grab a course from
@@ -243,34 +295,37 @@ public class Ext {
 				}
 				altern.remove(randNum);
 			}
-			
-			//If all of altern is exhausted and none of the slots have a course in them then return
-			if(cont == true)
-				return FromState;
-			
-			//Choose the course to modify to look more like the best
-			int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
-			courseItem courseToMove = sourceTimeslot.getAssignedItems().get(courseIndex);
-			List<courseItem> temp;
-			
-			//Remove the course that is to be added
-			for(int i = 0; i < ToState.timeSlots.size(); i++){
-				temp = ToState.timeSlots.get(i).getAssignedItems();
-				for(int j = 0; j < temp.size(); j++){
-					if(temp.get(j).isSameCourseItems(courseToMove)){
-						temp.remove(j);
-						i = ToState.timeSlots.size();
-						break;
-					}
-				}
-			}
-			
-			//Add the course to the proper location
 			for(int i = 0; i < ToState.timeSlots.size(); i++){
 				if(ToState.timeSlots.get(i).equals(sourceTimeslot)){
-					ToState.timeSlots.get(i).addItemToTimeslot(courseToMove);
+					destinationTimeslot = ToState.timeSlots.get(i);
 					break;
 				}
+			}
+			//Make sure we can add this course before we remove it from elsewhere
+			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
+				//If all of altern is exhausted and none of the slots have a course in them then return
+				if(cont == true)
+					return FromState;
+				
+				//Choose the course to modify to look more like the best
+				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
+				courseItem courseToMove = sourceTimeslot.getAssignedItems().get(courseIndex);
+				List<courseItem> temp;
+				
+				//Remove the course that is to be added
+				for(int i = 0; i < ToState.timeSlots.size(); i++){
+					temp = ToState.timeSlots.get(i).getAssignedItems();
+					for(int j = 0; j < temp.size(); j++){
+						if(temp.get(j).isSameCourseItems(courseToMove)){
+							temp.remove(j);
+							i = ToState.timeSlots.size();
+							break;
+						}
+					}
+				}
+				
+				//Add the course to the proper location
+				destinationTimeslot.addItemToTimeslot(courseToMove);
 			}
 		}
 		return ToState;
@@ -322,7 +377,7 @@ public class Ext {
 					randNum = random.nextInt(altern.size());
 					destination = newState.timeSlots.get(altern.get(randNum));
 					if((destination.assignedItems.size() > 0)&&(!destination.equals(source))){
-						destination.assignedItems.add(courseToMove);
+						destination.addItemToTimeslot(courseToMove);
 						break;
 					}
 					altern.remove(randNum);

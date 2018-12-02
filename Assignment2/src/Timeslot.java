@@ -47,7 +47,7 @@ public class Timeslot {
 	
 	//Method to add an item to this time slot that allows the user to know if the item was correctly added.
 	public Boolean addItemToTimeslot(courseItem newItem) {
-		if((assignedItems.size() <= localSlot.getMax())) {
+		if((assignedItems.size() < localSlot.getMax())) {
 			boolean validCourse = forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(newItem.getLecVsTut()::equals) && newItem.getTutVLab() == "");
 			boolean validTut = !forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(newItem.getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(newItem.getTutVLab()::equals));
 			if(validCourse || validTut){
