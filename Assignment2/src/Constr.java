@@ -363,7 +363,8 @@ public class Constr {
 	public static Boolean finalCheck(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
 
-	
+		if(!confirmAllClassesAssigned(state))
+			return false;
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)){
 			if (!(state.CoursesLabsToAssign.isEmpty())){	
 				return false;
@@ -380,8 +381,7 @@ public class Constr {
 	// Run Constr on a partial solution
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		State state = currentState;
-		//if(!confirmAllClassesAssigned(state))
-		//	return false;
+
 		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
 			return true;
 		else
