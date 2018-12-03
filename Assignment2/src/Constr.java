@@ -382,7 +382,12 @@ public class Constr {
 			startTime = splitTime[0];
 			labStart = Integer.parseInt(startTime);
 			
-			splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
+			try {
+				splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				continue;
+			}
+			
 			endTime = splitTime[0];
 			labEnd = Integer.parseInt(endTime);
 			
@@ -444,6 +449,137 @@ public class Constr {
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
 
+	// Ensure no course is assigned on tuesday from 11
+	private static Boolean tuesdayCourseCheckAssign(Timeslot timeslot, courseItem item){
+		// Check timeslot so that a course is not being assigned on a Tuesday at 11
+			if((timeslot.localSlot.day.equals("TU")) && (timeslot.localSlot.startTime.equals("11:00"))) {
+				if ((timeslot.forCourses == true)){
+					return false;
+				}
+			}
+			
+		return true;
+	}
+	
+	// Check that you won't have more than one 500 level course in a given timeslot
+	private static Boolean eveningLecAssign(Timeslot timeSlot, courseItem item){
+		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
+
+		if(item.isALec == true){
+			String lecNum = item.section;
+			if (lecNum.equals("09")){
+				if (Arrays.stream(eveningSlots).anyMatch(timeSlot.localSlot.startTime::equals))
+					return true;
+				else 
+					return false;
+			}	
+			
+		}
+		return true;
+	}
+
+
+	// Check every assignment in a timeslot to ensure there are no other 500 level courses currently assigned
+	private static Boolean assign500(Timeslot timeSlot){
+		for (int i=0; i < timeSlot.assignedItems.size(); i++)
+			if ((timeSlot.assignedItems.get(i).isALec == true) && (Integer.parseInt(timeSlot.assignedItems.get(i).number) > 500) && (Integer.parseInt(timeSlot.assignedItems.get(i).number) < 600))
+				return false;
+		return true;
+	}
+
+	// When assigning either CPSC 813 or 913, it must be assigned to TU at 18:00
+	private static Boolean assign13(Timeslot timeslot, courseItem item){
+		if ((item.number.equals("813") && (item.isALec == true))){
+			if ((!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00")))){	
+				return false;
+			}
+		}
+		
+		else if (item.number.equals("913") && (item.isALec == true)){
+			if (!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00"))){	
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	// Check incompatible classes aren't scheduled at the same times
+	private static Boolean checkIncompatibleAssign(Timeslot timeslot, courseItem item, LinkedList<CoursePair> incompClasses){
+		int incompItems = 0;
+		for (int i=0; i < timeslot.assignedItems.size(); i++){	
+	
+			for (int j=0; j < incompClasses.size(); j++){
+				incompItems = 0;
+				CoursePair cp = incompClasses.get(j);
+				courseItem c1 = cp.getItemOne();
+				courseItem c2 = cp.getItemTwo();
+				
+				if(item.isSameCourseItems(c1) || item.isSameCourseItems(c2)){
+					incompItems++;
+				}
+				
+				for (int k=0; k < timeslot.assignedItems.size(); k++){
+					courseItem currentItem = timeslot.assignedItems.get(k);
+	
+					if(currentItem.isSameCourseItems(c1)||currentItem.isSameCourseItems(c2)){
+						incompItems++;
+						if(incompItems > 1)
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	// Check unwanted courseItem/Timeslot pairs are not scheudled 
+	private static Boolean checkUnwantedAssign(Timeslot timeslot, courseItem item, LinkedList<TimeCoursePair> unwanted){
+		courseItem c;
+		Slot s;
+		TimeCoursePair uw;
+	
+		for (int i=0; i < unwanted.size(); i++){
+			uw = unwanted.get(i);
+			c = uw.getCourseItem();
+			s = uw.getTime();
+
+			for (int j=0; j < timeslot.assignedItems.size(); j++){
+				item = timeslot.assignedItems.get(j);
+
+				if(item.isSameCourseItems(c)){
+					if (timeslot.localSlot.startTime.equals(s.startTime))
+						return false;
+				}
+			}
+		
+		}
+		return true;
+	}
+
+	// Check that the assignment about to be made doesn't cause an overlap 
+	private static Boolean checkOverlapAssign(Timeslot timeslot, courseItem item){
+		String[] splitTime;
+		int startTime;
+		int endTime;
+		
+		if (timeslot.localSlot.day.equals("TU")) {
+			splitTime = timeslot.localSlot.startTime.split(":");
+			startTime = Integer.parseInt(splitTime[0]);
+			
+			
+			
+		}
+		
+		else if (timeslot.localSlot.day.equals("FR")) {
+			splitTime = timeslot.localSlot.startTime.split(":");
+			startTime = Integer.parseInt(splitTime[0]);
+		}
+		
+		return true;
+	}
+
+
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all the complete check possiblities for Constr; includes Constr.assign, Constr.partial and Constr.final
@@ -464,7 +600,11 @@ public class Constr {
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned, LinkedList<TimeCoursePair> unwanted){
 		
 	//(maxAndOverlapCheck(state)) was removed
+
 		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkUnwanted(currentState, unwanted)) 
+
+		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc)  && checkFridays(currentState) && checkTuesdays(currentState)) 
+
 			return true;
 		return false;
 	}
@@ -472,7 +612,7 @@ public class Constr {
 	
 	// Run Constr on an assignment
 	public static Boolean assign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> unwanted){
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted))
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci))
 			return true;
 		return false;
 

@@ -48,7 +48,7 @@ public class OrTree {
 				if(found){
 					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
 					nxtCoursesToAssign.remove(ranNum);
-					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&&fillStateRecursive(nxtCoursesToAssign))
+					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&& fillStateRecursive(nxtCoursesToAssign))
 						return true;
 					else
 						removeCourseFromTimeslot(addingItem, destinationTimeslot);
