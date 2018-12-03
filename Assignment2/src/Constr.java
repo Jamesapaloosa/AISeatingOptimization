@@ -338,12 +338,12 @@ public class Constr {
 		Timeslot currentCourseSlot;
 		Timeslot currentLabSlot;
 		
-		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
+		// Filter all timeslots into two separate linked lists; one for Tuesday courses and one for Tuesday labs
 		for (int i = 0; i < timeslots.size(); i++) {
-			if((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == false)) {
+			if((timeslots.get(i).localSlot.day.equals("TU")) && (timeslots.get(i).forCourses == false)) {
 				tuesdayLabs.add(timeslots.get(i));
 			}
-			else if ((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == true))
+			else if ((timeslots.get(i).localSlot.day.equals("TU")) && (timeslots.get(i).forCourses == true))
 				tuesdayCourses.add(timeslots.get(i));
 		}
 		
