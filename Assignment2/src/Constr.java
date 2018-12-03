@@ -139,10 +139,13 @@ public class Constr {
 			currentSlot = timeslots.get(i);
 
 			for (int j=0; j < currentSlot.assignedItems.size(); j++) {	
-				if ((currentSlot.assignedItems.get(j).isALec == true) && (currentSlot.assignedItems.get(j).section.contentEquals("09"))) {
-					if (Arrays.stream(eveningSlots).anyMatch(currentSlot.localSlot.startTime::contentEquals)){}
-					else 
-						return false;
+				if(currentSlot.assignedItems.get(j).isALec == true){
+					String lecNum = currentSlot.assignedItems.get(j).section;
+					if (lecNum.charAt(0) == '9'){
+						//if (!Arrays.stream(eveningSlots).anyMatch(currentSlot.localSlot.startTime::equals))
+							//return false;
+					}	
+					
 				}
 			}
 		}
