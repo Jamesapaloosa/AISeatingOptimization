@@ -32,9 +32,9 @@ public class DataParser {
 	
 	public static int generationSize = 10;
 	public static int generationMultiplier = 50;
-	public static int generationsWithoutChangeForResult = 10;
+	public static int generationsWithoutChangeForResult = 20;
 	public static int generationMutationModifier = 100;
-	public static long orTreeTimeOut = 6000;
+	public static long orTreeTimeOut = 10000;
 	public static double percentOfTopTenToTake = .3;
 	
 	
