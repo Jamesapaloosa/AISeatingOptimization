@@ -77,6 +77,5 @@ public class Driver {
 		output.OutputResultToCommandLine();
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
-		System.out.println("Ouput generator speed: " + duration);
 	}
 }

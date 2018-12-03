@@ -77,7 +77,7 @@ public class Ext {
 				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
-					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, System.currentTimeMillis() + DataParser.orTreeTimeOut))
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, (System.currentTimeMillis() + DataParser.orTreeTimeOut/2)))
 						newState = newOr.currentState;
 				}
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
