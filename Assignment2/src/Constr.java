@@ -343,7 +343,7 @@ public class Constr {
 			
 			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
 				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
-					if((currentCourseSlot.assignedItems.get(i).department.contentEquals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.contentEquals(currentLabSlot.assignedItems.get(j).number))) {
+					if((currentCourseSlot.assignedItems.get(j).department.contentEquals(currentLabSlot.assignedItems.get(k).department)) && (currentCourseSlot.assignedItems.get(j).number.contentEquals(currentLabSlot.assignedItems.get(k).number))) {
 						return false;
 					}
 				}
@@ -414,7 +414,7 @@ public class Constr {
 			
 			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
 				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
-					if((currentCourseSlot.assignedItems.get(i).department.contentEquals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.contentEquals(currentLabSlot.assignedItems.get(j).number))) {
+					if((currentCourseSlot.assignedItems.get(j).department.contentEquals(currentLabSlot.assignedItems.get(k).department)) && (currentCourseSlot.assignedItems.get(j).number.contentEquals(currentLabSlot.assignedItems.get(k).number))) {
 						return false;
 					}
 				}
@@ -475,7 +475,7 @@ public class Constr {
 			
 			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
 				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
-					if((currentCourseSlot.assignedItems.get(i).department.contentEquals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.contentEquals(currentLabSlot.assignedItems.get(j).number))) {
+					if((currentCourseSlot.assignedItems.get(j).department.contentEquals(currentLabSlot.assignedItems.get(k).department)) && (currentCourseSlot.assignedItems.get(j).number.contentEquals(currentLabSlot.assignedItems.get(k).number))) {
 						return false;
 					}
 				}
