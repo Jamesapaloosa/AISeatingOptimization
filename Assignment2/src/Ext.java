@@ -430,27 +430,20 @@ public class Ext {
 				altern.add(i);
 			}
 			sourceTimeslot = null;
-			boolean cont = true;
-			while(altern.size() > 0){
-				randNum = random.nextInt(altern.size());
-				sourceTimeslot = FromState.timeSlots.get(altern.get(randNum));
-				if(sourceTimeslot.assignedItems.size() > 0){
-					cont = false;
-					break;
-				}
-				altern.remove(randNum);
+			
+			destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
+			if (destinationTimeslot == null) {
+				return ToState;
 			}
-			for(int i = 0; i < ToState.timeSlots.size(); i++){
-				if(ToState.timeSlots.get(i).equals(sourceTimeslot)){
-					destinationTimeslot = ToState.timeSlots.get(i);
+			for(int i = 0; i < FromState.timeSlots.size(); i++){
+				if(FromState.timeSlots.get(i).equals(destinationTimeslot) && (FromState.timeSlots.get(i).assignedItems.size() != 0)){
+					sourceTimeslot = FromState.timeSlots.get(i);
+					index = i;
 					break;
 				}
 			}
 			//Make sure we can add this course before we remove it from elsewhere
-			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
-				//If all of altern is exhausted and none of the slots have a course in them then return
-				if(cont == true)
-					return FromState;
+			if((destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max) && sourceTimeslot != null){
 				
 				//Choose the course to modify to look more like the best
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
