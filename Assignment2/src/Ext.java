@@ -99,16 +99,50 @@ public class Ext {
 	
 	private int[] setExtensionRulesWeight(){
 		int[] weights = new int[8];
+		
+		/*
 		double prefVal = EvalData.getWpref() * fd.preferences.size();
 		double pairVal = EvalData.getWpair() * fd.pair.size();
 		double minVal = EvalData.getWminfilled() * fd.courseSlots.size();
 		double secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
 		double notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
+		*/
 		
-		double randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*4;
-		double breed = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
-		double mutate = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
-		double total = notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
+		// Pref Weight
+		int maxPref = 0;
+		for (TimeCoursePair tcp : fd.getPreferences()){
+			maxPref = maxPref + tcp.prefVal;
+		}
+		int prefVal = EvalData.getWpref() * maxPref;
+		
+		// Pair Weight
+		int pairVal = EvalData.getWpair() * (EvalData.getPen_notpaired() * fd.pair.size());
+		
+		// Minimum Weight
+		int minVal = 0;
+		for (Slot ts : fd.getCourseSlots()){
+			minVal = minVal + ts.getMin() * EvalData.getPen_coursemin();
+		}
+		for (Slot ts : fd.getLabSlots()){
+			minVal = minVal + ts.getMin() * EvalData.getPen_labsmin();
+		}
+		
+		// Sections Weight
+		int maxDiff = 0;
+		for (int i = 0; i < fd.getCourses().size() - 1; i++) {
+			for (int j = i + 1; j < fd.getCourses().size(); j++) {
+				if (eval.isSameCourseDifferentSection(fd.getCourses().get(i), fd.getCourses().get(j))) {
+					maxDiff = maxDiff + 1;
+				}
+			}
+		}
+		int secDiffVal = EvalData.getWsecdiff() * (maxDiff * EvalData.getPen_section());
+		
+		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*4;
+		double breed = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
+		double mutate = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
+		double total = prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
+		
 		
 		//Breed
 		weights[0] =  (int)Math.round((breed/total) *100);
@@ -118,8 +152,11 @@ public class Ext {
 		weights[2] = (int)Math.round((minVal/total)*100) + weights[1];
 		//pairTwoItems
 		weights[3] = (int)Math.round((pairVal/total)*100) + weights[2];
+		
 		//replaceUndesired
-		weights[4] = (int)Math.round((notPairedVal/total)*100) + weights[3];
+		//weights[4] = (int)Math.round((notPairedVal/total)*100) + weights[3];
+		weights[4] = 0;
+		
 		//assignSectionPairsToSameSlot
 		weights[5] = (int)Math.round((secDiffVal/total)*100) + weights[4];
 		//placePreferredClass
