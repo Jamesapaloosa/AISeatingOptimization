@@ -1,5 +1,9 @@
 /**
  * @author Christian Roatis
+ * 
+ * The Constr class ensures all hard constraints are satisfied. Most functions have two versions.
+ * One based on a state input (used for the genetic algorithm and to confirm valid solutions) 
+ * and for assignments, usually more efficient, used by the or-tree
  *
  */
 
@@ -558,27 +562,88 @@ public class Constr {
 	}
 
 	// Check that the assignment about to be made doesn't cause an overlap 
-	private static Boolean checkOverlapAssign(Timeslot timeslot, courseItem item){
+	private static Boolean checkOverlapAssign(State currentState, Timeslot timeslot, courseItem item){
 		String[] splitTime;
 		int startTime;
 		int endTime;
+		int compareStart;
+		int compareEnd;
+		LinkedList<Timeslot> timeslots = currentState.timeSlots;
 		
 		if (timeslot.localSlot.day.equals("TU")) {
 			splitTime = timeslot.localSlot.startTime.split(":");
 			startTime = Integer.parseInt(splitTime[0]);
 			
+			try {
+				splitTime = timeslot.localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				
+			}
 			
+			endTime = Integer.parseInt(splitTime[0]);
 			
+			for(int i=0; i < timeslots.size(); i++) {
+				if(timeslots.get(i).localSlot.day.equals("TU")) {
+					splitTime = timeslots.get(i).localSlot.startTime.split(":");
+					compareStart = Integer.parseInt(splitTime[0]);
+					
+					try {
+						splitTime = timeslots.get(i).localSlot.endTime.split(":");
+					}catch (NullPointerException e) {
+						continue;
+					}
+					
+					compareEnd = Integer.parseInt(splitTime[0]);
+					
+					if (compareStart == startTime || compareEnd == endTime) {
+						for(int j=0; j < timeslots.get(i).assignedItems.size(); j++) {
+							if((timeslots.get(i).assignedItems.get(j).department.equals(item.department)) && (timeslots.get(i).assignedItems.get(j).number.equals(item.number))) {
+								return false;
+							}
+						}
+					}
+				}
+			}			
 		}
 		
 		else if (timeslot.localSlot.day.equals("FR")) {
 			splitTime = timeslot.localSlot.startTime.split(":");
 			startTime = Integer.parseInt(splitTime[0]);
+			
+			try {
+				splitTime = timeslot.localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				
+			}
+			
+			endTime = Integer.parseInt(splitTime[0]);
+			
+			for(int i=0; i < timeslots.size(); i++) {
+				if(timeslots.get(i).localSlot.day.equals("FR")) {
+					splitTime = timeslots.get(i).localSlot.startTime.split(":");
+					compareStart = Integer.parseInt(splitTime[0]);
+					
+					try {
+						splitTime = timeslots.get(i).localSlot.endTime.split(":");
+					}catch (NullPointerException e) {
+						continue;
+					}
+					
+					compareEnd = Integer.parseInt(splitTime[0]);
+					
+					if (compareStart == startTime || compareStart == startTime + 1 || compareStart + 1 == startTime) {
+						for(int j=0; j < timeslots.get(i).assignedItems.size(); j++) {
+							if((timeslots.get(i).assignedItems.get(j).department.equals(item.department)) && (timeslots.get(i).assignedItems.get(j).number.equals(item.number))) {
+								return false;
+							}
+						}
+					}
+				}
+			}			
 		}
 		
 		return true;
 	}
-
 
 
 //------------------------------------------------------------------------------------------------------------
@@ -611,8 +676,8 @@ public class Constr {
 
 	
 	// Run Constr on an assignment
-	public static Boolean assign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> unwanted){
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci))
+	public static Boolean assign(State currentState, Timeslot ts, courseItem ci, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> unwanted){
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci) && checkOverlapAssign(currentState, ts, ci))
 			return true;
 		return false;
 
