@@ -71,12 +71,12 @@ public class Ext {
 				else if(randNum < weight[6]){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
-				}
+				}/*
 				else{
 					newOr = new OrTree(new State(blankState), FD);
 					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
 						newState = newOr.currentState;
-				}
+				}*/
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
@@ -99,13 +99,13 @@ public class Ext {
 	private int[] setExtensionRulesWeight(){
 		int[] weights = new int[8];
 		
-		/*
 		double prefVal = EvalData.getWpref() * fd.preferences.size();
 		double pairVal = EvalData.getWpair() * fd.pair.size();
 		double minVal = EvalData.getWminfilled() * fd.courseSlots.size();
 		double secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
 		double notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
-		*/
+		
+		/*
 		
 		// Pref Weight
 		int maxPref = 0;
@@ -136,7 +136,7 @@ public class Ext {
 			}
 		}
 		int secDiffVal = EvalData.getWsecdiff() * (maxDiff * EvalData.getPen_section());
-		
+		*/
 		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*4;
 		double breed = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
 		double mutate = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
