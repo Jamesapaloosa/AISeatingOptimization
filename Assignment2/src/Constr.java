@@ -382,7 +382,12 @@ public class Constr {
 			startTime = splitTime[0];
 			labStart = Integer.parseInt(startTime);
 			
-			splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
+			try {
+				splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				continue;
+			}
+			
 			endTime = splitTime[0];
 			labEnd = Integer.parseInt(endTime);
 			
