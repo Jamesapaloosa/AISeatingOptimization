@@ -5,11 +5,12 @@ public class Ext {
 	Random random = new Random();
 	State lowestEvalState;
 	Evaluator eval;
-	long start;;
+	long start;
 	long end;
 	LinkedList <State> schedule;
 	FileData fd;
 	State blankState;
+	SoftConstraintState stateSoftCheck;
 	
 	public Ext(Evaluator eval, State blankState){
 		this.eval = eval;
@@ -20,6 +21,7 @@ public class Ext {
 		State newState = null;
 		start = System.currentTimeMillis();
 		fd = FD;
+		stateSoftCheck = new SoftConstraintState(FD);
 		end = start + 330000;
 		schedule = factsSet;
 		OrTree newOr;
@@ -49,7 +51,7 @@ public class Ext {
 				if (randNum < weight[0]) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
-					newState = breed(schedule.get(randNum), schedule.get(randNum2), 1);
+					newState = breed(schedule.get(randNum), lowestEvalState, 1);
 					
 				}else if(randNum < weight[1]){
 					randNum = random.nextInt(schedule.size());
@@ -408,49 +410,38 @@ public class Ext {
 		State FromState;
 		State ToState;
 		int randNum;
+		int index = 0;
 		if(numberOfMutations < 1){
 			numberOfMutations = 1;
 		}
 		if (state1.eval_Value < state2.eval_Value) {
-			FromState = state1;
-			ToState = new State(state2);
-		}else {
-			FromState = state2;
 			ToState = new State(state1);
+			FromState = state2;
+		}else {
+			ToState = new State(state2);
+			FromState = state1;
 		}
-		LinkedList<Integer> altern;
+		
 		Timeslot sourceTimeslot;
 		Timeslot destinationTimeslot = null;
 		//Do a number of mutations based on the input provided to the method
 		for(int k = 0; k <= numberOfMutations; k++){
-			//Choose a timeslot to grab a course from
-			altern = new LinkedList<Integer>();
-			//Provide alternatives for the program to choose as a source timeslot.
-			for(int i = 0; i < FromState.timeSlots.size(); i++){
-				altern.add(i);
-			}
+			
 			sourceTimeslot = null;
-			boolean cont = true;
-			while(altern.size() > 0){
-				randNum = random.nextInt(altern.size());
-				sourceTimeslot = FromState.timeSlots.get(altern.get(randNum));
-				if(sourceTimeslot.assignedItems.size() > 0){
-					cont = false;
-					break;
-				}
-				altern.remove(randNum);
+			
+			destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
+			if (destinationTimeslot == null){
+				return ToState;
 			}
-			for(int i = 0; i < ToState.timeSlots.size(); i++){
-				if(ToState.timeSlots.get(i).equals(sourceTimeslot)){
-					destinationTimeslot = ToState.timeSlots.get(i);
+			for(int i = 0; i < FromState.timeSlots.size(); i++){
+				if((FromState.timeSlots.get(i).equals(destinationTimeslot)) && (FromState.timeSlots.get(i).assignedItems.size() > 0)){
+					sourceTimeslot = FromState.timeSlots.get(i);
+					index = i;
 					break;
 				}
 			}
 			//Make sure we can add this course before we remove it from elsewhere
-			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
-				//If all of altern is exhausted and none of the slots have a course in them then return
-				if(cont == true)
-					return FromState;
+			if((destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max) && sourceTimeslot != null){
 				
 				//Choose the course to modify to look more like the best
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
@@ -462,15 +453,14 @@ public class Ext {
 					temp = ToState.timeSlots.get(i).getAssignedItems();
 					for(int j = 0; j < temp.size(); j++){
 						if(temp.get(j).isSameCourseItems(courseToMove)){
-							temp.remove(j);
-							i = ToState.timeSlots.size();
+							ToState.timeSlots.get(i).getAssignedItems().remove(temp.get(j));
 							break;
 						}
 					}
 				}
 				
 				//Add the course to the proper location
-				destinationTimeslot.addItemToTimeslot(courseToMove, fd);
+				ToState.timeSlots.get(index).addItemToTimeslot(courseToMove, fd);
 			}
 		}
 		return ToState;
