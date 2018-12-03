@@ -31,9 +31,10 @@ public class DataParser {
 	public static String[] FileDataHeaders = {"Name", "Course slots:", "Lab slots:","Courses:","Labs:", "Not compatible:","Unwanted:","Preferences:", "Pair:","Partial assignments:"};
 	
 	public static int generationSize = 10;
-	public static int generationMultiplier = 5;
-	public static int generationsWithoutChangeForResult = 100;
-	public static int generationMutationModifier = 50;
+	public static int generationMultiplier = 50;
+	public static int generationsWithoutChangeForResult = 50;
+	public static int generationMutationModifier = 100;
+	public static long orTreeTimeOut = 10000;
 	
 	
 	public DataParser(String infile) {

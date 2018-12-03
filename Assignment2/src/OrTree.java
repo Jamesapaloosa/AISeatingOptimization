@@ -10,8 +10,10 @@ public class OrTree {
 		currentState = inState;
 		this.FD = FD;
 	}
-	
-	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign){
+
+	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign, long endtime){
+		if(endtime < System.currentTimeMillis())
+			return true;
 		courseItem addingItem;
 		Timeslot destinationTimeslot;
 		int ranNum;
@@ -44,15 +46,17 @@ public class OrTree {
 				return false;
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
-				found = destinationTimeslot.addItemToTimeslot(addingItem);
-				if(found){
-					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
-					nxtCoursesToAssign.remove(ranNum);
-					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)&& fillStateRecursive(nxtCoursesToAssign))
-						return true;
-					else
-						removeCourseFromTimeslot(addingItem, destinationTimeslot);
-				}
+				//if(Constr.assign(currentState, destinationTimeslot, addingItem, FD.incompatible, FD.unwanted)){
+					found = destinationTimeslot.addItemToTimeslot(addingItem, FD);
+					if(found){
+						nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
+						nxtCoursesToAssign.remove(ranNum);
+						if(fillStateRecursive(nxtCoursesToAssign, endtime)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+							return true;
+						else
+							removeCourseFromTimeslot(addingItem, destinationTimeslot);
+					}
+				//}
 			}
 		}
 		return false;

@@ -31,7 +31,7 @@ public class StateMaker {
 			for(int j = 0; j < output.getTimeSlots().size(); j++){
 				destinationTime = output.getTimeSlots().get(j);
 				if(destinationTime.localSlot.isSameSlot(tempPair.time)){
-					if(destinationTime.addItemToTimeslot(tempPair.item)){
+					if(destinationTime.addItemToTimeslot(tempPair.item, inData)){
 						found = true;
 						break;
 					}

@@ -654,8 +654,9 @@ public class Constr {
 
 		if(!confirmAllClassesAssigned(currentState))
 			return false;
-		//(maxAndOverlapCheck(state)) was removed
-		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkUnwanted(currentState, unwanted))
+		//&& schedule13(currentState)
+		//(maxAndOverlapCheck(state)) was removed  && check500(currentState) && checkIncompatible(currentState, inc) && checkUnwanted(currentState, unwanted))  && check13(currentState)
+		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState))
 			return true;
 		return false;
 	}
@@ -666,10 +667,14 @@ public class Constr {
 		
 	//(maxAndOverlapCheck(state)) was removed
 
-		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkUnwanted(currentState, unwanted)) 
-
-		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc)  && checkFridays(currentState) && checkTuesdays(currentState)) 
-
+		//if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState)  
+		//Removed tuesdayCoursechec because it is no longer needed: tuesdayCourseCheck(currentState))
+		//Addressed incompatible in timeslot dont need this here anymore && checkIncompatible(currentState, inc) 
+		//addressed check 500 in timeslot && check500(currentState)
+		//Addressed && checkUnwanted(currentState, unwanted))) in timeslot
+		//Addressed check13 in timeslot;&& check13(currentState) 
+		//addressed  && schedule13(currentState) in timeslot
+		if ((eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkFridays(currentState) && checkTuesdays(currentState)))
 			return true;
 		return false;
 	}
