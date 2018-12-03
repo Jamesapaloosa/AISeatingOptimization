@@ -31,7 +31,6 @@ public class Driver {
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
 		startTime = System.currentTimeMillis();
 		currentState = StateMaker.convertFromFileData(inputFileData);
-		
 		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
 		Constr.items.addAll(inputFileData.getLabs());
 
@@ -46,7 +45,7 @@ public class Driver {
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign())){
+			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign(), System.currentTimeMillis() + DataParser.orTreeTimeOut)){
 				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned, inputFileData.unwanted)){
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");

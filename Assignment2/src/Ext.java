@@ -35,8 +35,11 @@ public class Ext {
 			}
 		}
 		int genCount = 0;
+		long diff;
 		int[] weight = setExtensionRulesWeight();
-		while (System.currentTimeMillis() < end) {
+		long now = System.currentTimeMillis();
+		diff = end - now;
+		while (diff > 0) {
 			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
 			}
@@ -46,37 +49,37 @@ public class Ext {
 				if (randNum < weight[0]) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
-					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = breed(schedule.get(randNum), schedule.get(randNum2), 1);
 					
 				}else if(randNum < weight[1]){
 					randNum = random.nextInt(schedule.size());
-					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = mutate(schedule.get(randNum), 1);
 				}
 				else if(randNum < weight[2]){
 					randNum = random.nextInt(schedule.size());
-					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), 1);
 				}
 				else if(randNum < weight[3]){
 					randNum = random.nextInt(schedule.size());
-					newState = pairTwoItems(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = pairTwoItems(schedule.get(randNum), 1);
 				}
 				else if(randNum < weight[4]){
 					randNum = random.nextInt(schedule.size());
-					newState = replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = replaceUndesired(schedule.get(randNum), 1);
 				}
 				else if(randNum < weight[5]){
 					randNum = random.nextInt(schedule.size());
-					newState = assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = assignSectionPairsToSameSlot(schedule.get(randNum), 1);
 				}
-				else if(randNum < weight[6]){
+				else if (randNum < weight[6]){
 					randNum = random.nextInt(schedule.size());
-					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
-				}/*
+					newState = placePreferredClass(schedule.get(randNum), 1);
+				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
-					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, System.currentTimeMillis() + DataParser.orTreeTimeOut))
 						newState = newOr.currentState;
-				}*/
+				}
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
@@ -84,6 +87,7 @@ public class Ext {
 						lowestEvalState = newState;
 						genWithoutChange = 0;
 					}
+					diff = end - System.currentTimeMillis();
 				}
 			}
  			genWithoutChange++;
@@ -137,7 +141,7 @@ public class Ext {
 		}
 		int secDiffVal = EvalData.getWsecdiff() * (maxDiff * EvalData.getPen_section());
 		*/
-		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*4;
+		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*1;
 		double breed = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
 		double mutate = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
 		double total = prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
@@ -157,7 +161,7 @@ public class Ext {
 		weights[4] = 0;
 		
 		//assignSectionPairsToSameSlot
-		weights[5] = (int)Math.round((secDiffVal/total)*100) + weights[4];
+		weights[5] = (int)Math.round((secDiffVal/total)*100) + weights[3];
 		//placePreferredClass
 		weights[6] = (int)Math.round((prefVal/total)*100) + weights[5];
 		//randomNew
@@ -192,7 +196,7 @@ public class Ext {
 			if((from != null)){
 				if(to != null){
 					itemIndex = random.nextInt(from.assignedItems.size());
-					if(to.addItemToTimeslot(from.assignedItems.get(itemIndex)))
+					if(to.addItemToTimeslot(from.assignedItems.get(itemIndex), fd))
 						from.assignedItems.remove(itemIndex);
 					}
 			}
@@ -244,7 +248,7 @@ public class Ext {
 				
 				if(destination.assignedItems.size() < destination.localSlot.Max){
 					item2 = timeslotToCheck.assignedItems.remove(item2Index);
-					destination.addItemToTimeslot(item2);
+					destination.addItemToTimeslot(item2, fd);
 				}
 			}
 		}
@@ -298,7 +302,7 @@ public class Ext {
 				destinationSlot = output.timeSlots.get(j);
 				for (int k = 0; k < destinationSlot.assignedItems.size(); k++){
 					if(destinationSlot.assignedItems.get(k).isSameCourseItems(TCP.item)){
-						destinationSlot.addItemToTimeslot(TCP.item);
+						destinationSlot.addItemToTimeslot(TCP.item, fd);
 						break;
 					}
 				}
@@ -307,7 +311,7 @@ public class Ext {
 			//Loop that adds the course to its desired location
 			for(int j = 0; j < output.timeSlots.size(); j++){
 				if(output.timeSlots.get(j).localSlot.isSameSlot(TCP.time)){
-					output.timeSlots.get(j).addItemToTimeslot(TCP.item);
+					output.timeSlots.get(j).addItemToTimeslot(TCP.item, fd);
 					break;
 				}
 			}
@@ -345,7 +349,7 @@ public class Ext {
 			}
 			while(found){
 				destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-				if(destination.addItemToTimeslot(fd.unwanted.get(ranNum).item))
+				if(destination.addItemToTimeslot(fd.unwanted.get(ranNum).item, fd))
 					break;
 			}
 		}
@@ -389,7 +393,7 @@ public class Ext {
 						checks++;
 					}
 					if(validDest){
-						if(!destination1.addItemToTimeslot(CP.itemOne)||!destination1.addItemToTimeslot(CP.itemOne))
+						if(!destination1.addItemToTimeslot(CP.itemOne, fd)||!destination1.addItemToTimeslot(CP.itemOne, fd))
 							throw new IllegalArgumentException("error adding both one course in pair two items extension rule");
 					}
 			}
@@ -466,7 +470,7 @@ public class Ext {
 				}
 				
 				//Add the course to the proper location
-				destinationTimeslot.addItemToTimeslot(courseToMove);
+				destinationTimeslot.addItemToTimeslot(courseToMove, fd);
 			}
 		}
 		return ToState;
@@ -518,7 +522,7 @@ public class Ext {
 					randNum = random.nextInt(altern.size());
 					destination = newState.timeSlots.get(altern.get(randNum));
 					if((destination.assignedItems.size() > 0)&&(!destination.equals(source))){
-						destination.addItemToTimeslot(courseToMove);
+						destination.addItemToTimeslot(courseToMove, fd);
 						break;
 					}
 					altern.remove(randNum);
