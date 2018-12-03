@@ -411,11 +411,11 @@ public class Ext {
 			numberOfMutations = 1;
 		}
 		if (state1.eval_Value < state2.eval_Value) {
-			ToState = state1;
-			FromState = new State(state2);
+			ToState = new State(state1);
+			FromState = state2;
 		}else {
-			ToState = state2;
-			FromState = new State(state1);
+			ToState = new State(state2);
+			FromState = state1;
 		}
 		LinkedList<Integer> altern;
 		Timeslot sourceTimeslot;
@@ -430,7 +430,7 @@ public class Ext {
 				return ToState;
 			}
 			for(int i = 0; i < FromState.timeSlots.size(); i++){
-				if((FromState.timeSlots.get(i).equals(destinationTimeslot)) && (sourceTimeslot.assignedItems.size() > 0)){
+				if((FromState.timeSlots.get(i).equals(destinationTimeslot)) && (FromState.timeSlots.get(i).assignedItems.size() > 0)){
 					sourceTimeslot = FromState.timeSlots.get(i);
 					index = i;
 					break;
