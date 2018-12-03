@@ -9,11 +9,11 @@ public class StateMaker {
 		LinkedList<Timeslot> tempTime = output.getTimeSlots();
 		Timeslot tempSlot;
 		for(int i = 0; i < inData.getLabSlots().size(); i++){
-			tempSlot = new Timeslot(inData.getLabSlots().get(i), false);
+			tempSlot = new Timeslot(inData.getLabSlots().get(i));
 			tempTime.add(tempSlot);
 		}
 		for(int i = 0; i < inData.getCourseSlots().size();i++){
-			tempSlot = new Timeslot(inData.getCourseSlots().get(i), true);
+			tempSlot = new Timeslot(inData.getCourseSlots().get(i));
 			tempTime.add(tempSlot);
 		}
 		TimeCoursePair tempPair;
