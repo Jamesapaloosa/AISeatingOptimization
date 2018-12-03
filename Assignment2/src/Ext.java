@@ -194,7 +194,7 @@ public class Ext {
 			if((from != null)){
 				if(to != null){
 					itemIndex = random.nextInt(from.assignedItems.size());
-					if(to.addItemToTimeslot(from.assignedItems.get(itemIndex)))
+					if(to.addItemToTimeslot(from.assignedItems.get(itemIndex), fd))
 						from.assignedItems.remove(itemIndex);
 					}
 			}
@@ -246,7 +246,7 @@ public class Ext {
 				
 				if(destination.assignedItems.size() < destination.localSlot.Max){
 					item2 = timeslotToCheck.assignedItems.remove(item2Index);
-					destination.addItemToTimeslot(item2);
+					destination.addItemToTimeslot(item2, fd);
 				}
 			}
 		}
@@ -300,7 +300,7 @@ public class Ext {
 				destinationSlot = output.timeSlots.get(j);
 				for (int k = 0; k < destinationSlot.assignedItems.size(); k++){
 					if(destinationSlot.assignedItems.get(k).isSameCourseItems(TCP.item)){
-						destinationSlot.addItemToTimeslot(TCP.item);
+						destinationSlot.addItemToTimeslot(TCP.item, fd);
 						break;
 					}
 				}
@@ -309,7 +309,7 @@ public class Ext {
 			//Loop that adds the course to its desired location
 			for(int j = 0; j < output.timeSlots.size(); j++){
 				if(output.timeSlots.get(j).localSlot.isSameSlot(TCP.time)){
-					output.timeSlots.get(j).addItemToTimeslot(TCP.item);
+					output.timeSlots.get(j).addItemToTimeslot(TCP.item, fd);
 					break;
 				}
 			}
@@ -347,7 +347,7 @@ public class Ext {
 			}
 			while(found){
 				destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-				if(destination.addItemToTimeslot(fd.unwanted.get(ranNum).item))
+				if(destination.addItemToTimeslot(fd.unwanted.get(ranNum).item, fd))
 					break;
 			}
 		}
@@ -391,7 +391,7 @@ public class Ext {
 						checks++;
 					}
 					if(validDest){
-						if(!destination1.addItemToTimeslot(CP.itemOne)||!destination1.addItemToTimeslot(CP.itemOne))
+						if(!destination1.addItemToTimeslot(CP.itemOne, fd)||!destination1.addItemToTimeslot(CP.itemOne, fd))
 							throw new IllegalArgumentException("error adding both one course in pair two items extension rule");
 					}
 			}
@@ -425,20 +425,19 @@ public class Ext {
 			
 			sourceTimeslot = null;
 			
-			try {
-				destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
-			}catch (Exception e) {
+			destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
+			if (destinationTimeslot == null){
 				return ToState;
 			}
 			for(int i = 0; i < FromState.timeSlots.size(); i++){
-				if(FromState.timeSlots.get(i).equals(destinationTimeslot)){
+				if((FromState.timeSlots.get(i).equals(destinationTimeslot)) && (sourceTimeslot.assignedItems.size() > 0)){
 					sourceTimeslot = FromState.timeSlots.get(i);
 					index = i;
 					break;
 				}
 			}
 			//Make sure we can add this course before we remove it from elsewhere
-			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
+			if((destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max) && sourceTimeslot != null){
 				
 				//Choose the course to modify to look more like the best
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
@@ -457,7 +456,7 @@ public class Ext {
 				}
 				
 				//Add the course to the proper location
-				ToState.timeSlots.get(index).addItemToTimeslot(courseToMove);
+				ToState.timeSlots.get(index).addItemToTimeslot(courseToMove, fd);
 			}
 		}
 		return ToState;
@@ -509,7 +508,7 @@ public class Ext {
 					randNum = random.nextInt(altern.size());
 					destination = newState.timeSlots.get(altern.get(randNum));
 					if((destination.assignedItems.size() > 0)&&(!destination.equals(source))){
-						destination.addItemToTimeslot(courseToMove);
+						destination.addItemToTimeslot(courseToMove, fd);
 						break;
 					}
 					altern.remove(randNum);
