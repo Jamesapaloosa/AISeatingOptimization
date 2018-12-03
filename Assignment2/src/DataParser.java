@@ -1,12 +1,10 @@
 import java.util.regex.Matcher;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.*;
 import java.io.*; 
 public class DataParser {
 	String sourcefile;
+	FileData dataOutput;
 	public static String[] validDays = {"MO", "TU", "FR"};
 	public static String[] validMondays = {"Mo", "mO", "mo", "MO"};
 	public static String[] validTuesdays = {"TU", "Tu", "tu", "tU"};
@@ -34,8 +32,8 @@ public class DataParser {
 	
 	public static int generationSize = 10;
 	public static int generationMultiplier = 5;
-	public static int generationsWithoutChangeForResult = 40;
-	public static int generationMutationModifier = 100;
+	public static int generationsWithoutChangeForResult = 100;
+	public static int generationMutationModifier = 50;
 	
 	
 	public DataParser(String infile) {
@@ -120,7 +118,8 @@ public class DataParser {
 	//a format for the program to read and do optimization on.
 	public FileData readfile() throws IOException {
 		File file = new File(sourcefile);
-		FileData dataOutput = new FileData();
+		dataOutput = new FileData();
+		courseItem tempCourseItem;
 		int rowNum = 0;
 		BufferedReader br;
 		try {
@@ -162,7 +161,7 @@ public class DataParser {
 						break;
 					}
 					if(line.length() > 0)
-						dataOutput.getCourseSlots().add(readCourseSlot(line, rowNum));
+						dataOutput.getCourseSlots().add(readCourseSlot(line, rowNum, true));
 				}
 				break;
 			case "Lab slots:":
@@ -174,7 +173,7 @@ public class DataParser {
 						break;
 					}
 					if(line.length() > 0)
-						dataOutput.getLabSlots().add(readCourseSlot(line, rowNum));
+						dataOutput.getLabSlots().add(readCourseSlot(line, rowNum, false));
 				}
 				break;
 			case "Courses:":
@@ -197,8 +196,12 @@ public class DataParser {
 						readNewLine = false;
 						break;
 					}
-					if(line.length() > 0)
-						dataOutput.getLabs().add(readCourseLine(line, rowNum));
+					if(line.length() > 0){
+						tempCourseItem = readCourseLine(line, rowNum);
+						dataOutput.getLabs().add(tempCourseItem);
+						//Add an incompatible pair for each lab and its lecture
+						dataOutput.incompatible.add(new CoursePair(tempCourseItem, new courseItem(tempCourseItem.department, tempCourseItem.number, validLecType[0], tempCourseItem.section, true)));
+					}
 				}
 				break;
 			case "Not compatible:":
@@ -222,7 +225,7 @@ public class DataParser {
 						break;
 					}
 					if(line.length() > 0)
-						dataOutput.getUnwanted().add(readTimeCoursePair(line, rowNum));
+						dataOutput.getUnwanted().add(readTimeCoursePair(line, rowNum, true));
 				}
 				break;
 			case "Preferences:":
@@ -234,7 +237,7 @@ public class DataParser {
 						break;
 					}
 					if(line.length() > 0)
-						dataOutput.getPreferences().add(readTimeCoursePair(line, rowNum));
+						dataOutput.getPreferences().add(readTimeCoursePair(line, rowNum, true));
 				}
 				break;
 			case "Pair:":
@@ -255,7 +258,7 @@ public class DataParser {
 					rowNum++;
 					if(line != null){
 						if(line.length() > 0)
-							dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum));
+							dataOutput.getPreAssigned().add(readTimeCoursePair(line, rowNum, false));
 					}
 					else 
 						break;
@@ -298,7 +301,6 @@ public class DataParser {
 			if(Arrays.stream(validTutType).anyMatch(dataSet[2]::equals))
 				isCourse = false;
 			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], isCourse);
-			
 		}
 		else if (dataSet.length == 6){
 			//Type verification if there are the two extra data points
@@ -308,14 +310,13 @@ public class DataParser {
 				throw new IllegalArgumentException("Invalid Section number: " + dataSet[5] + " on row: " + rowNum);
 			outCL = new courseItem(dataSet[0], dataSet[1], dataSet[2], dataSet[3], dataSet[4], dataSet[5], false);
 		}
-		else{
+		else
 			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
-		}
 		return outCL;
 	}
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a slot data set 
-	private Slot readCourseSlot(String input, int rowNum){
+	private Slot readCourseSlot(String input, int rowNum, boolean isForCourses){
 		Slot outSlot;
 		input = input.trim();
 		String[] dataSet = input.split("\\s*,\\s*");
@@ -340,7 +341,7 @@ public class DataParser {
 		int tempMin = Integer.parseInt(dataSet[3]);
 		if(tempMax < tempMin)
 			throw new IllegalArgumentException("The format for the max and min for a slot are invalid: " + dataSet[2] + ", " + dataSet[3] + "in row: " + rowNum);
-		outSlot = new Slot(tempMax, tempMin, dataSet[1], dataSet[0]);
+		outSlot = new Slot(tempMax, tempMin, dataSet[1], dataSet[0], isForCourses);
 		return outSlot;
 	}
 	//------------------------------------------------------------------------------------------------------------
@@ -356,10 +357,12 @@ public class DataParser {
 	}
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a pair of time and course data sets.
-	private TimeCoursePair readTimeCoursePair(String input, int rowNum){
+	private TimeCoursePair readTimeCoursePair(String input, int rowNum, boolean isPref){
 		input = input.trim();
 		String day = "";
 		String time = "";
+		courseItem tempCourse;
+		Slot tempSlot;
 		int classIndex = 0;
 		String[] dataSet = input.split("\\s*,\\s*");
 		if(dataSet.length == 3){
@@ -389,7 +392,12 @@ public class DataParser {
 			}
 			if((day == "")||(time == ""))
 				throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
-			return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum), 0);
+			tempCourse = readCourseLine(dataSet[classIndex], rowNum);
+			if(isPref)
+				tempSlot = new Slot(0, 0, time, day, tempCourse.isALec, isPref);
+			else
+				tempSlot = new Slot(0, 0, time, day, tempCourse.isALec);
+			return new TimeCoursePair(tempSlot, tempCourse, 0);
 		}
 		else if(dataSet.length == 4){
 			for(int i = 0; i < dataSet.length; i++){
@@ -418,7 +426,12 @@ public class DataParser {
 			}
 			if((day == "")||(time == ""))
 				throw new IllegalArgumentException("Valid day or time were not found for row: " + rowNum);
-			return new TimeCoursePair(new Slot(0, 0, time, day), readCourseLine(dataSet[classIndex], rowNum), Integer.parseInt(dataSet[3]));
+			tempCourse = readCourseLine(dataSet[classIndex], rowNum);
+			if(isPref)
+				tempSlot = new Slot(0, 0, time, day, tempCourse.isALec, isPref);
+			else
+				tempSlot = new Slot(0, 0, time, day, tempCourse.isALec);
+			return new TimeCoursePair(tempSlot, tempCourse, Integer.parseInt(dataSet[3]));
 		}
 		throw new IllegalArgumentException("Unexpected number of arguments in row: " + rowNum);
 	}

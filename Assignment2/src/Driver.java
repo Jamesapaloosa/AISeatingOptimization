@@ -46,12 +46,17 @@ public class Driver {
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign()))
-				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned)){
+			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign())){
+				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned, inputFileData.unwanted)){
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");
 				}
-		}		
+			}
+			else{
+				System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
+				return;
+			}
+		}
 		System.out.println(".");
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;

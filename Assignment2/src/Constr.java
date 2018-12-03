@@ -1,5 +1,9 @@
 /**
  * @author Christian Roatis
+ * 
+ * The Constr class ensures all hard constraints are satisfied. Most functions have two versions.
+ * One based on a state input (used for the genetic algorithm and to confirm valid solutions) 
+ * and for assignments, usually more efficient, used by the or-tree
  *
  */
 
@@ -7,34 +11,32 @@ import java.util.*;
 
 public class Constr {
 
-    static State state = new State();
     static LinkedList<Timeslot> timeslots = new LinkedList<Timeslot>();
     static LinkedList<courseItem> items = new LinkedList<courseItem>();
   
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints of any given state
-
+    /*
 	// Ensure courseMax or labMax isn't violated in a current state
 	private static Boolean maxAndOverlapCheck(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
-
-
+		//state = currentState;
+		//timeslots = state.timeSlots; 
+		/*
 		// Check every time-slot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
 			Timeslot currentSlot = timeslots.get(i);
-			if((currentSlot.assignedItems.size() <= currentSlot.localSlot.getMax())) {
-				for(int j = 0; j < currentSlot.assignedItems.size(); j++){
-					boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) && currentSlot.assignedItems.get(j).getTutVLab() == "");
-					boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getTutVLab()::equals));
-					if(!validCourse && !validTut)
-						return false;
-				}
+			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
+				boolean validCourse = currentSlot.forCourses && (Arrays.stream(DataParser.validLecType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) && currentSlot.assignedItems.get(j).getTutVLab() == "");
+				boolean validTut = !currentSlot.forCourses && (Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getLecVsTut()::equals) || Arrays.stream(DataParser.validTutType).anyMatch(currentSlot.assignedItems.get(j).getTutVLab()::equals));
+				if(!validCourse && !validTut)
+					return false;
 			}
 		}
+		
 		return true;
 	}
-	
+	*/
+	//Makes sure all classes that are needed are contained in the stimeslots
 	private static Boolean confirmAllClassesAssigned(State currentState){
 		Timeslot timeslot;
 		int LoopSize;
@@ -61,11 +63,9 @@ public class Constr {
 		return true;
 	}
 	
+	//Goes through the code and makes sure that no class exists twice
 	private static Boolean noDuplicates(State currentState) {
-        state = currentState;
-        timeslots = state.timeSlots;
-        LinkedList<courseItem> items = new LinkedList<courseItem>();
-        courseItem currentItem;
+        timeslots = currentState.timeSlots;
         Timeslot fromSlot;
         Timeslot toSlot;
         courseItem fromCourse;
@@ -110,12 +110,12 @@ public class Constr {
     }
 
 	private static Boolean tuesdayCourseCheck(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
-		// Check every timeslot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
+		// Check every timeslot to ensure no course is assigned at 11:00 on a Tuesday 
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			if((currentSlot.localSlot.day.equals("TU"))&& (currentSlot.localSlot.startTime.equals("11:00"))) {
 				if ((currentSlot.forCourses == true)&&(currentSlot.assignedItems.size() > 0)){
@@ -128,13 +128,13 @@ public class Constr {
 	}
 
 	private static Boolean eveningLecCheck(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
+		Timeslot currentSlot;
 
 		// Check every timeslot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			for (int j=0; j < currentSlot.assignedItems.size(); j++) {	
 				if ((currentSlot.assignedItems.get(j).isALec == true) && (currentSlot.assignedItems.get(j).section.equals("09"))) {
@@ -150,13 +150,13 @@ public class Constr {
 
 	// Check that no two 500 level courses are assigned in the same slot in any given state
 	private static Boolean check500(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
 		int count = 0;
+		Timeslot currentSlot;
 
 		// Check every timeslot in a state to make sure no more than one 500 level class occupies any one timeslot
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 			count = 0;
 
 			for (int j=0; j < currentSlot.assignedItems.size(); j++) {
@@ -173,12 +173,12 @@ public class Constr {
 
 	// Deal with the complicated CPSC 813/913 scheduling and overlap rules
 	private static Boolean check13(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
 		// Ensure CPSC 813 and 913 are scheduled only during the TU timeslot starting at 18:00.
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
 				
@@ -213,11 +213,11 @@ public class Constr {
 
 	// Deal with the CPSC 813 and 913 being scheduled outside allowed times
 	private static Boolean schedule13(State currentState){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
 				if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
 					if ((currentSlot.assignedItems.get(j).isALec == true) && ((currentSlot.assignedItems.get(j).number.equals("813")) || (currentSlot.assignedItems.get(j).number.equals("913")))){
@@ -231,20 +231,24 @@ public class Constr {
 
 		// Check incompatible classes aren't scheduled at the same times
 	private static Boolean checkIncompatible(State currentState, LinkedList<CoursePair> incompClasses){
-		state = currentState;
-		timeslots = state.timeSlots; 
+		timeslots = currentState.timeSlots; 
 		int incompItems = 0;
+		CoursePair cp;
+		courseItem c1;
+		courseItem c2;
+		courseItem item;
+		
 
 		for (int i=0; i < timeslots.size(); i++){	
 
 			for (int j=0; j < incompClasses.size(); j++){
 				incompItems = 0;
-				CoursePair cp = incompClasses.get(j);
-				courseItem c1 = cp.getItemOne();
-				courseItem c2 = cp.getItemTwo();
+				cp = incompClasses.get(j);
+				c1 = cp.getItemOne();
+				c2 = cp.getItemTwo();
 
 				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					courseItem item = timeslots.get(i).assignedItems.get(k);
+					item = timeslots.get(i).assignedItems.get(k);
 
 					if(item.isSameCourseItems(c1)||item.isSameCourseItems(c2)){
 						incompItems++;
@@ -258,19 +262,22 @@ public class Constr {
 	}
 	
 	private static Boolean checkPreassigned(State currentState, LinkedList<TimeCoursePair> preAssigned) {
-		state = currentState;
-		timeslots = state.timeSlots;
-		
+		timeslots = currentState.timeSlots;
+		TimeCoursePair pa;
+		courseItem c;
+		Slot s;
+		courseItem item;
+
 		for (int i=0; i < timeslots.size(); i++){	
 
 			for (int j=0; j < preAssigned.size(); j++){
 
-				TimeCoursePair pa = preAssigned.get(j);
-				courseItem c = pa.getCourseItem();
-				Slot s = pa.getTime();
+				pa = preAssigned.get(j);
+				c = pa.getCourseItem();
+				s = pa.getTime();
 
 				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					courseItem item = timeslots.get(i).assignedItems.get(k);
+					item = timeslots.get(i).assignedItems.get(k);
 
 					if(item.isSameCourseItems(c)){
 						if (!timeslots.get(i).localSlot.startTime.equals(s.startTime))
@@ -282,10 +289,182 @@ public class Constr {
 		return true;
 	}
 
+	// Check that labs on Fridays don't overlap with any of their course sections 
+	private static Boolean checkFridays(State currentState){
+		timeslots = currentState.timeSlots; 
+		LinkedList<Timeslot> fridayCourses = new LinkedList<Timeslot>();
+		LinkedList<Timeslot> fridayLabs = new LinkedList<Timeslot>();
+		
+		// A linked list holding courses that start in the middle of a lab slot, in the format: Course Slot -> Lab Slot etc. 
+		LinkedList<Timeslot> problemSlots = new LinkedList<Timeslot>();
+		
+		Timeslot currentCourseSlot;
+		Timeslot currentLabSlot;
+		
+		String[] splitStartTime;
+		String startTime;
+		int labStart;
+		int courseStart;
+		
+		
+		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
+		for (int i = 0; i < timeslots.size(); i++) {
+			if((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == false)) {
+				fridayLabs.add(timeslots.get(i));
+			}
+			else if ((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == true))
+				fridayCourses.add(timeslots.get(i));
+		}
+		
+		
+		// Find which course and lab timeslots overlap and add them into problemSlots in the order Course, Lab
+		for (int i=0; i < fridayLabs.size(); i++){		
+			splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
+			startTime = splitStartTime[0];
+			labStart = Integer.parseInt(startTime);
+			
+			for (int j = 0; j < fridayCourses.size(); j++) {
+				splitStartTime = fridayCourses.get(i).localSlot.startTime.split(":");
+				startTime = splitStartTime[0];
+				courseStart = Integer.parseInt(startTime);
+				
+				if(courseStart == (labStart + 1)) {
+					problemSlots.add(fridayCourses.get(j));
+					problemSlots.add(fridayLabs.get(i));
+				}
+			}
+		}
+		// Loop to check if any of the problem slots house an overlap of a lab with its corresponding course
+		for (int i=0; i< problemSlots.size(); i+=2 ) {
+			currentCourseSlot = problemSlots.get(i);
+			currentLabSlot = problemSlots.get(i+1);
+			
+			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
+				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
+					if((currentCourseSlot.assignedItems.get(i).department.equals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.equals(currentLabSlot.assignedItems.get(j).number))) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	// Check that labs on Tuesdays don't overlap with any of their course sections 
+	private static Boolean checkTuesdays(State currentState){
+		timeslots = currentState.timeSlots; 
+		LinkedList<Timeslot> tuesdayCourses = new LinkedList<Timeslot>();
+		LinkedList<Timeslot> tuesdayLabs = new LinkedList<Timeslot>();
+		
+		// A linked list holding courses that start in the middle of a lab slot, in the format: Course Slot -> Lab Slot etc. 
+		LinkedList<Timeslot> problemSlots = new LinkedList<Timeslot>();
+		
+		Timeslot currentCourseSlot;
+		Timeslot currentLabSlot;
+		
+		String[] splitTime;
+		String startTime;
+		int labStart;
+		String endTime;
+		int labEnd;
+		String[] courseStartTime;
+		String[] courseEndTime;
+		
+		// Filter all timeslots into two separate linked lists; one for Tuesday courses and one for Tuesday labs
+		for (int i = 0; i < timeslots.size(); i++) {
+			if((timeslots.get(i).localSlot.day.equals("TU")) && (timeslots.get(i).forCourses == false)) {
+				tuesdayLabs.add(timeslots.get(i));
+			}
+			else if ((timeslots.get(i).localSlot.day.equals("TU")) && (timeslots.get(i).forCourses == true))
+				tuesdayCourses.add(timeslots.get(i));
+		}
+		
+		
+		// Find which course and lab timeslots overlap and add them into problemSlots in the order Course, Lab
+		for (int i=0; i < tuesdayLabs.size(); i++){		
+			splitTime = tuesdayLabs.get(i).localSlot.startTime.split(":");
+			startTime = splitTime[0];
+			labStart = Integer.parseInt(startTime);
+			
+			try {
+				splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				continue;
+			}
+			
+			endTime = splitTime[0];
+			labEnd = Integer.parseInt(endTime);
+			
+			for (int j = 0; j < tuesdayCourses.size(); j++) {
+				courseStartTime = tuesdayCourses.get(i).localSlot.startTime.split(":");
+				courseEndTime = tuesdayCourses.get(i).localSlot.endTime.split(":");
+				
+				if((Integer.parseInt(courseStartTime[0]) == (labStart)) || (Integer.parseInt(courseEndTime[0]) == (labEnd))) {
+					problemSlots.add(tuesdayCourses.get(j));
+					problemSlots.add(tuesdayLabs.get(i));
+				}
+			}
+		}
+		// Loop to check if any of the problem slots house an overlap of a lab with its corresponding course
+		for (int i=0; i< problemSlots.size(); i+=2 ) {
+			currentCourseSlot = problemSlots.get(i);
+			currentLabSlot = problemSlots.get(i+1);
+			
+			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
+				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
+					if((currentCourseSlot.assignedItems.get(i).department.equals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.equals(currentLabSlot.assignedItems.get(j).number))) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	// Check unwanted courseItem/Timeslot pairs are not scheudled 
+	private static Boolean checkUnwanted(State currentState, LinkedList<TimeCoursePair> unwanted){
+		timeslots = currentState.timeSlots; 
+		TimeCoursePair uw;
+		courseItem c;
+		courseItem item;
+		Slot s;
+		
+	
+		for (int i=0; i < timeslots.size(); i++){	
+	
+			for (int j=0; j < unwanted.size(); j++){
+				uw = unwanted.get(j);
+				c = uw.getCourseItem();
+				s = uw.getTime();
+	
+				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
+					item = timeslots.get(i).assignedItems.get(k);
+
+					if(item.isSameCourseItems(c)){
+						if (timeslots.get(i).localSlot.startTime.equals(s.startTime))
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
 
+	// Ensure no course is assigned on tuesday from 11
+	private static Boolean tuesdayCourseCheckAssign(Timeslot timeslot, courseItem item){
+		// Check timeslot so that a course is not being assigned on a Tuesday at 11
+			if((timeslot.localSlot.day.equals("TU")) && (timeslot.localSlot.startTime.equals("11:00"))) {
+				if ((timeslot.forCourses == true)){
+					return false;
+				}
+			}
+			
+		return true;
+	}
+	
 	// Check that you won't have more than one 500 level course in a given timeslot
 	private static Boolean eveningLecAssign(Timeslot timeSlot, courseItem item){
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
@@ -324,7 +503,8 @@ public class Constr {
 			if (!(timeslot.localSlot.day.equals("TU")) || !(timeslot.localSlot.startTime.equals ("18:00"))){	
 				return false;
 			}
-		}		
+		}
+		
 		return true;
 	}
 	
@@ -357,49 +537,149 @@ public class Constr {
 		return true;
 	}
 
+	// Check unwanted courseItem/Timeslot pairs are not scheudled 
+	private static Boolean checkUnwantedAssign(Timeslot timeslot, courseItem item, LinkedList<TimeCoursePair> unwanted){
+		courseItem c;
+		Slot s;
+		TimeCoursePair uw;
+	
+		for (int i=0; i < unwanted.size(); i++){
+			uw = unwanted.get(i);
+			c = uw.getCourseItem();
+			s = uw.getTime();
+
+			for (int j=0; j < timeslot.assignedItems.size(); j++){
+				item = timeslot.assignedItems.get(j);
+
+				if(item.isSameCourseItems(c)){
+					if (timeslot.localSlot.startTime.equals(s.startTime))
+						return false;
+				}
+			}
+		
+		}
+		return true;
+	}
+
+	// Check that the assignment about to be made doesn't cause an overlap 
+	private static Boolean checkOverlapAssign(State currentState, Timeslot timeslot, courseItem item){
+		String[] splitTime;
+		int startTime;
+		int endTime;
+		int compareStart;
+		int compareEnd;
+		LinkedList<Timeslot> timeslots = currentState.timeSlots;
+		
+		if (timeslot.localSlot.day.equals("TU")) {
+			splitTime = timeslot.localSlot.startTime.split(":");
+			startTime = Integer.parseInt(splitTime[0]);
+			
+			try {
+				splitTime = timeslot.localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				
+			}
+			
+			endTime = Integer.parseInt(splitTime[0]);
+			
+			for(int i=0; i < timeslots.size(); i++) {
+				if(timeslots.get(i).localSlot.day.equals("TU")) {
+					splitTime = timeslots.get(i).localSlot.startTime.split(":");
+					compareStart = Integer.parseInt(splitTime[0]);
+					
+					try {
+						splitTime = timeslots.get(i).localSlot.endTime.split(":");
+					}catch (NullPointerException e) {
+						continue;
+					}
+					
+					compareEnd = Integer.parseInt(splitTime[0]);
+					
+					if (compareStart == startTime || compareEnd == endTime) {
+						for(int j=0; j < timeslots.get(i).assignedItems.size(); j++) {
+							if((timeslots.get(i).assignedItems.get(j).department.equals(item.department)) && (timeslots.get(i).assignedItems.get(j).number.equals(item.number))) {
+								return false;
+							}
+						}
+					}
+				}
+			}			
+		}
+		
+		else if (timeslot.localSlot.day.equals("FR")) {
+			splitTime = timeslot.localSlot.startTime.split(":");
+			startTime = Integer.parseInt(splitTime[0]);
+			
+			try {
+				splitTime = timeslot.localSlot.endTime.split(":");
+			}catch (NullPointerException e) {
+				
+			}
+			
+			endTime = Integer.parseInt(splitTime[0]);
+			
+			for(int i=0; i < timeslots.size(); i++) {
+				if(timeslots.get(i).localSlot.day.equals("FR")) {
+					splitTime = timeslots.get(i).localSlot.startTime.split(":");
+					compareStart = Integer.parseInt(splitTime[0]);
+					
+					try {
+						splitTime = timeslots.get(i).localSlot.endTime.split(":");
+					}catch (NullPointerException e) {
+						continue;
+					}
+					
+					compareEnd = Integer.parseInt(splitTime[0]);
+					
+					if (compareStart == startTime || compareStart == startTime + 1 || compareStart + 1 == startTime) {
+						for(int j=0; j < timeslots.get(i).assignedItems.size(); j++) {
+							if((timeslots.get(i).assignedItems.get(j).department.equals(item.department)) && (timeslots.get(i).assignedItems.get(j).number.equals(item.number))) {
+								return false;
+							}
+						}
+					}
+				}
+			}			
+		}
+		
+		return true;
+	}
 
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all the complete check possiblities for Constr; includes Constr.assign, Constr.partial and Constr.final
 
 	// Run Constr on a final solution
-	public static Boolean finalCheck(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
-		State state = currentState;
+	public static Boolean finalCheck(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned, LinkedList<TimeCoursePair> unwanted){
 
-		if(!confirmAllClassesAssigned(state))
+		if(!confirmAllClassesAssigned(currentState))
 			return false;
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)){
-			if (!(state.CoursesLabsToAssign.isEmpty())){	
-				return false;
-			}
+		//(maxAndOverlapCheck(state)) was removed
+		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkUnwanted(currentState, unwanted))
 			return true;
-		}
-		
-
-		else
-			return false;
+		return false;
 	}
 	
 
 	// Run Constr on a partial solution
-	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
-		State state = currentState;
+	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned, LinkedList<TimeCoursePair> unwanted){
+		
+	//(maxAndOverlapCheck(state)) was removed
 
-		if ((maxAndOverlapCheck(state)) && (tuesdayCourseCheck(state)) && eveningLecCheck(state) && check500(state) && check13(state) && schedule13(state) && noDuplicates(state) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned)) 
+		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkUnwanted(currentState, unwanted)) 
+
+		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc)  && checkFridays(currentState) && checkTuesdays(currentState)) 
+
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	
 	// Run Constr on an assignment
-	public static Boolean assign(Timeslot ts, courseItem ci, LinkedList<CoursePair> inc){
-		
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc)){
+	public static Boolean assign(State currentState, Timeslot ts, courseItem ci, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> unwanted){
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci) && checkOverlapAssign(currentState, ts, ci))
 			return true;
-		}
-		else
-			return false;
+		return false;
 
 	}
 
