@@ -36,6 +36,8 @@ public class Constr {
 		return true;
 	}
 	*/
+    		
+    
 	//Makes sure all classes that are needed are contained in the stimeslots
 	private static Boolean confirmAllClassesAssigned(State currentState){
 		Timeslot timeslot;
@@ -421,6 +423,67 @@ public class Constr {
 		return true;
 	}
 	
+	// Check that labs on Fridays don't overlap with any of their course sections 
+	private static Boolean checkMondays(State currentState){
+		timeslots = currentState.timeSlots; 
+		LinkedList<Timeslot> mondayCourses = new LinkedList<Timeslot>();
+		LinkedList<Timeslot> mondayLabs = new LinkedList<Timeslot>();
+		
+		// A linked list holding courses that start in the middle of a lab slot, in the format: Course Slot -> Lab Slot etc. 
+		LinkedList<Timeslot> problemSlots = new LinkedList<Timeslot>();
+		
+		Timeslot currentCourseSlot;
+		Timeslot currentLabSlot;
+		
+		String[] splitStartTime;
+		String startTime;
+		int labStart;
+		int courseStart;
+		
+		
+		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
+		for (int i = 0; i < timeslots.size(); i++) {
+			if((timeslots.get(i).localSlot.day.contentEquals("MO")) && (timeslots.get(i).forCourses == false)) {
+				mondayLabs.add(timeslots.get(i));
+			}
+			else if ((timeslots.get(i).localSlot.day.contentEquals("MO")) && (timeslots.get(i).forCourses == true))
+				mondayCourses.add(timeslots.get(i));
+		}
+		
+		
+		// Find which course and lab timeslots overlap and add them into problemSlots in the order Course, Lab
+		for (int i=0; i < mondayLabs.size(); i++){		
+			splitStartTime = mondayLabs.get(i).localSlot.startTime.split(":");
+			startTime = splitStartTime[0];
+			labStart = Integer.parseInt(startTime);
+			
+			for (int j = 0; j < mondayCourses.size(); j++) {
+				splitStartTime = mondayCourses.get(i).localSlot.startTime.split(":");
+				startTime = splitStartTime[0];
+				courseStart = Integer.parseInt(startTime);
+				
+				if(courseStart == (labStart)) {
+					problemSlots.add(mondayCourses.get(j));
+					problemSlots.add(mondayLabs.get(i));
+				}
+			}
+		}
+		// Loop to check if any of the problem slots house an overlap of a lab with its corresponding course
+		for (int i=0; i< problemSlots.size(); i+=2 ) {
+			currentCourseSlot = problemSlots.get(i);
+			currentLabSlot = problemSlots.get(i+1);
+			
+			for(int j=0; j<currentCourseSlot.assignedItems.size(); j++) {
+				for (int k=0; k<currentLabSlot.assignedItems.size(); k++) {
+					if((currentCourseSlot.assignedItems.get(i).department.contentEquals(currentLabSlot.assignedItems.get(j).department)) && (currentCourseSlot.assignedItems.get(i).number.contentEquals(currentLabSlot.assignedItems.get(j).number))) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	// Check unwanted courseItem/Timeslot pairs are not scheudled 
 	private static Boolean checkUnwanted(State currentState, LinkedList<TimeCoursePair> unwanted){
 		timeslots = currentState.timeSlots; 
@@ -656,7 +719,7 @@ public class Constr {
 			return false;
 		//&& schedule13(currentState)
 		//(maxAndOverlapCheck(state)) was removed  && check500(currentState) && checkIncompatible(currentState, inc) && checkUnwanted(currentState, unwanted))  && check13(currentState)
-		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState))
+		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState))
 			return true;
 		return false;
 	}
@@ -674,7 +737,7 @@ public class Constr {
 		//Addressed && checkUnwanted(currentState, unwanted))) in timeslot
 		//Addressed check13 in timeslot;&& check13(currentState) 
 		//addressed  && schedule13(currentState) in timeslot
-		if ((eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkFridays(currentState) && checkTuesdays(currentState)))
+		if ((eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState)))
 			return true;
 		return false;
 	}
