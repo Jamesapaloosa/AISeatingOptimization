@@ -46,7 +46,6 @@ public class OrTree {
 				return false;
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
-				//if(Constr.assign(currentState, destinationTimeslot, addingItem, FD.incompatible, FD.unwanted)){
 					found = destinationTimeslot.addItemToTimeslot(addingItem, FD);
 					if(found){
 						nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
@@ -56,7 +55,6 @@ public class OrTree {
 						else
 							removeCourseFromTimeslot(addingItem, destinationTimeslot);
 					}
-				//}
 			}
 		}
 		return false;

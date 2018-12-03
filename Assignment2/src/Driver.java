@@ -10,9 +10,14 @@ public class Driver {
 
 		FileData inputFileData;
 		
-		//command line inputs required here
-		EvalData.promptUserForValues();
+		if(args.length == 9){
+			EvalData.readCommandLineArg(args);
+		}else{
+			//command line inputs required here
+			EvalData.promptUserForValues();
+		}
 		
+
 		
 		//Code to call and parse file
 		startTime = System.currentTimeMillis();
