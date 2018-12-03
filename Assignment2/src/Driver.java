@@ -47,7 +47,7 @@ public class Driver {
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign())){
-				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned)){
+				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned, inputFileData.unwanted)){
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");
 				}
