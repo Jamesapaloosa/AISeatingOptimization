@@ -107,10 +107,11 @@ public class Constr {
 
 	private static Boolean tuesdayCourseCheck(State currentState){
 		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
 		// Check every timeslot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			if((currentSlot.localSlot.day.equals("TU"))&& (currentSlot.localSlot.startTime.equals("11:00"))) {
 				if ((currentSlot.forCourses == true)&&(currentSlot.assignedItems.size() > 0)){
@@ -125,10 +126,11 @@ public class Constr {
 	private static Boolean eveningLecCheck(State currentState){
 		timeslots = currentState.timeSlots; 
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
+		Timeslot currentSlot;
 
 		// Check every timeslot in a state to make sure no coursemax/labmax is violated, nor do any labs/tutorials share the same slot as their corresponding course
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			for (int j=0; j < currentSlot.assignedItems.size(); j++) {	
 				if ((currentSlot.assignedItems.get(j).isALec == true) && (currentSlot.assignedItems.get(j).section.equals("09"))) {
@@ -146,10 +148,11 @@ public class Constr {
 	private static Boolean check500(State currentState){
 		timeslots = currentState.timeSlots; 
 		int count = 0;
+		Timeslot currentSlot;
 
 		// Check every timeslot in a state to make sure no more than one 500 level class occupies any one timeslot
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 			count = 0;
 
 			for (int j=0; j < currentSlot.assignedItems.size(); j++) {
@@ -167,10 +170,11 @@ public class Constr {
 	// Deal with the complicated CPSC 813/913 scheduling and overlap rules
 	private static Boolean check13(State currentState){
 		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
 		// Ensure CPSC 813 and 913 are scheduled only during the TU timeslot starting at 18:00.
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 
 			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
 				
@@ -206,9 +210,10 @@ public class Constr {
 	// Deal with the CPSC 813 and 913 being scheduled outside allowed times
 	private static Boolean schedule13(State currentState){
 		timeslots = currentState.timeSlots; 
+		Timeslot currentSlot;
 
 		for (int i=0; i < timeslots.size(); i++){	
-			Timeslot currentSlot = timeslots.get(i);
+			currentSlot = timeslots.get(i);
 			for(int j = 0; j < currentSlot.assignedItems.size(); j++){
 				if(!(currentSlot.localSlot.day.equals("TU")) && !(currentSlot.localSlot.startTime.equals("18:00"))) {
 					if ((currentSlot.assignedItems.get(j).isALec == true) && ((currentSlot.assignedItems.get(j).number.equals("813")) || (currentSlot.assignedItems.get(j).number.equals("913")))){
@@ -224,17 +229,22 @@ public class Constr {
 	private static Boolean checkIncompatible(State currentState, LinkedList<CoursePair> incompClasses){
 		timeslots = currentState.timeSlots; 
 		int incompItems = 0;
+		CoursePair cp;
+		courseItem c1;
+		courseItem c2;
+		courseItem item;
+		
 
 		for (int i=0; i < timeslots.size(); i++){	
 
 			for (int j=0; j < incompClasses.size(); j++){
 				incompItems = 0;
-				CoursePair cp = incompClasses.get(j);
-				courseItem c1 = cp.getItemOne();
-				courseItem c2 = cp.getItemTwo();
+				cp = incompClasses.get(j);
+				c1 = cp.getItemOne();
+				c2 = cp.getItemTwo();
 
 				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					courseItem item = timeslots.get(i).assignedItems.get(k);
+					item = timeslots.get(i).assignedItems.get(k);
 
 					if(item.isSameCourseItems(c1)||item.isSameCourseItems(c2)){
 						incompItems++;
@@ -249,17 +259,21 @@ public class Constr {
 	
 	private static Boolean checkPreassigned(State currentState, LinkedList<TimeCoursePair> preAssigned) {
 		timeslots = currentState.timeSlots;
-		
+		TimeCoursePair pa;
+		courseItem c;
+		Slot s;
+		courseItem item;
+
 		for (int i=0; i < timeslots.size(); i++){	
 
 			for (int j=0; j < preAssigned.size(); j++){
 
-				TimeCoursePair pa = preAssigned.get(j);
-				courseItem c = pa.getCourseItem();
-				Slot s = pa.getTime();
+				pa = preAssigned.get(j);
+				c = pa.getCourseItem();
+				s = pa.getTime();
 
 				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					courseItem item = timeslots.get(i).assignedItems.get(k);
+					item = timeslots.get(i).assignedItems.get(k);
 
 					if(item.isSameCourseItems(c)){
 						if (!timeslots.get(i).localSlot.startTime.equals(s.startTime))
@@ -283,6 +297,12 @@ public class Constr {
 		Timeslot currentCourseSlot;
 		Timeslot currentLabSlot;
 		
+		String[] splitStartTime;
+		String startTime;
+		int labStart;
+		int courseStart;
+		
+		
 		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
 		for (int i = 0; i < timeslots.size(); i++) {
 			if((timeslots.get(i).localSlot.day.equals("FR")) && (timeslots.get(i).forCourses == false)) {
@@ -293,16 +313,16 @@ public class Constr {
 		}
 		
 		
-		// For every Friday Lab Timeslot, ensure none of its assigned items overlap with a corresponding course
+		// Find which course and lab timeslots overlap and add them into problemSlots in the order Course, Lab
 		for (int i=0; i < fridayLabs.size(); i++){		
-			String[] splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
-			String startTime = splitStartTime[0];
-			int labStart = Integer.parseInt(startTime);
+			splitStartTime = fridayLabs.get(i).localSlot.startTime.split(":");
+			startTime = splitStartTime[0];
+			labStart = Integer.parseInt(startTime);
 			
 			for (int j = 0; j < fridayCourses.size(); j++) {
 				splitStartTime = fridayCourses.get(i).localSlot.startTime.split(":");
 				startTime = splitStartTime[0];
-				int courseStart = Integer.parseInt(startTime);
+				courseStart = Integer.parseInt(startTime);
 				
 				if(courseStart == (labStart + 1)) {
 					problemSlots.add(fridayCourses.get(j));
@@ -338,6 +358,14 @@ public class Constr {
 		Timeslot currentCourseSlot;
 		Timeslot currentLabSlot;
 		
+		String[] splitTime;
+		String startTime;
+		int labStart;
+		String endTime;
+		int labEnd;
+		String[] courseStartTime;
+		String[] courseEndTime;
+		
 		// Filter all timeslots into two separate linked lists; one for Tuesday courses and one for Tuesday labs
 		for (int i = 0; i < timeslots.size(); i++) {
 			if((timeslots.get(i).localSlot.day.equals("TU")) && (timeslots.get(i).forCourses == false)) {
@@ -348,19 +376,19 @@ public class Constr {
 		}
 		
 		
-		// For every Friday Lab Timeslot, ensure none of its assigned items overlap with a corresponding course
+		// Find which course and lab timeslots overlap and add them into problemSlots in the order Course, Lab
 		for (int i=0; i < tuesdayLabs.size(); i++){		
-			String[] splitTime = tuesdayLabs.get(i).localSlot.startTime.split(":");
-			String startTime = splitTime[0];
-			int labStart = Integer.parseInt(startTime);
+			splitTime = tuesdayLabs.get(i).localSlot.startTime.split(":");
+			startTime = splitTime[0];
+			labStart = Integer.parseInt(startTime);
 			
 			splitTime = tuesdayLabs.get(i).localSlot.endTime.split(":");
-			String endTime = splitTime[0];
-			int labEnd = Integer.parseInt(endTime);
+			endTime = splitTime[0];
+			labEnd = Integer.parseInt(endTime);
 			
 			for (int j = 0; j < tuesdayCourses.size(); j++) {
-				String[] courseStartTime = tuesdayCourses.get(i).localSlot.startTime.split(":");
-				String[] courseEndTime = tuesdayCourses.get(i).localSlot.endTime.split(":");
+				courseStartTime = tuesdayCourses.get(i).localSlot.startTime.split(":");
+				courseEndTime = tuesdayCourses.get(i).localSlot.endTime.split(":");
 				
 				if((Integer.parseInt(courseStartTime[0]) == (labStart)) || (Integer.parseInt(courseEndTime[0]) == (labEnd))) {
 					problemSlots.add(tuesdayCourses.get(j));
