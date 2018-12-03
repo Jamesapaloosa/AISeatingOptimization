@@ -10,6 +10,7 @@ public class Ext {
 	LinkedList <State> schedule;
 	FileData fd;
 	State blankState;
+	SoftConstraintState stateSoftCheck;
 	
 	public Ext(Evaluator eval, State blankState){
 		this.eval = eval;
@@ -22,6 +23,7 @@ public class Ext {
 		fd = FD;
 		end = start + 330000;
 		schedule = factsSet;
+		stateSoftCheck = new SoftConstraintState(FD);
 		OrTree newOr;
 		int randNum;
 		int randNum2;
@@ -46,7 +48,7 @@ public class Ext {
 				if (randNum < weight[0]) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
-					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = breed(schedule.get(randNum), lowestEvalState, (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
 				}else if(randNum < weight[1]){
 					randNum = random.nextInt(schedule.size());
@@ -68,7 +70,7 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < weight[6]){
+				else{
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}/*
@@ -79,6 +81,7 @@ public class Ext {
 				}*/
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
+					System.out.println("State entered");
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
 					if (newState.eval_Value < lowestEvalState.eval_Value){
 						lowestEvalState = newState;
@@ -404,49 +407,39 @@ public class Ext {
 		State FromState;
 		State ToState;
 		int randNum;
+		int index = 0;
 		if(numberOfMutations < 1){
 			numberOfMutations = 1;
 		}
 		if (state1.eval_Value < state2.eval_Value) {
-			FromState = state1;
-			ToState = new State(state2);
+			ToState = state1;
+			FromState = new State(state2);
 		}else {
-			FromState = state2;
-			ToState = new State(state1);
+			ToState = state2;
+			FromState = new State(state1);
 		}
 		LinkedList<Integer> altern;
 		Timeslot sourceTimeslot;
 		Timeslot destinationTimeslot = null;
 		//Do a number of mutations based on the input provided to the method
 		for(int k = 0; k <= numberOfMutations; k++){
-			//Choose a timeslot to grab a course from
-			altern = new LinkedList<Integer>();
-			//Provide alternatives for the program to choose as a source timeslot.
-			for(int i = 0; i < FromState.timeSlots.size(); i++){
-				altern.add(i);
-			}
+			
 			sourceTimeslot = null;
-			boolean cont = true;
-			while(altern.size() > 0){
-				randNum = random.nextInt(altern.size());
-				sourceTimeslot = FromState.timeSlots.get(altern.get(randNum));
-				if(sourceTimeslot.assignedItems.size() > 0){
-					cont = false;
-					break;
-				}
-				altern.remove(randNum);
+			
+			try {
+				destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
+			}catch (Exception e) {
+				return ToState;
 			}
-			for(int i = 0; i < ToState.timeSlots.size(); i++){
-				if(ToState.timeSlots.get(i).equals(sourceTimeslot)){
-					destinationTimeslot = ToState.timeSlots.get(i);
+			for(int i = 0; i < FromState.timeSlots.size(); i++){
+				if(FromState.timeSlots.get(i).equals(destinationTimeslot)){
+					sourceTimeslot = FromState.timeSlots.get(i);
+					index = i;
 					break;
 				}
 			}
 			//Make sure we can add this course before we remove it from elsewhere
 			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
-				//If all of altern is exhausted and none of the slots have a course in them then return
-				if(cont == true)
-					return FromState;
 				
 				//Choose the course to modify to look more like the best
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
@@ -458,17 +451,17 @@ public class Ext {
 					temp = ToState.timeSlots.get(i).getAssignedItems();
 					for(int j = 0; j < temp.size(); j++){
 						if(temp.get(j).isSameCourseItems(courseToMove)){
-							temp.remove(j);
-							i = ToState.timeSlots.size();
+							ToState.timeSlots.get(i).getAssignedItems().remove(temp.get(j));
 							break;
 						}
 					}
 				}
 				
 				//Add the course to the proper location
-				destinationTimeslot.addItemToTimeslot(courseToMove);
+				ToState.timeSlots.get(index).addItemToTimeslot(courseToMove);
 			}
 		}
+		System.out.println("Breed worked");
 		return ToState;
 	}
 	
@@ -546,7 +539,7 @@ public class Ext {
 		    }
 		});
 		LinkedList <State> output = new LinkedList<State>();
-		for (int i = 0; i <= DataParser.generationSize ; i++) {
+		for (int i = 0; i < DataParser.generationSize ; i++) {
 			output.add(states.get(evalValues[i][1]));
 		}
 		states.clear();
