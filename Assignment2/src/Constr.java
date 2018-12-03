@@ -485,33 +485,33 @@ public class Constr {
 	}
 	
 	// Check unwanted courseItem/Timeslot pairs are not scheudled 
-	private static Boolean checkUnwanted(State currentState, LinkedList<TimeCoursePair> unwanted){
-		timeslots = currentState.timeSlots; 
-		TimeCoursePair uw;
-		courseItem c;
-		courseItem item;
-		Slot s;
-		
-	
-		for (int i=0; i < timeslots.size(); i++){	
-	
-			for (int j=0; j < unwanted.size(); j++){
-				uw = unwanted.get(j);
-				c = uw.getCourseItem();
-				s = uw.getTime();
-	
-				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
-					item = timeslots.get(i).assignedItems.get(k);
-
-					if(item.isSameCourseItems(c)){
-						if (timeslots.get(i).localSlot.startTime.contentEquals(s.startTime))
-							return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
+//	private static Boolean checkUnwanted(State currentState, LinkedList<TimeCoursePair> unwanted){
+//		timeslots = currentState.timeSlots; 
+//		TimeCoursePair uw;
+//		courseItem c;
+//		courseItem item;
+//		Slot s;
+//		
+//	
+//		for (int i=0; i < timeslots.size(); i++){	
+//	
+//			for (int j=0; j < unwanted.size(); j++){
+//				uw = unwanted.get(j);
+//				c = uw.getCourseItem();
+//				s = uw.getTime();
+//	
+//				for (int k=0; k < timeslots.get(i).assignedItems.size(); k++){
+//					item = timeslots.get(i).assignedItems.get(k);
+//
+//					if(item.isSameCourseItems(c)){
+//						if (timeslots.get(i).localSlot.startTime.contentEquals(s.startTime))
+//							return false;
+//					}
+//				}
+//			}
+//		}
+//		return true;
+//	}
 
 //------------------------------------------------------------------------------------------------------------
 //This section holds all functions that check the hard constraints when attempting an assignment
