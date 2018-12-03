@@ -105,7 +105,7 @@ public class Ext {
 		double secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
 		double notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
 		
-		double randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*4;
+		double randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*2;
 		double breed = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
 		double mutate = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
 		double total = notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
