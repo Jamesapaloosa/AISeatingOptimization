@@ -77,7 +77,7 @@ public class Ext {
 					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
 						newState = newOr.currentState;
 				}*/
-				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned)) {
+				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
 					if (newState.eval_Value < lowestEvalState.eval_Value){
