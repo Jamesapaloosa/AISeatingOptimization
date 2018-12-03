@@ -35,6 +35,7 @@ public class Ext {
 			}
 		}
 		int genCount = 0;
+		int[] weight = setExtensionRulesWeight();
 		while (System.currentTimeMillis() < end) {
 			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
@@ -42,32 +43,32 @@ public class Ext {
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 7) {
+				if (randNum < weight[0]) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else if(randNum < 15){
+				}else if(randNum < weight[1]){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 25){
+				else if(randNum < weight[2]){
 					randNum = random.nextInt(schedule.size());
 					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 35){
+				else if(randNum < weight[3]){
 					randNum = random.nextInt(schedule.size());
 					newState = pairTwoItems(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 60){
+				else if(randNum < weight[4]){
 					randNum = random.nextInt(schedule.size());
 					newState = replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 70){
+				else if(randNum < weight[5]){
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 99){
+				else if(randNum < weight[6]){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
@@ -93,6 +94,40 @@ public class Ext {
 			schedule = purge(schedule);
 		}
 		return new State(lowestEvalState);
+	}
+	
+	
+	private int[] setExtensionRulesWeight(){
+		int[] weights = new int[8];
+		int prefVal = EvalData.getWpref() * fd.preferences.size();
+		int pairVal = EvalData.getWpair() * fd.pair.size();
+		int minVal = EvalData.getWminfilled() * fd.courseSlots.size();
+		int secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
+		int notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
+		
+		int randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*4;
+		int breed = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
+		int mutate = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
+		int total = notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
+		
+		//Breed
+		weights[0] = (breed/total) *100;
+		//Mutate
+		weights[1] = (mutate/total)*100;
+		//putCoursesIntoSlotsUnderMin
+		weights[2] = (minVal/total)*100;
+		//pairTwoItems
+		weights[3] = (pairVal/total)*100;
+		//replaceUndesired
+		weights[4] = (notPairedVal/total)*100;
+		//assignSectionPairsToSameSlot
+		weights[5] = (secDiffVal/total)*100;
+		//placePreferredClass
+		weights[6] = (prefVal/total)*100;
+		//randomNew
+		weights[7] = (randomNew/total)*100;
+		
+		return weights;
 	}
 	
 	//Moves a course to a timeslot that is below the minimum
