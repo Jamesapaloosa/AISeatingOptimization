@@ -20,7 +20,7 @@ public class Ext {
 		State newState = null;
 		start = System.currentTimeMillis();
 		fd = FD;
-		end = start + 120*100000;
+		end = start + 330000;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;
@@ -67,7 +67,7 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 98){
+				else if(randNum < 99){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
@@ -136,7 +136,6 @@ public class Ext {
 		courseItem item1 = null;
 		courseItem item2 = null;
 		Timeslot timeslotToCheck;
-		Timeslot temp2;
 		Timeslot destination;
 		int randNum;
 		int item2Index;
@@ -165,16 +164,16 @@ public class Ext {
 					break;
 			}
 			if(pairFound){
-				timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
 				checks = 0;
-				while(timeslotToCheck.assignedItems.size() < timeslotToCheck.localSlot.Max && checks < 40){
-					timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				while(destination.assignedItems.size() >= destination.localSlot.Max && checks < 40){
+					destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
 					checks++;
 				}
 				
-				if(timeslotToCheck.assignedItems.size() < timeslotToCheck.localSlot.Max){
+				if(destination.assignedItems.size() < destination.localSlot.Max){
 					item2 = timeslotToCheck.assignedItems.remove(item2Index);
-					timeslotToCheck.addItemToTimeslot(item2);
+					destination.addItemToTimeslot(item2);
 				}
 			}
 		}
