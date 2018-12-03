@@ -99,33 +99,33 @@ public class Ext {
 	
 	private int[] setExtensionRulesWeight(){
 		int[] weights = new int[8];
-		int prefVal = EvalData.getWpref() * fd.preferences.size();
-		int pairVal = EvalData.getWpair() * fd.pair.size();
-		int minVal = EvalData.getWminfilled() * fd.courseSlots.size();
-		int secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
-		int notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
+		double prefVal = EvalData.getWpref() * fd.preferences.size();
+		double pairVal = EvalData.getWpair() * fd.pair.size();
+		double minVal = EvalData.getWminfilled() * fd.courseSlots.size();
+		double secDiffVal = EvalData.getWsecdiff() * fd.courseSlots.size();
+		double notPairedVal = EvalData.getWsecdiff() * fd.unwanted.size();
 		
-		int randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*4;
-		int breed = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
-		int mutate = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
-		int total = notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
+		double randomNew = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal)/100)*4;
+		double breed = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
+		double mutate = ((notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
+		double total = notPairedVal + prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
 		
 		//Breed
-		weights[0] = (breed/total) *100;
+		weights[0] =  (int)Math.round((breed/total) *100);
 		//Mutate
-		weights[1] = (mutate/total)*100;
+		weights[1] = (int)Math.round((mutate/total)*100) + weights[0];
 		//putCoursesIntoSlotsUnderMin
-		weights[2] = (minVal/total)*100;
+		weights[2] = (int)Math.round((minVal/total)*100) + weights[1];
 		//pairTwoItems
-		weights[3] = (pairVal/total)*100;
+		weights[3] = (int)Math.round((pairVal/total)*100) + weights[2];
 		//replaceUndesired
-		weights[4] = (notPairedVal/total)*100;
+		weights[4] = (int)Math.round((notPairedVal/total)*100) + weights[3];
 		//assignSectionPairsToSameSlot
-		weights[5] = (secDiffVal/total)*100;
+		weights[5] = (int)Math.round((secDiffVal/total)*100) + weights[4];
 		//placePreferredClass
-		weights[6] = (prefVal/total)*100;
+		weights[6] = (int)Math.round((prefVal/total)*100) + weights[5];
 		//randomNew
-		weights[7] = (randomNew/total)*100;
+		weights[7] = (int)Math.round((randomNew/total)*100) + weights[6];
 		
 		return weights;
 	}
