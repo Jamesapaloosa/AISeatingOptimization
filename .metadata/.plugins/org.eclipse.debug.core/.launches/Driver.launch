@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="Driver"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="&quot;Z:\CPSC433\testCase3_department1.txt&quot;  &quot;Z:\CPSC433\testCase4_department2.txt&quot; &quot;Z:\CPSC433\testCase1.txt&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="&quot;Z:\CPSC433\testCase1.txt&quot; &quot;Z:\CPSC433\testCase4_department2.txt&quot; &quot;Z:\CPSC433\testCase3_department1.txt&quot;"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Assignment2"/>
 </launchConfiguration>

@@ -13,7 +13,16 @@ public class EvalData {
 	private static int pen_notpaired = -6969;
 	private static int pen_section = -6969;
 	
-	
+	public static void readCommandLineArg(String[] input){
+		Wpref = Integer.parseInt(input[1]);
+		Wpair = Integer.parseInt(input[2]);
+		Wminfilled = Integer.parseInt(input[3]);
+		Wsecdiff = Integer.parseInt(input[4]);
+		pen_coursemin = Integer.parseInt(input[5]);
+		pen_labsmin = Integer.parseInt(input[6]);
+		pen_notpaired = Integer.parseInt(input[7]);
+		pen_section = Integer.parseInt(input[8]);
+	}
 	
 	public static void promptUserForValues(){
 		Scanner scanner = new Scanner(System.in);

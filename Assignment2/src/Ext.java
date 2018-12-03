@@ -524,6 +524,14 @@ public class Ext {
 
 	
 	public LinkedList <State> purge (LinkedList <State> states){
+		
+		
+		
+		LinkedList <State> output = new LinkedList<State>();
+		LinkedList <State> best = new LinkedList<State>();
+		LinkedList <State> other = new LinkedList<State>();
+
+		
 		//Dictionary statesEval = new Hashtable();
 		int statesSize = states.size();
 		int [][] evalValues = new int [statesSize][2];
@@ -539,10 +547,21 @@ public class Ext {
 		        return Integer.compare(b[0], a[0]);
 		    }
 		});
-		LinkedList <State> output = new LinkedList<State>();
-		for (int i = 0; i <= DataParser.generationSize ; i++) {
-			output.add(states.get(evalValues[i][1]));
+		
+		
+		for(int i = evalValues.length - 1; i > (evalValues.length - 1) - DataParser.generationSize * DataParser.percentOfTopTenToTake ; i--){
+			best.add(states.get(evalValues[i][1]));
 		}
+		
+		int rangeOfWorst = evalValues.length - (int)(DataParser.generationSize * (1 - DataParser.percentOfTopTenToTake));
+		int randNum;
+		for(int i = 0; i < (DataParser.generationSize *.5); i++){
+			randNum = random.nextInt(evalValues.length - rangeOfWorst);
+			other.add(states.get(evalValues[randNum][1]));
+		}
+		output = best;
+		output.addAll(other);
+
 		states.clear();
 		return output;
 	}
