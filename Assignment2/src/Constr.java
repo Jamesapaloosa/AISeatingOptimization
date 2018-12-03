@@ -511,7 +511,7 @@ public class Constr {
 	public static Boolean partial(State currentState, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> preAssigned){
 		
 	//(maxAndOverlapCheck(state)) was removed
-		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc) && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState)) 
+		if ((tuesdayCourseCheck(currentState)) && eveningLecCheck(currentState) && check500(currentState) && check13(currentState) && schedule13(currentState) && noDuplicates(currentState) && checkIncompatible(currentState, inc)  && checkFridays(currentState) && checkTuesdays(currentState)) 
 			return true;
 		return false;
 	}

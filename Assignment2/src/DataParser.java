@@ -32,8 +32,8 @@ public class DataParser {
 	
 	public static int generationSize = 10;
 	public static int generationMultiplier = 5;
-	public static int generationsWithoutChangeForResult = 40;
-	public static int generationMutationModifier = 100;
+	public static int generationsWithoutChangeForResult = 100;
+	public static int generationMutationModifier = 50;
 	
 	
 	public DataParser(String infile) {

@@ -51,8 +51,6 @@ public class Driver {
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");
 				}
-				else
-					i--;
 			}
 			else{
 				System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");

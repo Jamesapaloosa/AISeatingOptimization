@@ -44,16 +44,14 @@ public class OrTree {
 				return false;
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
-				if(Constr.assign(destinationTimeslot, addingItem, FD.incompatible)){
 				found = destinationTimeslot.addItemToTimeslot(addingItem);
 				if(found){
 					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
 					nxtCoursesToAssign.remove(ranNum);
-					if(fillStateRecursive(nxtCoursesToAssign))
+					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned)&& fillStateRecursive(nxtCoursesToAssign))
 						return true;
 					else
 						removeCourseFromTimeslot(addingItem, destinationTimeslot);
-				}
 				}
 			}
 		}
