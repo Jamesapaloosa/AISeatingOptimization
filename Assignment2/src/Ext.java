@@ -426,20 +426,19 @@ public class Ext {
 			
 			sourceTimeslot = null;
 			
-			try {
-				destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
-			}catch (Exception e) {
+			destinationTimeslot = stateSoftCheck.getSoftState(ToState.timeSlots);
+			if (destinationTimeslot == null) {
 				return ToState;
 			}
 			for(int i = 0; i < FromState.timeSlots.size(); i++){
-				if(FromState.timeSlots.get(i).equals(destinationTimeslot)){
+				if(FromState.timeSlots.get(i).equals(destinationTimeslot) && (FromState.timeSlots.get(i).assignedItems.size() != 0)){
 					sourceTimeslot = FromState.timeSlots.get(i);
 					index = i;
 					break;
 				}
 			}
 			//Make sure we can add this course before we remove it from elsewhere
-			if(destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max){
+			if((destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max) && sourceTimeslot != null){
 				
 				//Choose the course to modify to look more like the best
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
