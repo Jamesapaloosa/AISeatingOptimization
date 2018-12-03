@@ -42,30 +42,30 @@ public class Ext {
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
-				if (randNum < 10) {
+				if (randNum < 7) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), schedule.get(randNum2), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 					
-				}else if(randNum < 20){
+				}else if(randNum < 15){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 30){
+				else if(randNum < 25){
 					randNum = random.nextInt(schedule.size());
-					putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
-				else if(randNum < 50){
+				else if(randNum < 35){
 					randNum = random.nextInt(schedule.size());
 					newState = pairTwoItems(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 60){
 					randNum = random.nextInt(schedule.size());
-					replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = replaceUndesired(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 70){
 					randNum = random.nextInt(schedule.size());
-					assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
+					newState = assignSectionPairsToSameSlot(schedule.get(randNum), (int)Math.ceil(lowestEvalState.eval_Value/DataParser.generationMutationModifier));
 				}
 				else if(randNum < 98){
 					randNum = random.nextInt(schedule.size());
@@ -135,26 +135,48 @@ public class Ext {
 		State output = new State(state);
 		courseItem item1 = null;
 		courseItem item2 = null;
-		Timeslot temp1;
+		Timeslot timeslotToCheck;
 		Timeslot temp2;
+		Timeslot destination;
+		int randNum;
+		int item2Index;
+		int checks;
+		boolean pairFound;
 		for(int i = 0; i < numberOfMutations; i++){
-			temp1 = state.timeSlots.get(random.nextInt(state.timeSlots.size()));
-			if(temp1.assignedItems.size() <= temp1.localSlot.Max - 2){
-				item1 = temp1.getAssignedItems().get(temp1.assignedItems.size());
-				for(int j = 0; j < state.timeSlots.size(); j++){
-					temp2 = state.getTimeSlots().get(j);
-					for(int k = 0; k < temp2.assignedItems.size(); k++){
-						item2 = temp2.assignedItems.get(k);
-						if(isSameCourseDifferentSection(item1, item2)){
-							j = state.timeSlots.size();
-							temp2.assignedItems.remove(k);
-							break;
-						}
+			timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+			checks = 0;
+			while(timeslotToCheck.assignedItems.size() < 2 && checks < 40){
+				timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				checks++;
+			}
+			item2Index = -1;
+			pairFound = false;
+			for(int j = 0; j < timeslotToCheck.assignedItems.size(); j++){
+				item1 = timeslotToCheck.assignedItems.get(j);
+				for(int k = j + 1; k < timeslotToCheck.assignedItems.size(); k++){
+					item2 = timeslotToCheck.assignedItems.get(k);
+					if(isSameCourseDifferentSection(item1, item2)){
+						pairFound = true;
+						item2Index = k;
+						break;
 					}
 				}
+				if(pairFound)
+					break;
 			}
-			temp1.addItemToTimeslot(item1);
-			temp1.addItemToTimeslot(item2);
+			if(pairFound){
+				timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				checks = 0;
+				while(timeslotToCheck.assignedItems.size() < timeslotToCheck.localSlot.Max && checks < 40){
+					timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+					checks++;
+				}
+				
+				if(timeslotToCheck.assignedItems.size() < timeslotToCheck.localSlot.Max){
+					item2 = timeslotToCheck.assignedItems.remove(item2Index);
+					timeslotToCheck.addItemToTimeslot(item2);
+				}
+			}
 		}
 		return output;
 	}
