@@ -437,12 +437,10 @@ public class Constr {
 		
 		Timeslot currentCourseSlot;
 		Timeslot currentLabSlot;
-		
 		String[] splitStartTime;
 		String startTime;
 		int labStart;
 		int courseStart;
-		
 		
 		// Filter all timeslots into two separate linked lists; one for Friday courses and one for Friday labs
 		for (int i = 0; i < timeslots.size(); i++) {

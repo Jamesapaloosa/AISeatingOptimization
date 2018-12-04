@@ -73,6 +73,8 @@ public class OrTree {
 							removeCourseFromTimeslot(addingItem, destinationTimeslot);
 					}
 			}
+			if(altern.size() == 0)
+				return false;
 		}
 		return false;
 	}
