@@ -5,6 +5,7 @@ public class State {
 	int eval_Value; 
 	boolean isSolvable;
 	
+	//Creates a new state
 	public State(){
 		timeSlots = new LinkedList<Timeslot>();
 		CoursesLabsToAssign = new LinkedList<courseItem>();
@@ -12,6 +13,7 @@ public class State {
 		isSolvable = true;
 	}
 	
+	//Creates a state that is a copy of the fed state
 	public State(State inState){
 		timeSlots = new LinkedList<Timeslot>();
 		CoursesLabsToAssign = new LinkedList<courseItem>();

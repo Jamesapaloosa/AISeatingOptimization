@@ -5,15 +5,15 @@ public class OrTree {
 	State currentState;
 	FileData FD;
 	
-	
+	//Constructor for the or tree
 	public OrTree(State inState, FileData FD){
 		currentState = inState;
 		this.FD = FD;
 	}
 
-	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign, long endtime){
-		if(endtime < System.currentTimeMillis())
-			return true;
+	
+	//Or tree that acts as a recursive function to create all or tree versions of a solution.
+	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign){
 		courseItem addingItem;
 		Timeslot destinationTimeslot;
 		int ranNum;
@@ -67,18 +67,21 @@ public class OrTree {
 					if(found){
 						nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
 						nxtCoursesToAssign.remove(ranNum);
-						if(fillStateRecursive(nxtCoursesToAssign, endtime)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+						if(fillStateRecursive(nxtCoursesToAssign)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
 							return true;
 						else
 							removeCourseFromTimeslot(addingItem, destinationTimeslot);
 					}
 			}
+			
+			//TODO: fix so that this checks smarter
 			if(altern.size() == 0)
 				return false;
 		}
 		return false;
 	}
 	
+	//Finds a course and removes it from a timeslot if the or tree determines that it is not possible to place that course into that location
 	private void removeCourseFromTimeslot(courseItem removeThis, Timeslot fromHere){
 		for(int i = 0; i < fromHere.assignedItems.size(); i++){
 			if(removeThis.isSameCourseItems(fromHere.assignedItems.get(i)))

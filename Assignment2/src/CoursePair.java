@@ -1,7 +1,7 @@
 public class CoursePair {
 	courseItem itemOne;
 	courseItem itemTwo;
-	
+	//Course that stores the data of a pair of courses
 	public courseItem getItemOne() {
 		return itemOne;
 	}

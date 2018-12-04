@@ -7,7 +7,7 @@ public class Slot {
 	int Max;
 	int Min;
 	boolean isForCourses;
-	
+	//constructor for a slot that that is not a preference which means it has to be a real slot
 	public Slot(int inMax, int inMin, String inStart, String inDay, boolean isForCourses) {
 		Max = inMax;
 		Min = inMin;
@@ -17,6 +17,7 @@ public class Slot {
 		setEndTime(isForCourses);
 	}
 	
+	//constructor for a slot that is a preference and so does not need to be a real slot
 	public Slot(int inMax, int inMin, String inStart, String inDay, boolean isForCourses, boolean isPref) {
 		Max = inMax;
 		Min = inMin;
@@ -49,6 +50,7 @@ public class Slot {
 		return Min;
 	}
 	
+	//Method that confirms this is a valid slot and creates the end time
 	private void setEndTime(boolean isForCourses){
 		String lecVTut;
 		if(isForCourses){

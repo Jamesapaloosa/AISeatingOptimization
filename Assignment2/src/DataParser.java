@@ -5,6 +5,8 @@ import java.io.*;
 public class DataParser {
 	String sourcefile;
 	FileData dataOutput;
+	
+	//The following are universal data sources that are for use across the machine
 	public static String[] validDays = {"MO", "TU", "FR"};
 	public static String[] validMondays = {"Mo", "mO", "mo", "MO"};
 	public static String[] validTuesdays = {"TU", "Tu", "tu", "tU"};
@@ -37,7 +39,7 @@ public class DataParser {
 	public static long orTreeTimeOut = 10000;
 	public static double percentOfTopTenToTake = .3;
 	
-	
+	//
 	public DataParser(String infile) {
 		if(infile == "") {
 			sourcefile = "E:\\CPSC433\\testCase1.txt";
@@ -58,6 +60,7 @@ public class DataParser {
 		
 	}
 	
+	//Set the dictionary with the end times for each start time
 	private void setTutFridayEndTimes(){
 		TutFridayEndTimes.put("8:00", "10:00");
 		TutFridayEndTimes.put("10:00", "12:00");
@@ -68,6 +71,7 @@ public class DataParser {
 		
 	}
 	
+	//Set the dictionary with the tuesday course end times
 	private void setCourseTuesdayEndTimes(){
 		CourseTuesdayEndTimes.put("8:00", "9:30");
 		CourseTuesdayEndTimes.put("9:30", "11:00");
@@ -79,6 +83,7 @@ public class DataParser {
 		CourseTuesdayEndTimes.put("18:30", "20:00");
 	}
 	
+	//Set the tutorial monday tuesday times
 	private void setTutMondayTuesdayEndTimes(){
 		CourseTuesdayEndTimes.put("8:00", "9:00");
 		CourseTuesdayEndTimes.put("9:00", "10:00");

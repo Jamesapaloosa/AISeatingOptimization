@@ -13,6 +13,7 @@ public class EvalData {
 	private static int pen_notpaired = -6969;
 	private static int pen_section = -6969;
 	
+	//Read the data from command line arguments
 	public static void readCommandLineArg(String[] input){
 		Wpref = Integer.parseInt(input[1]);
 		Wpair = Integer.parseInt(input[2]);
@@ -24,6 +25,7 @@ public class EvalData {
 		pen_section = Integer.parseInt(input[8]);
 	}
 	
+	//method to get weights and penalties from the user
 	public static void promptUserForValues(){
 		Scanner scanner = new Scanner(System.in);
 		String input;

@@ -17,12 +17,13 @@ public class Ext {
 		this.blankState = blankState;
 	}
 
+	//method that runs and get the optomized solution
 	public State getOptomized(LinkedList<State> factsSet, FileData FD){
 		State newState = null;
 		start = System.currentTimeMillis();
 		fd = FD;
 		stateSoftCheck = new SoftConstraintState(FD);
-		end = start + 330000;
+		end = start + 28800000;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;
@@ -41,10 +42,12 @@ public class Ext {
 		int[] weight = setExtensionRulesWeight();
 		long now = System.currentTimeMillis();
 		diff = end - now;
+		//While the time limit is not passed
 		while (diff > 0) {
 			if (lowestEvalState.eval_Value == 0) {
 				return lowestEvalState;
 			}
+			//choose the different extension rules to try for each generation
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
 				randNum = random.nextInt(100);
@@ -79,7 +82,7 @@ public class Ext {
 				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
-					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, (System.currentTimeMillis() + DataParser.orTreeTimeOut/2)))
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
 						newState = newOr.currentState;
 				}
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
@@ -101,7 +104,7 @@ public class Ext {
 		return new State(lowestEvalState);
 	}
 	
-	
+	//method to determine the weight of each extension rule to employ per generation
 	private int[] setExtensionRulesWeight(){
 		int[] weights = new int[8];
 		
@@ -218,6 +221,7 @@ public class Ext {
 		int item2Index;
 		int checks;
 		boolean pairFound;
+		//determine how many mutations to attempt
 		for(int i = 0; i < numberOfMutations; i++){
 			timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
 			checks = 0;
@@ -257,6 +261,7 @@ public class Ext {
 		return output;
 	}
 	
+	//Check for the course being the same but a different section
 	private Boolean isSameCourseDifferentSection(courseItem inItem1, courseItem inItem2)
 	{
 		if(!inItem1.getDepartment().equals(inItem2.getDepartment())) {
@@ -522,11 +527,8 @@ public class Ext {
 		return newState;
 	}
 
-	
+	//Method to purge a portion of the worst results
 	public LinkedList <State> purge (LinkedList <State> states){
-		
-		
-		
 		LinkedList <State> output = new LinkedList<State>();
 		LinkedList <State> best = new LinkedList<State>();
 		LinkedList <State> other = new LinkedList<State>();
@@ -548,11 +550,11 @@ public class Ext {
 		    }
 		});
 		
-		
+		//Grab the best results
 		for(int i = evalValues.length - 1; i > (evalValues.length - 1) - DataParser.generationSize * DataParser.percentOfTopTenToTake ; i--){
 			best.add(states.get(evalValues[i][1]));
 		}
-		
+		//Grab some other results for random chance of other solutions
 		int rangeOfWorst = evalValues.length - (int)(DataParser.generationSize * (1 - DataParser.percentOfTopTenToTake));
 		int randNum;
 		for(int i = 0; i < (DataParser.generationSize *.5); i++){
