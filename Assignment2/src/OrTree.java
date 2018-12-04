@@ -18,10 +18,12 @@ public class OrTree {
 		Timeslot destinationTimeslot;
 		int ranNum;
 		boolean found;
+		boolean foundNightClass;
 		LinkedList<courseItem> nxtCoursesToAssign;
 		LinkedList<Integer> altern = new LinkedList<Integer>();
 		LinkedList<Integer> courseAltern = new LinkedList<Integer>();
 		
+
 		//Return if all courses are assigned;
 		if(coursesToAssign.size() == 0){
 			currentState.CoursesLabsToAssign = new LinkedList<courseItem>();
@@ -36,8 +38,23 @@ public class OrTree {
 		found = false;
 		altern = new LinkedList<Integer>();
 		while(courseAltern.size() > 0){
-			ranNum = new Random().nextInt(courseAltern.size());
-			addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
+			foundNightClass = false;
+			addingItem = null;
+			ranNum = -1;
+			//Pick night courses first
+			for (int i = 0; i < coursesToAssign.size(); i++){
+				if(coursesToAssign.get(i).section.charAt(0) == '9'){
+					foundNightClass = true;
+					ranNum = i;
+					addingItem = coursesToAssign.get(i);
+					break;
+				}
+			}
+			if(!foundNightClass){
+				ranNum = new Random().nextInt(courseAltern.size());
+				addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
+			}
+			
 			//Altern creates different choices of time slots
 			for(int k = 0; k < currentState.timeSlots.size(); k++){
 				altern.add(new Integer(k));

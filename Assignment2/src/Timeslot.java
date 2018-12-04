@@ -18,6 +18,17 @@ public class Timeslot {
 			return false;
 		}
 		
+		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
+
+		if(newItem.isALec == true){
+			String lecNum = newItem.section;
+			if (lecNum.charAt(0) == '9'){
+				if (!Arrays.stream(eveningSlots).anyMatch(this.localSlot.startTime::equals))
+					return false;
+			}	
+			
+		}
+		
 		//Deal with 913 and 813 constraints
 		int inNumber = Integer.parseInt(newItem.number);
 		int otherNum;
