@@ -38,7 +38,11 @@ public class Driver {
 		currentState = StateMaker.convertFromFileData(inputFileData);
 		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
 		Constr.items.addAll(inputFileData.getLabs());
-
+		if(!Constr.check813913Pairs()){
+			System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
+			return;
+		}
+		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("making the initial state speed: " + duration);

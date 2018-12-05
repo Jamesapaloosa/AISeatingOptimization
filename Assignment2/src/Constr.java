@@ -36,6 +36,33 @@ public class Constr {
 		return true;
 	}
 	*/
+    
+    public static boolean check813913Pairs(){
+    	boolean foundhigh = false;
+    	boolean foundlow = false;
+    	courseItem thisItem;
+    	for(int i = 0; i < items.size(); i++){
+    		thisItem = items.get(i);
+    		if(thisItem.isALec && thisItem.number.contentEquals("813") && thisItem.department.contentEquals("CPSC"))
+    			foundhigh = true;
+    		else if((thisItem.isALec && thisItem.number.contentEquals("313") && thisItem.department.contentEquals("CPSC")))
+    			foundlow = true;
+    	}
+    	if((foundhigh && !foundlow) ||(!foundhigh && foundlow))
+    		return false;
+    	foundhigh = false;
+    	foundlow = false;
+    	for(int i = 0; i < items.size(); i++){
+    		thisItem = items.get(i);
+    		if(thisItem.isALec && thisItem.number.contentEquals("913") && thisItem.department.contentEquals("CPSC"))
+    			foundhigh = true;
+    		else if((thisItem.isALec && thisItem.number.contentEquals("413") && thisItem.department.contentEquals("CPSC")))
+    			foundlow = true;
+    	}
+    	if((foundhigh && !foundlow) ||(!foundhigh && foundlow))
+    		return false;
+    	return true;
+    }
     		
     
 	//Makes sure all classes that are needed are contained in the stimeslots
@@ -183,6 +210,8 @@ public class Constr {
 		timeslots = currentState.timeSlots; 
 		Timeslot currentSlot;
 
+		
+		
 		// Ensure CPSC 813 and 913 are scheduled only during the TU timeslot starting at 18:00.
 		for (int i=0; i < timeslots.size(); i++){	
 			currentSlot = timeslots.get(i);
@@ -722,7 +751,7 @@ public class Constr {
 			return false;
 		//&& schedule13(currentState)
 		//(maxAndOverlapCheck(state)) was removed  && check500(currentState) && checkIncompatible(currentState, inc) && checkUnwanted(currentState, unwanted))  && check13(currentState)
-		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState))
+		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState)&&check13(currentState))
 			return true;
 		return false;
 	}
@@ -748,7 +777,7 @@ public class Constr {
 	
 	// Run Constr on an assignment
 	public static Boolean assign(State currentState, Timeslot ts, courseItem ci, LinkedList<CoursePair> inc, LinkedList<TimeCoursePair> unwanted){
-		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci) && checkOverlapAssign(currentState, ts, ci))
+		if (eveningLecAssign(ts, ci) && assign500(ts) && assign13(ts, ci) && checkIncompatibleAssign(ts, ci, inc) && checkUnwantedAssign(ts, ci, unwanted) && tuesdayCourseCheckAssign(ts, ci) && checkOverlapAssign(currentState, ts, ci) && check13(currentState))
 			return true;
 		return false;
 
