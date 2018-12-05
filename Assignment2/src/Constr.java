@@ -61,6 +61,8 @@ public class Constr {
 					return false;
 			}
 		}
+		if(valuesToFind.size() > 0)
+			return false;
 		
 		return true;
 	}

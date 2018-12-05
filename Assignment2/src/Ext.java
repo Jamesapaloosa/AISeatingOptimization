@@ -28,6 +28,7 @@ public class Ext {
 		OrTree newOr;
 		int randNum;
 		int randNum2;
+		int ExtNum;
 		int genWithoutChange = 0;
 		lowestEvalState = schedule.get(0);
 		lowestEvalState.eval_Value = eval.evaluateTimeslots(lowestEvalState.timeSlots);
@@ -50,33 +51,33 @@ public class Ext {
 			//choose the different extension rules to try for each generation
 			System.out.println("Generation number: " + genCount + " Top eval value: " + lowestEvalState.eval_Value);
  			for(int i = 0; i < DataParser.generationSize * DataParser.generationMultiplier; i++){
-				randNum = random.nextInt(100);
-				if (randNum < weight[0]) {
+ 				ExtNum = random.nextInt(100);
+				if (ExtNum < weight[0]) {
 					randNum = random.nextInt(schedule.size());
 					randNum2 = random.nextInt(schedule.size());
 					newState = breed(schedule.get(randNum), lowestEvalState, 1);
 					
-				}else if(randNum < weight[1]){
+				}else if(ExtNum < weight[1]){
 					randNum = random.nextInt(schedule.size());
 					newState = mutate(schedule.get(randNum), 1);
 				}
-				else if(randNum < weight[2]){
+				else if(ExtNum < weight[2]){
 					randNum = random.nextInt(schedule.size());
 					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), 1);
 				}
-				else if(randNum < weight[3]){
+				else if(ExtNum < weight[3]){
 					randNum = random.nextInt(schedule.size());
 					newState = pairTwoItems(schedule.get(randNum), 1);
 				}
-				else if(randNum < weight[4]){
+				else if(ExtNum < weight[4]){
 					randNum = random.nextInt(schedule.size());
 					newState = replaceUndesired(schedule.get(randNum), 1);
 				}
-				else if(randNum < weight[5]){
+				else if(ExtNum < weight[5]){
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), 1);
 				}
-				else if (randNum < weight[6]){
+				else if (ExtNum < weight[6]){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), 1);
 				}
