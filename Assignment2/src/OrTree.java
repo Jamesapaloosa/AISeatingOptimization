@@ -17,8 +17,6 @@ public class OrTree {
 		courseItem addingItem;
 		Timeslot destinationTimeslot;
 		int ranNum;
-		boolean found;
-		boolean foundNightClass;
 		LinkedList<courseItem> nxtCoursesToAssign;
 		LinkedList<Integer> altern = new LinkedList<Integer>();
 		LinkedList<Integer> courseAltern = new LinkedList<Integer>();
@@ -26,8 +24,10 @@ public class OrTree {
 
 		//Return if all courses are assigned;
 		if(coursesToAssign.size() == 0){
-			currentState.CoursesLabsToAssign = new LinkedList<courseItem>();
-			return true;
+			if(Constr.finalCheck(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+				return true;
+			else 
+				return false;
 		}
 		//set the choices of courses to assign
 		for(int k = 0; k < coursesToAssign.size(); k++){
@@ -35,48 +35,26 @@ public class OrTree {
 		}
 		
 		//make a list of the indexes of different choices to make at this point
-		found = false;
 		altern = new LinkedList<Integer>();
 		while(courseAltern.size() > 0){
-			foundNightClass = false;
-			addingItem = null;
-			ranNum = -1;
-			//Pick night courses first
-			for (int i = 0; i < coursesToAssign.size(); i++){
-				if(coursesToAssign.get(i).section.charAt(0) == '9'){
-					foundNightClass = true;
-					ranNum = i;
-					addingItem = coursesToAssign.get(i);
-					break;
-				}
-			}
-			if(!foundNightClass){
-				ranNum = new Random().nextInt(courseAltern.size());
-				addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
-			}
+			ranNum = new Random().nextInt(courseAltern.size());
+			addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
 			
-			//Altern creates different choices of time slots
 			for(int k = 0; k < currentState.timeSlots.size(); k++){
 				altern.add(new Integer(k));
 			}
-			if(altern.size() == 0)
-				return false;
+			
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
-					found = destinationTimeslot.addItemToTimeslot(addingItem, FD);
-					if(found){
-						nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
-						nxtCoursesToAssign.remove(ranNum);
-						if(fillStateRecursive(nxtCoursesToAssign)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
-							return true;
-						else
-							removeCourseFromTimeslot(addingItem, destinationTimeslot);
-					}
+				if(destinationTimeslot.addItemToTimeslot(addingItem, FD)){
+					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
+					nxtCoursesToAssign.remove(ranNum);
+					if(fillStateRecursive(nxtCoursesToAssign)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+						return true;
+					else
+						removeCourseFromTimeslot(addingItem, destinationTimeslot);
+				}
 			}
-			
-			//TODO: fix so that this checks smarter
-			if(altern.size() == 0)
-				return false;
 		}
 		return false;
 	}

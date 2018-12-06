@@ -90,7 +90,6 @@ public class Constr {
 		}
 		if(valuesToFind.size() > 0)
 			return false;
-		
 		return true;
 	}
 	
@@ -751,7 +750,7 @@ public class Constr {
 			return false;
 		//&& schedule13(currentState)
 		//(maxAndOverlapCheck(state)) was removed  && check500(currentState) && checkIncompatible(currentState, inc) && checkUnwanted(currentState, unwanted))  && check13(currentState)
-		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState)&&check13(currentState))
+		if (eveningLecCheck(currentState)  && noDuplicates(currentState)  && checkPreassigned(currentState, preAssigned) && checkFridays(currentState) && checkTuesdays(currentState) && checkMondays(currentState))
 			return true;
 		return false;
 	}

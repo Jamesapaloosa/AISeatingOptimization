@@ -1,0 +1,31 @@
+Name:
+gehtnicht2
+
+Course slots:
+
+
+Lab slots:
+
+
+
+Courses:
+CPSC 433 LEC 01
+
+Labs:
+
+
+
+Not compatible:
+CPSC 433 LEC 01 TUT 01, SENG 311 LEC 01 TUT 01
+
+Unwanted:
+
+Preferences:
+MO, 8:00, CPSC 433 LEC 01, 10
+MO, 9:00, CPSC 433 LEC 02, 5
+MO, 9:00, SENG 311 LEC 01, 10
+
+Pair:
+
+Partial assignments:
+

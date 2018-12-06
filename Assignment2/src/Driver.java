@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import java.util.Scanner;
@@ -31,39 +32,42 @@ public class Driver {
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
-		
+		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
 		
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
 		startTime = System.currentTimeMillis();
 		currentState = StateMaker.convertFromFileData(inputFileData);
 		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
 		Constr.items.addAll(inputFileData.getLabs());
-		if(!Constr.check813913Pairs()){
-			System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
-			return;
-		}
+//		if(!Constr.check813913Pairs()){
+//			System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
+//			return;
+//		}
 		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("making the initial state speed: " + duration);
-		
-		
+		courseItem newItem;
+		LinkedList<courseItem> nightCourses = new LinkedList<courseItem>();
+
 		//Or tree
 		startTime = System.currentTimeMillis();
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-			if(thisOrTree.fillStateRecursive(thisOrTree.currentState.getCoursesLabsToAssign())){
-				if(Constr.finalCheck(thisOrTree.currentState, inputFileData.incompatible, inputFileData.preAssigned, inputFileData.unwanted)){
+				if(thisOrTree.fillStateRecursive((LinkedList<courseItem>)thisOrTree.currentState.getCoursesLabsToAssign().clone())){
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");
 				}
-			}
-			else{
-				System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
-				return;
-			}
+				else{
+					System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
+					return;
+				}
+		}
+		if(InitialStates.size() == 0){
+			System.out.println("Failed to create or trees because of constr final");
+			return;
 		}
 		System.out.println(".");
 		endTime = System.currentTimeMillis();
