@@ -480,53 +480,56 @@ public class Ext {
 	*/
 	private State mutate(State state, int numberOfMutations){
 		State newState = new State(state);
-		LinkedList<Integer> altern = new LinkedList<Integer>();
 		Timeslot source;
 		Timeslot destination;
 		boolean cont;
+		int destinationIndex = 0;
+		int sourceIndex = 0;
 		if(numberOfMutations < 1){
 			numberOfMutations = 1;
 		}
 		int randNum;
 		//Loop to go through the number of mutations required
 		for(int j = 0; j < numberOfMutations; j++){
-			for(int i = 0; i < newState.timeSlots.size(); i++){
-				altern.add(i);
+			
+			destination = stateSoftCheck.getSoftState(newState.timeSlots);
+			
+			if (destination == null){
+				return newState;
 			}
 			source = null;
 			cont = false;
-			//Find a source timeslot to take a class from
-			while(altern.size() > 0){
-				randNum = random.nextInt(altern.size());
-				source = newState.timeSlots.get(altern.get(randNum));
-				if(source.assignedItems.size() > 0){
+			while(true){
+				source = newState.timeSlots.get(random.nextInt(newState.timeSlots.size()));
+				if(source.assignedItems.size() > 0 && !source.equals(destination)){
 					cont = true;
 					break;
 				}
-				altern.remove(randNum);
 			}
-			if(cont){
-				//Grab a course at random
-				int courseIndex = random.nextInt(source.assignedItems.size());
-				courseItem courseToMove = source.getAssignedItems().remove(courseIndex);
-				
-				//Find a destination time-slot to put that class into
-				for(int i = 0; i < newState.timeSlots.size(); i++){
-					altern.add(i);
+			
+			for (int i = 0; i < newState.timeSlots.size(); i++) {
+				if (newState.timeSlots.get(i).equals(destination)) {
+					destinationIndex = i;
+				}else if (newState.timeSlots.get(i).equals(source)) {
+					sourceIndex = i;
 				}
-				while(altern.size() > 0){
-					randNum = random.nextInt(altern.size());
-					destination = newState.timeSlots.get(altern.get(randNum));
-					if((destination.assignedItems.size() > 0)&&(!destination.equals(source))){
-						destination.addItemToTimeslot(courseToMove, fd);
-						break;
-					}
-					altern.remove(randNum);
+			}
+			
+			if (cont) {
+				//Make sure we can add this course before we remove it from elsewhere
+				if((destination.assignedItems.size() < destination.localSlot.Max) && source != null){
+					
+
+					int courseIndex = random.nextInt(source.assignedItems.size());
+					courseItem courseToMove = newState.timeSlots.get(sourceIndex).getAssignedItems().remove(courseIndex);
+					
+					newState.timeSlots.get(destinationIndex).addItemToTimeslot(courseToMove, fd);
 				}
 			}
 		}
 		return newState;
 	}
+
 
 	//Method to purge a portion of the worst results
 	public LinkedList <State> purge (LinkedList <State> states){
