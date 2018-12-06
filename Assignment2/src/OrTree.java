@@ -15,31 +15,32 @@ public class OrTree {
 	//Or tree that acts as a recursive function to create all or tree versions of a solution.
 	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign){
 		courseItem addingItem;
+		courseItem temp;
+		courseItem temp2;
 		Timeslot destinationTimeslot;
-		int ranNum;
+		int courseIndexInToAssign;
 		LinkedList<courseItem> nxtCoursesToAssign;
-		LinkedList<Integer> altern = new LinkedList<Integer>();
+		LinkedList<Integer> altern;
 		LinkedList<Integer> courseAltern = new LinkedList<Integer>();
 		
 
 		//Return if all courses are assigned;
-		if(coursesToAssign.size() == 0){
-			if(Constr.finalCheck(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
-				return true;
-			else 
-				return false;
+		if(coursesToAssign.size() == 0 && Constr.finalCheck(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)){
+			return true;
 		}
+		else if (coursesToAssign.size() == 0 && !Constr.finalCheck(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+			return false;
 		//set the choices of courses to assign
 		for(int k = 0; k < coursesToAssign.size(); k++){
 			courseAltern.add(new Integer(k));
 		}
 		
 		//make a list of the indexes of different choices to make at this point
-		altern = new LinkedList<Integer>();
+
 		while(courseAltern.size() > 0){
-			ranNum = new Random().nextInt(courseAltern.size());
-			addingItem = coursesToAssign.get(courseAltern.remove(ranNum));
-			
+			courseIndexInToAssign = new Random().nextInt(courseAltern.size());
+			addingItem = coursesToAssign.get(courseAltern.remove(courseIndexInToAssign));
+			altern = new LinkedList<Integer>();
 			for(int k = 0; k < currentState.timeSlots.size(); k++){
 				altern.add(new Integer(k));
 			}
@@ -48,22 +49,27 @@ public class OrTree {
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
 				if(destinationTimeslot.addItemToTimeslot(addingItem, FD)){
 					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
-					nxtCoursesToAssign.remove(ranNum);
-					if(fillStateRecursive(nxtCoursesToAssign)&&Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted))
+					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)&&fillStateRecursive(nxtCoursesToAssign))
 						return true;
-					else
-						removeCourseFromTimeslot(addingItem, destinationTimeslot);
+					else{
+						if(!removeCourseFromTimeslot(addingItem, destinationTimeslot))
+							throw new IllegalArgumentException("Failed to remove class from destination");
+					}
 				}
 			}
 		}
 		return false;
 	}
 	
+	
 	//Finds a course and removes it from a timeslot if the or tree determines that it is not possible to place that course into that location
-	private void removeCourseFromTimeslot(courseItem removeThis, Timeslot fromHere){
+	private boolean removeCourseFromTimeslot(courseItem removeThis, Timeslot fromHere){
 		for(int i = 0; i < fromHere.assignedItems.size(); i++){
-			if(removeThis.isSameCourseItems(fromHere.assignedItems.get(i)))
+			if(removeThis.isSameCourseItems(fromHere.assignedItems.get(i))){
 				fromHere.assignedItems.remove(i);
+				return true;
+			}
 		}
+		return false;
 	}
 }

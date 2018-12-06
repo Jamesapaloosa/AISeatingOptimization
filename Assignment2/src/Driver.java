@@ -54,6 +54,10 @@ public class Driver {
 		startTime = System.currentTimeMillis();
 		OrTree thisOrTree;
 		LinkedList<State> InitialStates = new LinkedList<State>();
+		if(!Constr.partial(currentState, inputFileData.incompatible, inputFileData.preAssigned, inputFileData.unwanted)){
+			System.out.println("invalid start state for the provided state.  Problem is unsolvable");
+			return;
+		}
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
 				if(thisOrTree.fillStateRecursive((LinkedList<courseItem>)thisOrTree.currentState.getCoursesLabsToAssign().clone())){

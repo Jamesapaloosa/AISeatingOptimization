@@ -18,6 +18,12 @@ public class Timeslot {
 			return false;
 		}
 		
+		for(int i = 0; i < assignedItems.size(); i++){
+			if(assignedItems.get(i).isSameCourseItems(newItem))
+				return false;
+		}
+			
+		
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
 
 		if(newItem.isALec == true){

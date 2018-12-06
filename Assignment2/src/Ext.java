@@ -23,7 +23,7 @@ public class Ext {
 		start = System.currentTimeMillis();
 		fd = FD;
 		stateSoftCheck = new SoftConstraintState(FD);
-		end = start + 28800000;
+		end = start + 43200000;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;
@@ -77,15 +77,16 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), 1);
 				}
-				else if (ExtNum < weight[6]){
+				else{ 		//(ExtNum < weight[6])
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), 1);
-				}
+				}/*
 				else{
 					newOr = new OrTree(new State(blankState), FD);
 					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
 						newState = newOr.currentState;
 				}
+				*/
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
