@@ -15,13 +15,12 @@ public class OrTree {
 	//Or tree that acts as a recursive function to create all or tree versions of a solution.
 	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign){
 		courseItem addingItem;
-		courseItem temp;
-		courseItem temp2;
 		Timeslot destinationTimeslot;
 		int courseIndexInToAssign;
 		LinkedList<courseItem> nxtCoursesToAssign;
 		LinkedList<Integer> altern;
 		LinkedList<Integer> courseAltern = new LinkedList<Integer>();
+		State tempState;
 		
 
 		//Return if all courses are assigned;
@@ -47,8 +46,11 @@ public class OrTree {
 			
 			while(altern.size() > 0){
 				destinationTimeslot = currentState.timeSlots.get(altern.remove(new Random().nextInt(altern.size())));
+				
+				
 				if(destinationTimeslot.addItemToTimeslot(addingItem, FD)){
 					nxtCoursesToAssign = (LinkedList<courseItem>)coursesToAssign.clone();
+					nxtCoursesToAssign.remove(courseIndexInToAssign);
 					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)&&fillStateRecursive(nxtCoursesToAssign))
 						return true;
 					else{
