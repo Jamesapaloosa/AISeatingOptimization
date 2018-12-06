@@ -93,6 +93,22 @@ public class Constr {
 		return true;
 	}
 	
+	
+	public static boolean noDuplicates(LinkedList<courseItem> inlist){
+        courseItem fromCourse;
+        courseItem toCourse;
+        for(int i = 0; i < inlist.size(); i++){
+        	fromCourse = inlist.get(i);
+        	for(int j = i + 1; j < inlist.size(); j++){
+        		toCourse = inlist.get(j);
+        		if (fromCourse.isSameCourseItems(toCourse)){
+        			return false;
+        		}
+        	}
+        }
+        return true;
+	}
+	
 	//Goes through the code and makes sure that no class exists twice
 	public static Boolean noDuplicates(State currentState) {
         Timeslot fromSlot;
@@ -493,6 +509,40 @@ public class Constr {
 		return true;
 	}
 	
+	private static Boolean checkMondaysJames(State currentState){
+		
+		LinkedList<Timeslot> mondayCourses = new LinkedList<Timeslot>();
+		LinkedList<Timeslot> mondayLabs = new LinkedList<Timeslot>();
+		for (int i = 0; i < timeslots.size(); i++) {
+			if((timeslots.get(i).localSlot.day.contentEquals("MO")) && (timeslots.get(i).forCourses == false)) {
+				mondayLabs.add(timeslots.get(i));
+			}
+			else if ((timeslots.get(i).localSlot.day.contentEquals("MO")) && (timeslots.get(i).forCourses == true))
+				mondayCourses.add(timeslots.get(i));
+		}
+		courseItem lab;
+		courseItem course;
+		Timeslot labSlot;
+		Timeslot courseSlot;
+		for(int i = 0; i < mondayLabs.size(); i++){
+			labSlot = mondayLabs.get(i);
+			for(int j = 0; j < labSlot.assignedItems.size(); j++){
+				lab = labSlot.getAssignedItems().get(j);
+				for(int k = 0; k < mondayCourses.size(); k++){
+					courseSlot = mondayCourses.get(k);
+					for(int l = 0; l < courseSlot.assignedItems.size(); l++){
+						course = courseSlot.assignedItems.get(l);
+						if(lab.section.contentEquals(course.section) && lab.department.contentEquals(course.department) && lab.number.contentEquals(course.number)){
+							if(courseSlot.localSlot.startTime.contentEquals(labSlot.localSlot.startTime))
+								return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	// Check unwanted courseItem/Timeslot pairs are not scheudled 
 //	private static Boolean checkUnwanted(State currentState, LinkedList<TimeCoursePair> unwanted){
 //		timeslots = currentState.timeSlots; 
@@ -748,7 +798,7 @@ public class Constr {
 			return false;
 		if(!checkTuesdays(currentState))
 			return false;
-		if(!checkMondays(currentState))
+		if(!checkMondaysJames(currentState))
 			return false;
 		if(!checkPreassigned(currentState, preAssigned))
 			return false;

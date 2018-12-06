@@ -43,13 +43,16 @@ public class Driver {
 //			System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
 //			return;
 //		}
-		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("making the initial state speed: " + duration);
-		courseItem newItem;
-		LinkedList<courseItem> nightCourses = new LinkedList<courseItem>();
-
+		
+		
+		if(!Constr.noDuplicates(Constr.items))
+			return;
+		if(!Constr.noDuplicates(currentState.CoursesLabsToAssign))
+			return;
+		
 		//Or tree
 		startTime = System.currentTimeMillis();
 		OrTree thisOrTree;

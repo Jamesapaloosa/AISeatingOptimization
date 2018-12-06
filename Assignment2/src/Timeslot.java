@@ -17,12 +17,8 @@ public class Timeslot {
 		if(localSlot.startTime.contentEquals("11:00") && forCourses && localSlot.day.contentEquals("TU")){
 			return false;
 		}
-		
-		for(int i = 0; i < assignedItems.size(); i++){
-			if(assignedItems.get(i).isSameCourseItems(newItem))
-				return false;
-		}
-			
+		if(!Constr.noDuplicates(assignedItems))
+			return false;
 		
 		String[] eveningSlots = {"18:00", "18:30", "19:00", "20:00"};
 
@@ -142,9 +138,11 @@ public class Timeslot {
 	}
 	
 	public boolean equals(Timeslot otherSlot){
-		if(localSlot.isSameSlot(otherSlot.localSlot)&&((forCourses & otherSlot.forCourses) || (!forCourses & !otherSlot.forCourses))){
+		if(localSlot.isSameSlot(otherSlot.localSlot)&&(forCourses && otherSlot.forCourses)){
 			return true;
 		}
+		else if((!forCourses && !otherSlot.forCourses) && (localSlot.isSameSlot(otherSlot.localSlot)))
+			return true;
 		return false;
 	}
 }
