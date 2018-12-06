@@ -13,7 +13,9 @@ public class OrTree {
 
 	
 	//Or tree that acts as a recursive function to create all or tree versions of a solution.
-	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign){
+	public boolean fillStateRecursive(LinkedList<courseItem> coursesToAssign, long endtime){
+		if(endtime < System.currentTimeMillis())
+			return true;
 		courseItem addingItem;
 		Timeslot destinationTimeslot;
 		int courseIndexInToAssign;
@@ -58,7 +60,7 @@ public class OrTree {
 					if(!temp.isSameCourseItems(addingItem)){
 						throw new IllegalArgumentException("course removed does not match the added item");
 					}
-					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)&&fillStateRecursive(nxtCoursesToAssign))
+					if(Constr.partial(currentState, FD.incompatible, FD.preAssigned, FD.unwanted)&&fillStateRecursive(nxtCoursesToAssign, endtime))
 						return true;
 					else{
 						foundToRemove = removeCourseFromState(addingItem);

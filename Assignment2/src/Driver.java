@@ -63,7 +63,7 @@ public class Driver {
 		}
 		for(int i = 0; i < DataParser.generationSize; i = InitialStates.size()){
 			thisOrTree = new OrTree(new State(currentState), inputFileData);
-				if(thisOrTree.fillStateRecursive((LinkedList<courseItem>)thisOrTree.currentState.getCoursesLabsToAssign().clone())){
+				if(thisOrTree.fillStateRecursive((LinkedList<courseItem>)thisOrTree.currentState.getCoursesLabsToAssign().clone(), System.currentTimeMillis() + DataParser.orTreeTimeOut)){
 					InitialStates.add(thisOrTree.currentState);
 					System.out.print(".");
 				}
