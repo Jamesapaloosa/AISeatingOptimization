@@ -321,6 +321,7 @@ public class DataParser {
 			throw new IllegalArgumentException("Unexpected number of arguments (" + dataSet.length + ") for Course: " + input + " on row: " + rowNum);
 		return outCL;
 	}
+	
 	//------------------------------------------------------------------------------------------------------------
 	//Method for reading a line that contains a slot data set 
 	private Slot readCourseSlot(String input, int rowNum, boolean isForCourses){

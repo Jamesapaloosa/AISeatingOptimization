@@ -29,6 +29,26 @@ public class Driver {
 			System.out.println("Fatal error in inputFileParser method! " + e.getMessage());
 			return;
 		}
+		boolean Pres913 = false;
+		boolean Pres813 = false;
+		courseItem tempCourse;
+		for(int i = 0; i < inputFileData.getCourses().size(); i++){
+			tempCourse =  inputFileData.getCourses().get(i);
+			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("813"))
+				Pres813 = true;
+			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("913"))
+				Pres913 = true;
+		}
+		
+		
+		for(int i = 0; i < inputFileData.getCourses().size(); i++){
+			tempCourse = inputFileData.getCourses().get(i);
+			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("413") && !Pres913)
+				inputFileData.getCourses().add(new courseItem("CPSC", "913", "LEC", "01", true));
+			else if((tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("313") && !Pres813))
+				inputFileData.getCourses().add(new courseItem("CPSC", "813", "LEC", "01", true));
+		}
+		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
