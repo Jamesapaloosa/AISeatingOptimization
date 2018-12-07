@@ -309,6 +309,8 @@ public class Ext {
 		TimeCoursePair TCP;
 		Timeslot destinationSlot;
 		//loop that assigns x number of courses to their preference
+		if(fd.preferences.size() == 0)
+			return output;
 		for(int i = 0; i < numberOfMutations; i++){
 			randNum = random.nextInt(fd.preferences.size());
 			TCP = fd.preferences.get(randNum);
