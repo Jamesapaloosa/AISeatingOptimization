@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 public class StateMaker {
 	
-	public static State convertFromFileData(FileData inData, boolean check, boolean twoCheck){
+	public static State convertFromFileData(FileData inData){
 		
 		State output = new State();
 		output.setCoursesLabsToAssign((LinkedList<courseItem>)inData.getCourses().clone());
