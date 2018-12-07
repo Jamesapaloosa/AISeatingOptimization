@@ -77,16 +77,16 @@ public class Ext {
 					randNum = random.nextInt(schedule.size());
 					newState = assignSectionPairsToSameSlot(schedule.get(randNum), 1);
 				}
-				else{ 		//(ExtNum < weight[6])
+				else if(ExtNum < weight[6]) {
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), 1);
-				}/*
+				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
-					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, System.currentTimeMillis()))
 						newState = newOr.currentState;
 				}
-				*/
+
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
@@ -450,7 +450,7 @@ public class Ext {
 			//Make sure we can add this course before we remove it from elsewhere
 			if((destinationTimeslot.assignedItems.size() < destinationTimeslot.localSlot.Max) && sourceTimeslot != null){
 				
-				//Choose the course to modify to look more like the best
+				//Choose the timeslot from the best and 
 				int courseIndex = random.nextInt(sourceTimeslot.assignedItems.size());
 				courseItem courseToMove = sourceTimeslot.getAssignedItems().get(courseIndex);
 				List<courseItem> temp;
