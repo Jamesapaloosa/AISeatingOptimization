@@ -23,7 +23,7 @@ public class Ext {
 		start = System.currentTimeMillis();
 		fd = FD;
 		stateSoftCheck = new SoftConstraintState(FD);
-		end = start + 43200000;
+		end = start + 7200000;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;
@@ -63,30 +63,26 @@ public class Ext {
 				}
 				else if(ExtNum < weight[2]){
 					randNum = random.nextInt(schedule.size());
-					newState = putCoursesIntoSlotsUnderMin(schedule.get(randNum), 1);
+					newState = putCoursesIntoSlotsUnderMin(lowestEvalState, 1);
 				}
 				else if(ExtNum < weight[3]){
 					randNum = random.nextInt(schedule.size());
-					newState = pairTwoItems(schedule.get(randNum), 1);
-				}
-				else if(ExtNum < weight[4]){
-					randNum = random.nextInt(schedule.size());
-					newState = replaceUndesired(schedule.get(randNum), 1);
+					newState = pairTwoItems(lowestEvalState, 1);
 				}
 				else if(ExtNum < weight[5]){
 					randNum = random.nextInt(schedule.size());
-					newState = assignSectionPairsToSameSlot(schedule.get(randNum), 1);
+					newState = assignSectionPairsToSameSlot(lowestEvalState, 1);
 				}
-				else{ 		//(ExtNum < weight[6])
+				else if(ExtNum < weight[6]){
 					randNum = random.nextInt(schedule.size());
 					newState = placePreferredClass(schedule.get(randNum), 1);
-				}/*
+				}
 				else{
 					newOr = new OrTree(new State(blankState), FD);
-					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign))
+					if(newOr.fillStateRecursive(blankState.CoursesLabsToAssign, System.currentTimeMillis() + DataParser.orTreeTimeOut))
 						newState = newOr.currentState;
 				}
-				*/
+				
 				if (Constr.finalCheck(newState, FD.incompatible, FD.preAssigned, FD.unwanted)) {
 					schedule.add(newState);
 					newState.eval_Value = eval.evaluateTimeslots(newState.timeSlots);
@@ -148,7 +144,7 @@ public class Ext {
 		}
 		int secDiffVal = EvalData.getWsecdiff() * (maxDiff * EvalData.getPen_section());
 		*/
-		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*1;
+		double randomNew = ((prefVal + pairVal + minVal + secDiffVal)/100)*8;
 		double breed = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*8;
 		double mutate = ((prefVal + pairVal + minVal + secDiffVal + randomNew)/100)*6;
 		double total = prefVal + pairVal + minVal + secDiffVal + randomNew + breed + mutate;
@@ -185,18 +181,33 @@ public class Ext {
 		Timeslot to;
 		int itemIndex = 0;
 		Timeslot temp;
+		int randNum;
+		boolean forCourses;
+		LinkedList<Integer> altern;
 		while(numberOfMutationsDone < numberOfMutations){
 			from = to = null;
-			for(int i = 0; i < output.timeSlots.size(); i++){
-				temp = output.timeSlots.get(i);
-				if(temp.localSlot.Min > temp.assignedItems.size()){
+			randNum = random.nextInt(fd.courseSlots.size() + fd.labSlots.size());
+			if(randNum < fd.courseSlots.size())
+				forCourses = true;
+			else 
+				forCourses = false;
+			
+			altern = new LinkedList<Integer>();
+			
+			for(int k = 0; k < output.timeSlots.size(); k++){
+				altern.add(new Integer(k));
+			}
+			
+			for(int i = 0; i < altern.size(); i++){
+				randNum = altern.remove(random.nextInt(altern.size()));
+				temp = output.timeSlots.get(randNum);
+				if(temp.localSlot.Min > temp.assignedItems.size() && temp.forCourses == forCourses){
 					to = temp;
-				}else if (temp.localSlot.Min < temp.assignedItems.size()){
+				}else if (temp.localSlot.Min < temp.assignedItems.size()&& temp.forCourses == forCourses){
 					from = temp;
 				}
 				if((from != null)&&(to != null)){
-					if(from.forCourses == to.forCourses)
-						break;
+					break;
 				}
 			}
 			
@@ -223,40 +234,38 @@ public class Ext {
 		int item2Index;
 		int checks;
 		boolean pairFound;
+		CoursePair CP;
+		if(fd.pair.size() == 0){
+			return output;
+		}
 		//determine how many mutations to attempt
 		for(int i = 0; i < numberOfMutations; i++){
-			timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-			checks = 0;
-			while(timeslotToCheck.assignedItems.size() < 2 && checks < 40){
+			
+			CP = fd.pair.get(random.nextInt(fd.pair.size()));
+			
+			if(CP.itemOne.isALec == CP.itemTwo.isALec){
+				
 				timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-				checks++;
-			}
-			item2Index = -1;
-			pairFound = false;
-			for(int j = 0; j < timeslotToCheck.assignedItems.size(); j++){
-				item1 = timeslotToCheck.assignedItems.get(j);
-				for(int k = j + 1; k < timeslotToCheck.assignedItems.size(); k++){
-					item2 = timeslotToCheck.assignedItems.get(k);
-					if(isSameCourseDifferentSection(item1, item2)){
-						pairFound = true;
-						item2Index = k;
-						break;
+				checks = 0;
+				while(checks < 40 && timeslotToCheck.forCourses != CP.itemOne.isALec && timeslotToCheck.assignedItems.size() < timeslotToCheck.localSlot.Max - 2){
+					timeslotToCheck = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
+				}
+				for( int j = 0; j < output.timeSlots.size(); j++){
+					for(int k = 0; k < output.timeSlots.get(j).assignedItems.size(); k++){
+						if(CP.itemOne.isSameCourseItems(output.timeSlots.get(j).assignedItems.get(k)) && timeslotToCheck.addItemToTimeslot(output.timeSlots.get(j).assignedItems.get(k), fd)){
+							output.timeSlots.get(j).assignedItems.remove(k);
+							break;
+						}
 					}
 				}
-				if(pairFound)
-					break;
-			}
-			if(pairFound){
-				destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-				checks = 0;
-				while(destination.assignedItems.size() >= destination.localSlot.Max && checks < 40){
-					destination = output.timeSlots.get(random.nextInt(output.timeSlots.size()));
-					checks++;
-				}
 				
-				if(destination.assignedItems.size() < destination.localSlot.Max){
-					item2 = timeslotToCheck.assignedItems.remove(item2Index);
-					destination.addItemToTimeslot(item2, fd);
+				for( int j = 0; j < output.timeSlots.size(); j++){
+					for(int k = 0; k < output.timeSlots.get(j).assignedItems.size(); k++){
+						if(CP.itemTwo.isSameCourseItems(output.timeSlots.get(j).assignedItems.get(k)) && timeslotToCheck.addItemToTimeslot(output.timeSlots.get(j).assignedItems.get(k), fd)){
+							output.timeSlots.get(j).assignedItems.remove(k);
+							break;
+						}
+					}
 				}
 			}
 		}

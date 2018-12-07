@@ -40,7 +40,6 @@ public class Driver {
 				Pres913 = true;
 		}
 		
-		
 		for(int i = 0; i < inputFileData.getCourses().size(); i++){
 			tempCourse = inputFileData.getCourses().get(i);
 			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("413") && !Pres913)
@@ -48,7 +47,6 @@ public class Driver {
 			else if((tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("313") && !Pres813))
 				inputFileData.getCourses().add(new courseItem("CPSC", "813", "LEC", "01", true));
 		}
-		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
@@ -59,10 +57,6 @@ public class Driver {
 		currentState = StateMaker.convertFromFileData(inputFileData);
 		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
 		Constr.items.addAll(inputFileData.getLabs());
-//		if(!Constr.check813913Pairs()){
-//			System.out.println("Failed to create any or tree solutions for the provided state.  Problem is unsolvable");
-//			return;
-//		}
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("making the initial state speed: " + duration);
@@ -115,6 +109,7 @@ public class Driver {
 		startTime = System.currentTimeMillis();
 		OutputGenerator output = new OutputGenerator(currentState);
 		output.OutputResultToCommandLine();
+		output.OutputResultToFile();
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 	}

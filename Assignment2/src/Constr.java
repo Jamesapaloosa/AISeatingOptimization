@@ -84,8 +84,6 @@ public class Constr {
 						break;
 					}
 				}
-				if(!found)
-					return false;
 			}
 		}
 		if(valuesToFind.size() > 0)

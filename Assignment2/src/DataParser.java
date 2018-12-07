@@ -32,9 +32,9 @@ public class DataParser {
 	public static String emptyData = "<EMPTY>";
 	public static String[] FileDataHeaders = {"Name", "Course slots:", "Lab slots:","Courses:","Labs:", "Not compatible:","Unwanted:","Preferences:", "Pair:","Partial assignments:"};
 	
-	public static int generationSize = 10;
-	public static int generationMultiplier = 50;
-	public static int generationsWithoutChangeForResult = 2000000;
+	public static int generationSize = 1;
+	public static int generationMultiplier = 1;
+	public static int generationsWithoutChangeForResult = 1;
 	public static int generationMutationModifier = 100;
 	public static long orTreeTimeOut = 10000;
 	public static double percentOfTopTenToTake = .3;
