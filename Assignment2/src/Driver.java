@@ -40,13 +40,28 @@ public class Driver {
 				Pres913 = true;
 		}
 		
+		Slot a = new Slot(2, 2, "18:00", "TU", true);
+		
+		boolean check = false;
+		boolean twoCheck = false;
 		for(int i = 0; i < inputFileData.getCourses().size(); i++){
 			tempCourse = inputFileData.getCourses().get(i);
-			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("413") && !Pres913)
-				inputFileData.getCourses().add(new courseItem("CPSC", "913", "LEC", "01", true));
-			else if((tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("313") && !Pres813))
-				inputFileData.getCourses().add(new courseItem("CPSC", "813", "LEC", "01", true));
+			if(tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("413") && !Pres913) {
+				inputFileData.preAssigned.add(new TimeCoursePair(a, new courseItem("CPSC", "913", "LEC", "01", true), 1));
+				check = true;
+				if (check == true) {
+					twoCheck = true;
+				}
+			}
+			else if((tempCourse.department.contentEquals("CPSC")&& tempCourse.number.contentEquals("313") && !Pres813)) {
+				inputFileData.preAssigned.add(new TimeCoursePair(a, new courseItem("CPSC", "813", "LEC", "01", true), 1));
+				check = true;
+				if (check == true) {
+					twoCheck = true;
+				}
+			}
 		}
+		
 		endTime = System.currentTimeMillis();
 		duration = endTime - startTime;
 		System.out.println("input file parser speed: " + duration);
@@ -54,7 +69,7 @@ public class Driver {
 		
 		//preassigned courses to a time-slot and setup all of the time-slots based on imported data
 		startTime = System.currentTimeMillis();
-		currentState = StateMaker.convertFromFileData(inputFileData);
+		currentState = StateMaker.convertFromFileData(inputFileData, check, twoCheck);
 		Constr.items = ((LinkedList<courseItem>)inputFileData.getCourses().clone());
 		Constr.items.addAll(inputFileData.getLabs());
 		endTime = System.currentTimeMillis();

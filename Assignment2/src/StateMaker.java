@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 public class StateMaker {
 	
-	public static State convertFromFileData(FileData inData){
+	public static State convertFromFileData(FileData inData, boolean check, boolean twoCheck){
 		
 		State output = new State();
 		output.setCoursesLabsToAssign((LinkedList<courseItem>)inData.getCourses().clone());
@@ -16,6 +16,16 @@ public class StateMaker {
 			tempSlot = new Timeslot(inData.getCourseSlots().get(i));
 			tempTime.add(tempSlot);
 		}
+		
+
+		Slot a = new Slot(2, 2, "18:00", "TU", true);
+		if(twoCheck) {
+			tempTime.add(new Timeslot(a));
+			System.out.println("Ddawdw");
+		}else if (check) {
+			tempTime.add(new Timeslot(a));
+		}
+		
 		TimeCoursePair tempPair;
 		Timeslot destinationTime;
 		boolean found;

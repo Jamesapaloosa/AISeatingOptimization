@@ -25,7 +25,7 @@ public class Ext {
 		fd = FD;
 		stateSoftCheck = new SoftConstraintState(FD);
 		//Set end time here (milisecond)
-		end = start + 28800000;
+		end = start + 600;
 		schedule = factsSet;
 		OrTree newOr;
 		int randNum;

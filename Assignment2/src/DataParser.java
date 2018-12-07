@@ -19,7 +19,7 @@ public class DataParser {
 	
 	public static String[] validCourseMondayTimes = {"8:00","9:00", "10:00", "11:00","12:00","13:00","14:00", "15:00","16:00", "17:00","18:00","19:00","20:00"};
 	public static String[] validTutMondayTuesdayTimes = {"8:00","9:00", "10:00", "11:00","12:00","13:00","14:00", "15:00","16:00", "17:00","18:00","19:00","20:00"};
-	public static String[] validCourseTuesdayTimes = {"8:00", "9:30","11:00","12:30","14:00","15:30","17:00","18:30"};
+	public static String[] validCourseTuesdayTimes = {"8:00", "9:30","11:00","12:30","14:00","15:30","17:00","18:30", "18:00"};
 	public static String[] validLabFridayTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
 	
 	public static String[] validClassType = {"LEC", "TUT", "LAB", "tut", "lab", "lec"};
@@ -32,7 +32,7 @@ public class DataParser {
 	public static String emptyData = "<EMPTY>";
 	public static String[] FileDataHeaders = {"Name", "Course slots:", "Lab slots:","Courses:","Labs:", "Not compatible:","Unwanted:","Preferences:", "Pair:","Partial assignments:"};
 	
-	public static int generationSize = 1000;
+	public static int generationSize = 10;
     public static int generationMultiplier = 10;
     public static int generationsWithoutChangeForResult = 200000000;
     public static int generationMutationModifier = 1000;
