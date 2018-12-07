@@ -5,11 +5,14 @@ public class SoftConstraintState {
 	LinkedList<CoursePair> course_pairs;
 	LinkedList<TimeCoursePair> time_course_pairs;
 	
+	//A SoftConstraintState object needs a FileData object to be constructed
 	public SoftConstraintState(FileData inFileData){
 		course_pairs = (LinkedList<CoursePair>)inFileData.pair.clone();
 		time_course_pairs = inFileData.getPreferences();
 	}
 	
+	//By passing in a list of States, getSoftState will return a state that violates soft constraints
+	//Most checks here are the same as in Evaluator
 	public Timeslot getSoftState(LinkedList <Timeslot> states) {
 		Collections.shuffle(states);
 		for (Timeslot slot: states) {
